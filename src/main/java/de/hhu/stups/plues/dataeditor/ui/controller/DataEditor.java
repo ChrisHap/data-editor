@@ -1,7 +1,8 @@
 package de.hhu.stups.plues.dataeditor.ui.controller;
 
+import com.google.inject.Inject;
+
 import de.hhu.stups.plues.dataeditor.ui.components.SideBar;
-import de.hhu.stups.plues.dataeditor.ui.components.dataedits.CourseEdit;
 import de.hhu.stups.plues.dataeditor.ui.components.dataedits.ViewProvider;
 import de.hhu.stups.plues.dataeditor.ui.layout.Inflater;
 import javafx.animation.KeyFrame;
@@ -19,8 +20,6 @@ import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 import org.fxmisc.easybind.EasyBind;
 
-import javax.inject.Inject;
-import javax.inject.Provider;
 import java.net.URL;
 import java.util.ResourceBundle;
 

@@ -2,6 +2,7 @@ package de.hhu.stups.plues.dataeditor.ui;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+
 import de.hhu.stups.plues.dataeditor.injector.DataEditorModule;
 import de.hhu.stups.plues.dataeditor.ui.controller.DataEditor;
 import javafx.application.Application;

@@ -1,8 +1,9 @@
 package de.hhu.stups.plues.dataeditor.ui.components.dataedits;
 
-import com.google.inject.assistedinject.Assisted;
-import de.hhu.stups.plues.data.entities.Course;
+import com.google.inject.Inject;
+
 import de.hhu.stups.plues.dataeditor.ui.layout.Inflater;
+
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ComboBox;
@@ -11,7 +12,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.util.StringConverter;
 
-import javax.inject.Inject;
 import java.net.URL;
 import java.util.ResourceBundle;
 

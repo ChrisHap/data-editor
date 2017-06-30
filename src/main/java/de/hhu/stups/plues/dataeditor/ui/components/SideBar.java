@@ -1,5 +1,7 @@
 package de.hhu.stups.plues.dataeditor.ui.components;
 
+import com.google.inject.Inject;
+
 import de.hhu.stups.plues.dataeditor.ui.entities.EntityWrapper;
 import de.hhu.stups.plues.dataeditor.ui.layout.Inflater;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
@@ -14,7 +16,6 @@ import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
 import org.controlsfx.control.textfield.CustomTextField;
 
-import javax.inject.Inject;
 import java.net.URL;
 import java.util.ResourceBundle;
 
