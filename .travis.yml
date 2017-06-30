@@ -4,7 +4,7 @@ notification:
     on_failure: never
 language: java
 jdk:
-  - oraclejdk8
+- oraclejdk8
 addons:
   apt:
     packages:
@@ -13,19 +13,25 @@ addons:
     - oracle-java8-installer
   sonarqube:
     branches:
-      - master
-      - develop
+    - master
+    - develop
+  sonar:
+    token:
+      secure: rWtDjlPqovJqzQfsn21Uiqq/5DsjAJH2DBWm/vUFicpty/K2c67jVroVd1qk8gM81zFOdNX18h6FeOyE+AuFdyExnIhpcbsRs+n9I9H5nxvyAHMOubcz8WD1wSJ+N8iY9o+qpjgxeL3ZXfrv1KTcA1qEbSAox6QqIOeIdM69bHxyMB6hN1O4zmh4xKxqYl/JfUkXlWjOVYdn6/CHRTADN+7aEyAVd9nJrY76a6oaH3flqofSNgxo79qqsF/JYa2R5UqhdSluFRv3NPPafyDZ5Y1TuPw0YsYy4MNbFKfKBSeHI5r9wBtdSDMTUA+h2X4xTtJhWFyQknutJwQF8xR1DWR0S6Ydrwx7rwRudei2vBEV4fqY1tWEeUZqMLgds6dVyDhr5BqkqGHHFSf80c62owV/qg1WkWf50DINOxM+taf8k5a6cfmQdBk2bTxmlMmNfysKh5pz0E0HfxEmsDFJfIhSGcHU9tpJG2mBcQ5PB/kxb8ACLyIJCJ17UBb+nS7pB3GUPjkoUXNyUn2NvaqyBTff+mLjyBu/atllGueeyzXOJDGKSu+tibCmyoqr0LKrBYEtPJhoFIZ/1GylKQ/dfMP7kuiXIyfH560EIYjKo4+vQhKhmE/DqpL/i0H1wMC5vs+UI2ChIku0PBGxOrgAz4QDMWGOQXUT3EqZbsAMsIc=
 before_cache:
-  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
-  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+- rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+- rm -fr $HOME/.gradle/caches/*/plugin-resolution/
 cache:
   directories:
-  - $HOME/.gradle/caches/
-  - $HOME/.gradle/wrapper/
+  - "$HOME/.gradle/caches/"
+  - "$HOME/.gradle/wrapper/"
 before_install:
-  - export DISPLAY=:99.0
-  - sh -e /etc/init.d/xvfb start
+- export DISPLAY=:99.0
+- sh -e /etc/init.d/xvfb start
 script:
-  - ./gradlew --stacktrace -Pheadless=true check
+- "./gradlew --stacktrace -Pheadless=true check"
 after_success:
-  - ./gradlew distZip winZip createApp
+- "./gradlew distZip winZip createApp"
+env:
+  global:
+    secure: EWql3/pZ0nvGOodk9grz1jvKwrUnhbepmXl2CTDv8Y4x/3UG4ue2dOSMUBHC8FC5uB+Y2xiPcEBrBU0OPUPOQxytf43oXQQhCEqa8jmVZFAf8H6auIc9N7Qe18g1KfbxcJpr0C3bDZEtgWq6j7dSyJT4hpbLH7DM3hpG6jL4zXT1CHoSp0Zi9ns5sQgTs7Hzbv+o9I97kd7cpNvC5iW0Ag2USzi20BWErKQI/3rY41GdFH4+b8A0VemijLXgzTDnDvi8Av6vte7lvLfUiUe3SRA9XakCAgLVprz6yQRr9UZCBcql2LAlfmf9a9stypVeXLbTjsSkO+97dTxzIEgzg5toRUWB8GHuEQl5mrtcVsad2MIv15x4Qac6IA5NKnCWb3ol6c/8XVwi5u41UnfxxUJ0hO3r1tyois9zwvtUX7da2ipKInkBeYa+8Vvz3bzcn49dro+oxqXnIvZHS1rH9TvUzT5uXAHcy0FIiWvETRuFuDAe0XXnS+9YEdykN8dTUPIEJwx9gVh3zFz+Gr7leMMRPTiXc7Q/x1RtScwAoUjeM9fW6G4WPd7oot1o+LV4kO2+/y8IGMBtHYFmqVue8h2PILU1tLmkuiY/SFQ0vtznVCfTvV407IzfKonJPIhuJkWsR1gCsaNfcU0zeM1+BV4xnEq/3VRAR2s56sIzBhc=
