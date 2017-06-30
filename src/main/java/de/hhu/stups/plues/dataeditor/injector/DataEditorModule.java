@@ -9,6 +9,8 @@ import de.codecentric.centerdevice.MenuToolkit;
 
 import de.hhu.stups.plues.dataeditor.ui.components.MainMenu;
 import de.hhu.stups.plues.dataeditor.ui.components.SideBar;
+import de.hhu.stups.plues.dataeditor.ui.components.dataedits.CourseEdit;
+import de.hhu.stups.plues.dataeditor.ui.components.dataedits.ViewProvider;
 import de.hhu.stups.plues.dataeditor.ui.controller.DataEditor;
 import javafx.fxml.FXMLLoader;
 
@@ -26,7 +28,9 @@ public class DataEditorModule extends AbstractModule {
   @Override
   protected void configure() {
 
+    bind(ViewProvider.class);
     bind(MainMenu.class);
+    bind(CourseEdit.class);
     bind(SideBar.class);
     bind(DataEditor.class);
     bind(Locale.class).toInstance(locale);
