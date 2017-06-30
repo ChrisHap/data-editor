@@ -1,0 +1,125 @@
+plugins {
+    id 'java'
+    id 'application'
+    id 'idea'
+    id 'eclipse'
+    id 'findbugs'
+    id 'checkstyle'
+    id 'edu.sc.seis.launch4j' version '1.6.1'
+    id "edu.sc.seis.macAppBundle" version "2.1.6"
+}
+group 'data-editor'
+
+
+checkstyle {
+    toolVersion = "7.5.1"
+}
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+version '1.0-SNAPSHOT'
+
+mainClassName = "de.hhu.stups.plues.ui.Main"
+
+applicationDefaultJvmArgs = ["-Dapple.awt.UIElement=true"]
+def appName = "plues-data-editor" + project.version
+
+allprojects {
+    gradle.projectsEvaluated {
+        tasks.withType(JavaCompile) {
+            options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
+        }
+    }
+}
+
+repositories {
+    jcenter()
+    mavenCentral()
+    maven {
+        name "snapshots"
+        url "https://oss.sonatype.org/content/repositories/snapshots"
+    }
+    maven {
+        name "releases"
+        url "https://oss.sonatype.org/content/repositories/releases"
+    }
+    maven { url 'https://jitpack.io' }
+}
+
+dependencies {
+    compile 'com.google.code.findbugs:annotations:3.0.1u2'
+    compile 'de.jensd:fontawesomefx-fontawesome:4.7.0-3'
+    compile group: 'org.fxmisc.easybind', name: 'easybind', version: '1.0.3'
+    compile group: 'org.reactfx', name: 'reactfx', version: '2.0-M5'
+    compile 'com.google.inject.extensions:guice-assistedinject:4.1.0'
+    compile 'de.codecentric.centerdevice:centerdevice-nsmenufx:2.1.5'
+    compile 'org.controlsfx:controlsfx:8.40.12'
+    // logging
+    compile 'org.slf4j:slf4j-api:1.7.25' // MIT
+    compile 'ch.qos.logback:logback-core:1.2.3' // EPL
+    compile 'ch.qos.logback:logback-classic:1.2.3' // EPL
+    compile group: 'org.codehaus.janino', name: 'janino', version: '3.0.7'
+
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+    testCompile 'org.mockito:mockito-core:2.8.+'
+
+    // provides org.testfx.api, org.testfx.matcher to the test source set.
+    testCompile(group: "org.testfx", name: "testfx-core", version: "4.0.6-alpha")
+    // provides org.testfx.framework.junit to the test source set.
+    testCompile(group: "org.testfx", name: "testfx-junit", version: "4.0.6-alpha")
+    testRuntime 'org.testfx:openjfx-monocle:1.8.0_20'
+}
+
+launch4j {
+    mainClassName = project.mainClassName
+    outfile = appName + ".exe"
+    version = project.version
+    textVersion = project.version
+
+    messagesStartupError = "Startup Error"
+    messagesBundledJreError = "Bundled JRE Error"
+    messagesLauncherError = "Launch Error"
+    messagesJreVersionError = "JRE Version Error"
+}
+
+task winZip(dependsOn: "launch4j", type: Zip) {
+    def outdir = "${project.buildDir}/launch4j"
+    // project.launch4j.outputDir not working as expected
+    def libdir = "${project.buildDir}/launch4j/${project.launch4j.libraryDir}"
+    def zipdir = "${project.buildDir}/distributions/"
+
+
+    from(outdir) {
+        include project.launch4j.outfile
+        into ''
+    }
+
+    from(libdir) {
+        include "*.jar"
+        into 'lib'
+    }
+
+    archiveName appName + "-win.zip"
+    destinationDir file(zipdir)
+}
+
+macAppBundle {
+    appName = appName
+    mainClassName = project.mainClassName
+    icon = "icon.icns"
+    javaProperties.put("apple.laf.useScreenMenuBar", "true")
+
+}
+/*
+ * Allows you to run the UI tests in headless mode by calling gradle with the -Pheadless=true argument
+ */
+if (project.hasProperty('headless') ? project.headless : false) {
+    println "Running UI Tests Headless"
+    test {
+        jvmArgs = ['-Djava.awt.headless=true', '-Dtestfx.robot=glass', '-Dtestfx.headless=true', '-Dprism.order=sw', '-Dprism.text=t2k']
+    }
+}
+test {
+    environment "HEADLESS", project.hasProperty('headless')
+}
