@@ -3,17 +3,19 @@ package de.hhu.stups.plues.dataeditor.ui.controller;
 import com.google.inject.Inject;
 
 import de.hhu.stups.plues.dataeditor.ui.components.SideBar;
-import de.hhu.stups.plues.dataeditor.ui.components.dataedits.ViewProvider;
+import de.hhu.stups.plues.dataeditor.ui.components.dataedits.EditViewFactories;
 import de.hhu.stups.plues.dataeditor.ui.layout.Inflater;
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.SplitPane;
-import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
@@ -25,7 +27,7 @@ import java.util.ResourceBundle;
 
 public class DataEditor extends VBox implements Initializable {
 
-  private final ViewProvider viewProvider;
+  private final EditViewFactories editViewFactories;
   private double lastDividerPosition;
 
   private SplitPane.Divider splitPaneDivider;
@@ -48,43 +50,58 @@ public class DataEditor extends VBox implements Initializable {
 
   @Inject
   public DataEditor(final Inflater inflater,
-                    final ViewProvider viewProvider) {
-    this.viewProvider = viewProvider;
+                    final EditViewFactories editViewFactories) {
+    this.editViewFactories = editViewFactories;
     inflater.inflate("controller/data_editor", this, this, "main");
   }
 
   @Override
   public void initialize(final URL location, final ResourceBundle resources) {
+    initializeSplitPane();
+    tabPane.prefWidthProperty().bind(contentAnchorPane.widthProperty());
+  }
+
+  private void initializeSplitPane() {
     splitPaneDivider = mainSplitPane.getDividers().get(0);
     lastDividerPosition = splitPaneDivider.getPosition();
     mainSplitPane.prefHeightProperty().bind(heightProperty());
-    mainSplitPane.heightProperty().addListener((observable, oldValue, newValue) -> {
-      AnchorPane.setLeftAnchor(btToggleDivider, 0.0);
-      AnchorPane.setTopAnchor(btToggleDivider, newValue.doubleValue() / 2
-          - btToggleDivider.getHeight() / 2);
-    });
+    btToggleDivider.graphicProperty().bind(Bindings.when(sideBar.showSideBarProperty())
+        .then(new FontAwesomeIconView(FontAwesomeIcon.ARROW_LEFT))
+        .otherwise(new FontAwesomeIconView(FontAwesomeIcon.ARROW_RIGHT)));
+    EasyBind.subscribe(sideBar.showSideBarProperty(), this::showOrHideSideBar);
+    EasyBind.subscribe(mainSplitPane.heightProperty(),
+        (number) -> updateToggleDividerPos(number.doubleValue()));
+  }
 
-    EasyBind.subscribe(sideBar.showSideBarProperty(), showSideBar -> {
-      if (showSideBar && !mainSplitPane.getItems().contains(sideBar)) {
-        mainSplitPane.getItems().add(0, sideBar);
-        splitPaneDivider = mainSplitPane.getDividers().get(0);
-      } else if (!showSideBar) {
-        lastDividerPosition = splitPaneDivider.getPosition();
-      }
-      toggleSideBar(showSideBar);
-    });
+  /**
+   * Update the position of {@link #btToggleDivider} to be centered when the height of
+   * {@link #mainSplitPane} changes.
+   */
+  private void updateToggleDividerPos(final double height) {
+    AnchorPane.setLeftAnchor(btToggleDivider, 0.0);
+    AnchorPane.setTopAnchor(btToggleDivider, height / 2
+        - btToggleDivider.getHeight() / 2);
+  }
 
-    tabPane.prefWidthProperty().bind(contentAnchorPane.widthProperty());
-
-    final Tab tab = new Tab();
-    tab.setContent(viewProvider.courseEditProvider().get());
-    tabPane.getTabs().add(tab);
+  private void showOrHideSideBar(final boolean showSideBar) {
+    if (showSideBar && mainSplitPane.getItems().contains(sideBar)) {
+      return;
+    }
+    if (showSideBar) {
+      // add split pane if bar was closed
+      mainSplitPane.getItems().add(0, sideBar);
+      splitPaneDivider = mainSplitPane.getDividers().get(0);
+    } else {
+      // store current divider position when closing
+      lastDividerPosition = splitPaneDivider.getPosition();
+    }
+    animateSideBar(showSideBar);
   }
 
   /**
    * Run an animation either showing or hiding the {@link #sideBar}.
    */
-  private void toggleSideBar(final boolean showSideBar) {
+  private void animateSideBar(final boolean showSideBar) {
     final Timeline timeline = new Timeline();
     if (showSideBar) {
       mainSplitPane.setDividerPosition(0, 0.0);

@@ -1,21 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.VBox?>
+<?import de.hhu.stups.plues.dataeditor.ui.components.dataedits.CourseDegree?>
+<?import de.hhu.stups.plues.dataeditor.ui.components.LabeledTextField?>
 <?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.collections.FXCollections?>
-<?import de.hhu.stups.plues.dataeditor.ui.components.dataedits.CourseDegree?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.control.RadioButton?>
 
 <fx:root type="GridPane" styleClass="windowPadding" vgap="5.0" xmlns="http://javafx.com/javafx"
          xmlns:fx="http://javafx.com/fxml">
-    <VBox GridPane.columnIndex="0" GridPane.rowIndex="0">
-        <Label text="%course"/>
-        <TextField fx:id="txtCourseName"/>
-    </VBox>
+    <LabeledTextField fx:id="txtCourse" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
     <ComboBox fx:id="cbCourseDegree" GridPane.columnIndex="0" GridPane.rowIndex="1">
         <items>
             <FXCollections fx:factory="observableArrayList">
@@ -25,18 +20,9 @@
             </FXCollections>
         </items>
     </ComboBox>
-    <VBox GridPane.columnIndex="0" GridPane.rowIndex="2">
-        <Label text="%stg"/>
-        <TextField fx:id="txtStg"/>
-    </VBox>
-    <VBox GridPane.columnIndex="0" GridPane.rowIndex="3">
-        <Label text="%pversion"/>
-        <TextField fx:id="txtPVersion"/>
-    </VBox>
-    <VBox GridPane.columnIndex="0" GridPane.rowIndex="4">
-        <Label text="%credits"/>
-        <TextField fx:id="txtCreditPoints"/>
-    </VBox>
+    <LabeledTextField fx:id="txtStg" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+    <LabeledTextField fx:id="txtPVersion" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+    <LabeledTextField fx:id="txtCreditPoints" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
     <HBox spacing="5.0" GridPane.columnIndex="0" GridPane.rowIndex="5">
         <RadioButton fx:id="rbMajorCourse" text="%major"/>
         <RadioButton fx:id="rbMinorCourse" text="%minor"/>

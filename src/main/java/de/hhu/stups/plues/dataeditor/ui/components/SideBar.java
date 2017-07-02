@@ -2,19 +2,15 @@ package de.hhu.stups.plues.dataeditor.ui.components;
 
 import com.google.inject.Inject;
 
-import de.hhu.stups.plues.dataeditor.ui.entities.EntityWrapper;
 import de.hhu.stups.plues.dataeditor.ui.layout.Inflater;
-import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
-import de.jensd.fx.glyphs.fontawesome.utils.FontAwesomeIconFactory;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.TreeTableView;
 import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
-import org.controlsfx.control.textfield.CustomTextField;
+import org.fxmisc.easybind.EasyBind;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -26,13 +22,13 @@ public class SideBar extends VBox implements Initializable {
 
   @FXML
   @SuppressWarnings("unused")
-  private ComboBox<TreeType> cbDataType;
+  private ComboBox<VisualizationType> cbVisualizationType;
   @FXML
   @SuppressWarnings("unused")
-  private CustomTextField txtQuery;
+  private DataTreeView dataTreeView;
   @FXML
   @SuppressWarnings("unused")
-  private TreeTableView<EntityWrapper> treeTableView;
+  private DataListView dataListView;
 
   @Inject
   public SideBar(final Inflater inflater) {
@@ -43,28 +39,50 @@ public class SideBar extends VBox implements Initializable {
   @Override
   public void initialize(final URL location, final ResourceBundle resources) {
     this.resources = resources;
-    treeTableView.prefHeightProperty().bind(
-        this.heightProperty().subtract(cbDataType.heightProperty()));
-    txtQuery.setLeft(FontAwesomeIconFactory.get().createIcon(FontAwesomeIcon.SEARCH, "12"));
+    getChildren().remove(dataListView);
     initializeComboBox();
   }
 
   /**
-   * Initialize the {@link #cbDataType} to select between module tree or module data.
+   * Initialize the {@link #cbVisualizationType} to select between module tree or module data.
    */
   private void initializeComboBox() {
-    cbDataType.getSelectionModel().selectFirst();
-    cbDataType.setConverter(new StringConverter<TreeType>() {
+    cbVisualizationType.getSelectionModel().selectFirst();
+    cbVisualizationType.setConverter(new StringConverter<VisualizationType>() {
       @Override
-      public String toString(final TreeType treeType) {
-        return resources.getString(treeType.toString());
+      public String toString(final VisualizationType visualizationType) {
+        return resources.getString(visualizationType.toString());
       }
 
       @Override
-      public TreeType fromString(final String string) {
+      public VisualizationType fromString(final String string) {
         return null;
       }
     });
+    EasyBind.subscribe(cbVisualizationType.getSelectionModel().selectedItemProperty(),
+        this::handleVisualizationType);
+  }
+
+  /**
+   * Show either {@link #dataTreeView} or {@link #dataListView}.
+   */
+  private void handleVisualizationType(final VisualizationType visualizationType) {
+    switch (visualizationType) {
+      case TREE:
+        if (getChildren().contains(dataListView)) {
+          getChildren().remove(dataListView);
+          getChildren().add(dataTreeView);
+        }
+        return;
+      case LIST:
+        if (getChildren().contains(dataTreeView)) {
+          getChildren().remove(dataTreeView);
+          getChildren().add(dataListView);
+        }
+        return;
+      default:
+        break;
+    }
   }
 
   public BooleanProperty showSideBarProperty() {
