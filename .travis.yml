@@ -12,10 +12,10 @@ addons:
     - lib32ncurses5
     - oracle-java8-installer
   sonarcloud:
+    organization: "plues"
     branches:
-    - master
-    - develop
-  sonar:
+      - master
+      - develop
     token:
       secure: rWtDjlPqovJqzQfsn21Uiqq/5DsjAJH2DBWm/vUFicpty/K2c67jVroVd1qk8gM81zFOdNX18h6FeOyE+AuFdyExnIhpcbsRs+n9I9H5nxvyAHMOubcz8WD1wSJ+N8iY9o+qpjgxeL3ZXfrv1KTcA1qEbSAox6QqIOeIdM69bHxyMB6hN1O4zmh4xKxqYl/JfUkXlWjOVYdn6/CHRTADN+7aEyAVd9nJrY76a6oaH3flqofSNgxo79qqsF/JYa2R5UqhdSluFRv3NPPafyDZ5Y1TuPw0YsYy4MNbFKfKBSeHI5r9wBtdSDMTUA+h2X4xTtJhWFyQknutJwQF8xR1DWR0S6Ydrwx7rwRudei2vBEV4fqY1tWEeUZqMLgds6dVyDhr5BqkqGHHFSf80c62owV/qg1WkWf50DINOxM+taf8k5a6cfmQdBk2bTxmlMmNfysKh5pz0E0HfxEmsDFJfIhSGcHU9tpJG2mBcQ5PB/kxb8ACLyIJCJ17UBb+nS7pB3GUPjkoUXNyUn2NvaqyBTff+mLjyBu/atllGueeyzXOJDGKSu+tibCmyoqr0LKrBYEtPJhoFIZ/1GylKQ/dfMP7kuiXIyfH560EIYjKo4+vQhKhmE/DqpL/i0H1wMC5vs+UI2ChIku0PBGxOrgAz4QDMWGOQXUT3EqZbsAMsIc=
 before_cache:
@@ -30,7 +30,7 @@ before_install:
   - sh -e /etc/init.d/xvfb start
 script:
   - "./gradlew --stacktrace -Pheadless=true check"
-  - sonar-scanner -Dsonar.login=$SONAR_TOKEN
+  - sonar-scanner
 
 after_success:
   - "./gradlew distZip winZip createApp"
