@@ -4,37 +4,34 @@ notification:
     on_failure: never
 language: java
 jdk:
-- oraclejdk8
+  - oraclejdk8
 addons:
   apt:
     packages:
-    - lib32z1
-    - lib32ncurses5
-    - oracle-java8-installer
+      - lib32z1
+      - lib32ncurses5
+      - oracle-java8-installer
   sonarcloud:
     branches:
-      - master
-      - develop
-  sonar:
+     - master
+     - develop
     token:
-      secure: rWtDjlPqovJqzQfsn21Uiqq/5DsjAJH2DBWm/vUFicpty/K2c67jVroVd1qk8gM81zFOdNX18h6FeOyE+AuFdyExnIhpcbsRs+n9I9H5nxvyAHMOubcz8WD1wSJ+N8iY9o+qpjgxeL3ZXfrv1KTcA1qEbSAox6QqIOeIdM69bHxyMB6hN1O4zmh4xKxqYl/JfUkXlWjOVYdn6/CHRTADN+7aEyAVd9nJrY76a6oaH3flqofSNgxo79qqsF/JYa2R5UqhdSluFRv3NPPafyDZ5Y1TuPw0YsYy4MNbFKfKBSeHI5r9wBtdSDMTUA+h2X4xTtJhWFyQknutJwQF8xR1DWR0S6Ydrwx7rwRudei2vBEV4fqY1tWEeUZqMLgds6dVyDhr5BqkqGHHFSf80c62owV/qg1WkWf50DINOxM+taf8k5a6cfmQdBk2bTxmlMmNfysKh5pz0E0HfxEmsDFJfIhSGcHU9tpJG2mBcQ5PB/kxb8ACLyIJCJ17UBb+nS7pB3GUPjkoUXNyUn2NvaqyBTff+mLjyBu/atllGueeyzXOJDGKSu+tibCmyoqr0LKrBYEtPJhoFIZ/1GylKQ/dfMP7kuiXIyfH560EIYjKo4+vQhKhmE/DqpL/i0H1wMC5vs+UI2ChIku0PBGxOrgAz4QDMWGOQXUT3EqZbsAMsIc=
+      secure: EmBxc+tqJ1MK6bsRtM4ENOSxZh3YPDi/82tWL5qXYCHjvRMfXCzPTnKtuEvDZV8YxO229qLTZ7fcwVb1s2wrgHKjLgtF3SQhK0kPQFABouEH332rIFo5d25I1D0GHRUPHivyopPfOY9EiiCXXXDqJkEaW8dC9tvGgs2vSfjjnPMfFwRYBK8nZeUU7dq1B0ZQ3qSHKEK8no54AiNA/jUS/jNhFK1WOW9HUJ2bEhyM0tpUQmMcT2R1iEkBKK24OZ2o/GA1AK1m/2KVNU5TQgrgWdV9lj3DCRQzbZxZe99m3orOj06QQnHD06gB12I3A+kL/dCnFoVnz6llUcVyeQm+6fJu4+m/cAhMme4foTNOsL2SMGK664d6PKMtsCrPvpGmJ19Q/C21IQHKIQEK0C780h+WtCnSNx6l409+wCgAaBPRFroCAiGcivKoq0H1NF6jmnkvRmCog+0R1lYAGSEAQW0LTH/BAfoYKs42LlbtdXzkjhV1zFhim6vmGQwA+AGxyVhRZSaizm/WxLtI3cavnZVFsooRUDjc9a1DKky5Vkws2rTbYD2s9fpECarVnpddCnU3CQqtLATofoEjm4bojXIqZceoPNzAaeN36360fLS8ecNiAVKmZ51pvSGzuTErJf7jfzElhVVEaRh5A/9m00nHB3Uomyyc7/wmUHhfkr0=
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
   - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
 cache:
   directories:
-  - "$HOME/.gradle/caches/"
-  - "$HOME/.gradle/wrapper/"
+    - "$HOME/.gradle/caches/"
+    - "$HOME/.gradle/wrapper/"
 before_install:
   - export DISPLAY=:99.0
   - sh -e /etc/init.d/xvfb start
 script:
   - "./gradlew --stacktrace -Pheadless=true check"
-  - sonar-scanner -Dsonar.login=$SONAR_TOKEN
-
+  - sonar-scanner
 after_success:
   - "./gradlew distZip winZip createApp"
-
 env:
   global:
-    secure: EWql3/pZ0nvGOodk9grz1jvKwrUnhbepmXl2CTDv8Y4x/3UG4ue2dOSMUBHC8FC5uB+Y2xiPcEBrBU0OPUPOQxytf43oXQQhCEqa8jmVZFAf8H6auIc9N7Qe18g1KfbxcJpr0C3bDZEtgWq6j7dSyJT4hpbLH7DM3hpG6jL4zXT1CHoSp0Zi9ns5sQgTs7Hzbv+o9I97kd7cpNvC5iW0Ag2USzi20BWErKQI/3rY41GdFH4+b8A0VemijLXgzTDnDvi8Av6vte7lvLfUiUe3SRA9XakCAgLVprz6yQRr9UZCBcql2LAlfmf9a9stypVeXLbTjsSkO+97dTxzIEgzg5toRUWB8GHuEQl5mrtcVsad2MIv15x4Qac6IA5NKnCWb3ol6c/8XVwi5u41UnfxxUJ0hO3r1tyois9zwvtUX7da2ipKInkBeYa+8Vvz3bzcn49dro+oxqXnIvZHS1rH9TvUzT5uXAHcy0FIiWvETRuFuDAe0XXnS+9YEdykN8dTUPIEJwx9gVh3zFz+Gr7leMMRPTiXc7Q/x1RtScwAoUjeM9fW6G4WPd7oot1o+LV4kO2+/y8IGMBtHYFmqVue8h2PILU1tLmkuiY/SFQ0vtznVCfTvV407IzfKonJPIhuJkWsR1gCsaNfcU0zeM1+BV4xnEq/3VRAR2s56sIzBhc=
+    secure: IKl7OjpsYhATcjxY7zLJddJCfU0mo7tJ//ht8fl2l7/h6l+fduioSLzMWOXOpG5mTWILYS2dPvOzaJwFLN2KpxhYCCi9ogAw2a1NCa66pIEZUdBf5fnJy28HSolCWFe+RpDa6Q9id3tMY2Xie3Z+9LUbDPlEx5OXar7WCsjKu7Cm204Cs0vLSq5KaYcPPfIbCWhKQuTw7BM53hBWKBCrbFtRG2CAeg2LqNym1I4wKiz4Xeu7aXc4KxsWxYp4e6UToPfx6sPjR9xUaOi0wCbvJW9c7gqCkfdsXd/50lbRIjQSozyQJk4pH5O6Bngpd2bOJdxqd9Lj0Z5fAxN/kjn2jVTMEy91TiZOYRl4KALyJ5RYGFHIXOOLBFDgau5JDFKewjdVhK4lvoV37cLkAuzLdzHbU6sm2hm+7+2ovYlfKF8eO8JwXO4Eq9c5iv0hv1gEJAKyPja7YNNYiuFM3E1p+3CJy3d8VX9sIlwmdMGupy3qKlVvsZgqI1yYZOb4VqoOFAwtOCDR9f3xRaAG1joIsWhcPV40rDgYgzzcsEuzc6bJJEryT6t2DheVjEjSiMyYDYxfZ6iFpgx6kCzbBw7zjPF0xl3TQWVU22BiD9IPQVwjRoRyPCoQOCPwdMTl2BoMOuFF0hJrynLpczWj8lbp1zycRWyAdp2f1y7t+qDrcC8=
