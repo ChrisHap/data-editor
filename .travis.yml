@@ -15,6 +15,7 @@ addons:
     branches:
      - master
      - develop
+    organization: "joshua27-github"
     token:
       secure: $SONAR_TOKEN
 before_cache:

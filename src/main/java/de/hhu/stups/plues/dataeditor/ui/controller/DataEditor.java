@@ -70,7 +70,7 @@ public class DataEditor extends VBox implements Initializable {
         .otherwise(new FontAwesomeIconView(FontAwesomeIcon.ARROW_RIGHT)));
     EasyBind.subscribe(sideBar.showSideBarProperty(), this::showOrHideSideBar);
     EasyBind.subscribe(mainSplitPane.heightProperty(),
-        (number) -> updateToggleDividerPos(number.doubleValue()));
+        number -> updateToggleDividerPos(number.doubleValue()));
   }
 
   /**
