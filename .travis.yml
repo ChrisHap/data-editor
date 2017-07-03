@@ -12,7 +12,7 @@ addons:
     - lib32ncurses5
     - oracle-java8-installer
   sonarcloud:
-    organization: "plues"
+    organization: "data-editor"
     branches:
       - master
       - develop
