@@ -15,9 +15,7 @@ addons:
     branches:
      - master
      - develop
-    token:
-      secure: EmBxc+tqJ1MK6bsRtM4ENOSxZh3YPDi/82tWL5qXYCHjvRMfXCzPTnKtuEvDZV8YxO229qLTZ7fcwVb1s2wrgHKjLgtF3SQhK0kPQFABouEH332rIFo5d25I1D0GHRUPHivyopPfOY9EiiCXXXDqJkEaW8dC9tvGgs2vSfjjnPMfFwRYBK8nZeUU7dq1B0ZQ3qSHKEK8no54AiNA/jUS/jNhFK1WOW9HUJ2bEhyM0tpUQmMcT2R1iEkBKK24OZ2o/GA1AK1m/2KVNU5TQgrgWdV9lj3DCRQzbZxZe99m3orOj06QQnHD06gB12I3A+kL/dCnFoVnz6llUcVyeQm+6fJu4+m/cAhMme4foTNOsL2SMGK664d6PKMtsCrPvpGmJ19Q/C21IQHKIQEK0C780h+WtCnSNx6l409+wCgAaBPRFroCAiGcivKoq0H1NF6jmnkvRmCog+0R1lYAGSEAQW0LTH/BAfoYKs42LlbtdXzkjhV1zFhim6vmGQwA+AGxyVhRZSaizm/WxLtI3cavnZVFsooRUDjc9a1DKky5Vkws2rTbYD2s9fpECarVnpddCnU3CQqtLATofoEjm4bojXIqZceoPNzAaeN36360fLS8ecNiAVKmZ51pvSGzuTErJf7jfzElhVVEaRh5A/9m00nHB3Uomyyc7/wmUHhfkr0=
-before_cache:
+   before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
   - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
 cache:
@@ -29,7 +27,7 @@ before_install:
   - sh -e /etc/init.d/xvfb start
 script:
   - "./gradlew --stacktrace -Pheadless=true check"
-  - sonar-scanner
+  - sonar-scanner -Dsonar.login=$SONAR_TOKEN
 after_success:
   - "./gradlew distZip winZip createApp"
 env:
