@@ -15,6 +15,8 @@ addons:
     branches:
      - master
      - develop
+    token:
+      secure: $SONAR_TOKEN
    before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
   - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
@@ -27,7 +29,7 @@ before_install:
   - sh -e /etc/init.d/xvfb start
 script:
   - "./gradlew --stacktrace -Pheadless=true check"
-  - sonar-scanner -Dsonar.login=$SONAR_TOKEN
+  - sonar-scanner
 after_success:
   - "./gradlew distZip winZip createApp"
 env:
