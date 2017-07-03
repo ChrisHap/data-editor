@@ -3,6 +3,8 @@ package de.hhu.stups.plues.dataeditor.ui.components;
 import com.google.inject.Inject;
 
 import de.hhu.stups.plues.dataeditor.ui.layout.Inflater;
+import javafx.application.Platform;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
@@ -42,7 +44,7 @@ public class LabeledTextField extends VBox implements Initializable {
   }
 
   public void setLabelText(String labelText) {
-    this.labelTextProperty.set(labelText);
+    Platform.runLater(() -> this.labelTextProperty.set(labelText));
   }
 
   /**
@@ -50,5 +52,9 @@ public class LabeledTextField extends VBox implements Initializable {
    */
   public StringProperty textProperty() {
     return textField.textProperty();
+  }
+
+  public BooleanProperty disableTextFieldProperty() {
+    return textField.disableProperty();
   }
 }

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import de.hhu.stups.plues.dataeditor.ui.components.dataedits.CourseDegree?>
+<?import de.hhu.stups.plues.dataeditor.de.hhu.stups.plues.dataeditor.dataedits.CourseDegree?>
 <?import de.hhu.stups.plues.dataeditor.ui.components.LabeledTextField?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.control.ComboBox?>
