@@ -2,6 +2,9 @@ package de.hhu.stups.plues.dataeditor.ui.components;
 
 import com.google.inject.Inject;
 
+import de.hhu.stups.plues.dataeditor.ui.components.datavisualization.DataListView;
+import de.hhu.stups.plues.dataeditor.ui.components.datavisualization.DataTreeView;
+import de.hhu.stups.plues.dataeditor.ui.components.datavisualization.VisualizationType;
 import de.hhu.stups.plues.dataeditor.ui.layout.Inflater;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;

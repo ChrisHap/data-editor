@@ -1,4 +1,4 @@
-package de.hhu.stups.plues.dataeditor.ui.components;
+package de.hhu.stups.plues.dataeditor.ui.components.datavisualization;
 
 import com.google.inject.Inject;
 
@@ -34,7 +34,7 @@ public class DataListView extends VBox implements Initializable {
 
   @Inject
   public DataListView(final Inflater inflater) {
-    inflater.inflate("components/data_list_view", this, this, "data_view");
+    inflater.inflate("components/datavisualization/data_list_view", this, this, "data_view");
   }
 
   @Override

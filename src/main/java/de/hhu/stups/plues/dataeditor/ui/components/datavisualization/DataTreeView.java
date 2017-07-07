@@ -1,4 +1,4 @@
-package de.hhu.stups.plues.dataeditor.ui.components;
+package de.hhu.stups.plues.dataeditor.ui.components.datavisualization;
 
 import com.google.inject.Inject;
 
@@ -29,7 +29,7 @@ public class DataTreeView extends VBox implements Initializable {
 
   @Inject
   public DataTreeView(final Inflater inflater) {
-    inflater.inflate("components/data_tree_view", this, this, "data_view");
+    inflater.inflate("components/datavisualization/data_tree_view", this, this, "data_view");
   }
 
   @Override
