@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 
 import de.hhu.stups.plues.data.entities.Course;
 import de.hhu.stups.plues.dataeditor.ui.components.LabeledTextField;
+import de.hhu.stups.plues.dataeditor.ui.entities.CourseDegree;
 import de.hhu.stups.plues.dataeditor.ui.layout.Inflater;
 
 import javafx.beans.property.ObjectProperty;
@@ -13,7 +14,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.RadioButton;
-import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.GridPane;
 import javafx.util.StringConverter;
 

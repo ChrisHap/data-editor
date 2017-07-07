@@ -5,9 +5,6 @@ import com.google.inject.Inject;
 import de.hhu.stups.plues.dataeditor.ui.components.LabeledTextField;
 import de.hhu.stups.plues.dataeditor.ui.entities.EntityWrapper;
 import de.hhu.stups.plues.dataeditor.ui.layout.Inflater;
-import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
-import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
-import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -59,19 +56,6 @@ public class UnitEdit extends GridPane implements Initializable {
   public void initialize(final URL location, final ResourceBundle resources) {
     this.resources = resources;
     initializeInputFields();
-    initializeButtons();
-  }
-
-  private void initializeButtons() {
-    final FontAwesomeIconView iconEdit = new FontAwesomeIconView(FontAwesomeIcon.EDIT);
-    iconEdit.setGlyphSize(12);
-    final FontAwesomeIconView iconAdd = new FontAwesomeIconView(FontAwesomeIcon.PLUS);
-    iconAdd.setGlyphSize(12);
-    final FontAwesomeIconView iconRemove = new FontAwesomeIconView(FontAwesomeIcon.MINUS);
-    iconRemove.setGlyphSize(12);
-    btAddSession.graphicProperty().bind(Bindings.createObjectBinding(() -> iconAdd));
-    btEditSession.graphicProperty().bind(Bindings.createObjectBinding(() -> iconEdit));
-    btRemoveSession.graphicProperty().bind(Bindings.createObjectBinding(() -> iconRemove));
   }
 
   @FXML

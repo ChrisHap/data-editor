@@ -54,7 +54,9 @@ public class DataEditor extends VBox implements Initializable {
   @Override
   public void initialize(final URL location, final ResourceBundle resources) {
     initializeSplitPane();
-    dataEditView.prefWidthProperty().bind(contentAnchorPane.widthProperty());
+    dataEditView.prefWidthProperty().bind(contentAnchorPane.widthProperty()
+        .subtract(btToggleDivider.widthProperty()));
+    dataEditView.prefHeightProperty().bind(heightProperty());
   }
 
   private void initializeSplitPane() {
@@ -74,7 +76,6 @@ public class DataEditor extends VBox implements Initializable {
    * {@link #mainSplitPane} changes.
    */
   private void updateToggleDividerPos(final double height) {
-    AnchorPane.setLeftAnchor(btToggleDivider, 0.0);
     AnchorPane.setTopAnchor(btToggleDivider, height / 2
         - btToggleDivider.getHeight() / 2);
   }

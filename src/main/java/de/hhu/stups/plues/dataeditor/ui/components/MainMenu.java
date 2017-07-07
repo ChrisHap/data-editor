@@ -5,7 +5,6 @@ import com.google.inject.Inject;
 import de.hhu.stups.plues.dataeditor.ui.database.DbService;
 import de.hhu.stups.plues.dataeditor.ui.database.events.LoadDbEvent;
 import de.hhu.stups.plues.dataeditor.ui.layout.Inflater;
-import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.MenuBar;
@@ -28,9 +27,6 @@ public class MainMenu extends MenuBar implements Initializable {
   private MenuItem menuItemOpenDb;
   @FXML
   @SuppressWarnings("unused")
-  private MenuItem menuItemSaveDb;
-  @FXML
-  @SuppressWarnings("unused")
   private MenuItem menuItemSaveDbAs;
   @FXML
   @SuppressWarnings("unused")
@@ -49,24 +45,6 @@ public class MainMenu extends MenuBar implements Initializable {
   }
 
   /**
-   * Show a file chooser dialog and save the .sqlite database using the obtained path.
-   */
-  @FXML
-  @SuppressWarnings("unused")
-  private void saveDbAs() {
-
-  }
-
-  /**
-   * Save the .sqlite database.
-   */
-  @FXML
-  @SuppressWarnings("unused")
-  private void saveDb() {
-
-  }
-
-  /**
    * Open a .sqlite database.
    */
   @FXML
@@ -81,6 +59,15 @@ public class MainMenu extends MenuBar implements Initializable {
     if (file != null) {
       dbService.dbEventSource().push(new LoadDbEvent(file));
     }
+  }
+
+  /**
+   * Show a file chooser dialog and save the .sqlite database using the obtained path.
+   */
+  @FXML
+  @SuppressWarnings("unused")
+  private void saveDbAs() {
+
   }
 
   /**

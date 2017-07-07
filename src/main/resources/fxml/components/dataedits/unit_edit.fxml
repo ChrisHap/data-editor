@@ -10,6 +10,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
+<?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
 <fx:root type="GridPane" styleClass="windowPadding" vgap="5.0" hgap="5.0" alignment="CENTER"
          xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml">
     <LabeledTextField fx:id="txtUnit" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
@@ -26,9 +27,21 @@
         <ListView fx:id="listViewSessions"/>
     </VBox>
     <HBox spacing="5.0" alignment="CENTER_RIGHT" GridPane.columnIndex="1" GridPane.rowIndex="4">
-        <Button fx:id="btAddSession" onAction="#addSession"/>
-        <Button fx:id="btEditSession" onAction="#editSession"/>
-        <Button fx:id="btRemoveSession" onAction="#removeSession"/>
+        <Button fx:id="btAddSession" onAction="#addSession">
+            <graphic>
+                <FontAwesomeIconView glyphName="PLUS" glyphSize="12"/>
+            </graphic>
+        </Button>
+        <Button fx:id="btEditSession" onAction="#editSession">
+            <graphic>
+                <FontAwesomeIconView glyphName="EDIT" glyphSize="12"/>
+            </graphic>
+        </Button>
+        <Button fx:id="btRemoveSession" onAction="#removeSession">
+            <graphic>
+                <FontAwesomeIconView glyphName="MINUS" glyphSize="12"/>
+            </graphic>
+        </Button>
     </HBox>
     <columnConstraints>
         <ColumnConstraints percentWidth="50.0"/>

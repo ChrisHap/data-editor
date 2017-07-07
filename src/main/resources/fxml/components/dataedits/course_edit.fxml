@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import de.hhu.stups.plues.dataeditor.ui.components.LabeledTextField?>
-<?import de.hhu.stups.plues.dataeditor.ui.components.dataedits.CourseDegree?>
+<?import de.hhu.stups.plues.dataeditor.ui.entities.CourseDegree?>
 <?import javafx.collections.FXCollections?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
