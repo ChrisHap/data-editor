@@ -2,8 +2,8 @@ package de.hhu.stups.plues.dataeditor.ui.controller;
 
 import com.google.inject.Inject;
 
+import de.hhu.stups.plues.dataeditor.ui.components.DataEditView;
 import de.hhu.stups.plues.dataeditor.ui.components.SideBar;
-import de.hhu.stups.plues.dataeditor.ui.components.dataedits.EditViewFactories;
 import de.hhu.stups.plues.dataeditor.ui.layout.Inflater;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
@@ -16,7 +16,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.SplitPane;
-import javafx.scene.control.TabPane;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
@@ -27,7 +26,6 @@ import java.util.ResourceBundle;
 
 public class DataEditor extends VBox implements Initializable {
 
-  private final EditViewFactories editViewFactories;
   private double lastDividerPosition;
 
   private SplitPane.Divider splitPaneDivider;
@@ -43,22 +41,20 @@ public class DataEditor extends VBox implements Initializable {
   private AnchorPane contentAnchorPane;
   @FXML
   @SuppressWarnings("unused")
-  private TabPane tabPane;
+  private DataEditView dataEditView;
   @FXML
   @SuppressWarnings("unused")
   private Button btToggleDivider;
 
   @Inject
-  public DataEditor(final Inflater inflater,
-                    final EditViewFactories editViewFactories) {
-    this.editViewFactories = editViewFactories;
+  public DataEditor(final Inflater inflater) {
     inflater.inflate("controller/data_editor", this, this, "main");
   }
 
   @Override
   public void initialize(final URL location, final ResourceBundle resources) {
     initializeSplitPane();
-    tabPane.prefWidthProperty().bind(contentAnchorPane.widthProperty());
+    dataEditView.prefWidthProperty().bind(contentAnchorPane.widthProperty());
   }
 
   private void initializeSplitPane() {
