@@ -2,16 +2,18 @@ package de.hhu.stups.plues.dataeditor.ui.components.dataedits;
 
 import com.google.inject.Inject;
 
-import com.google.inject.assistedinject.Assisted;
-
 import de.hhu.stups.plues.data.entities.Course;
 import de.hhu.stups.plues.dataeditor.ui.components.LabeledTextField;
 import de.hhu.stups.plues.dataeditor.ui.layout.Inflater;
 
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.RadioButton;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.GridPane;
 import javafx.util.StringConverter;
 
@@ -20,8 +22,8 @@ import java.util.ResourceBundle;
 
 public class CourseEdit extends GridPane implements Initializable {
 
-  // TODO: use wrapper for the entities providing bindings for each instance attribute
-  private final Course course;
+  private final ObjectProperty<Course> courseProperty;
+
   private ResourceBundle resources;
 
   @FXML
@@ -45,11 +47,13 @@ public class CourseEdit extends GridPane implements Initializable {
   @FXML
   @SuppressWarnings("unused")
   private RadioButton rbMinorCourse;
+  @FXML
+  @SuppressWarnings("unused")
+  private Button persistChanges;
 
   @Inject
-  public CourseEdit(final Inflater inflater,
-                    @Assisted final Course course) {
-    this.course = course;
+  public CourseEdit(final Inflater inflater) {
+    courseProperty = new SimpleObjectProperty<>();
     inflater.inflate("components/dataedits/course_edit", this, this, "course_edit");
   }
 
@@ -58,6 +62,11 @@ public class CourseEdit extends GridPane implements Initializable {
     this.resources = resources;
     initializeCbDegree();
     initializeInputFields();
+  }
+
+  @FXML
+  public void persistChanges() {
+
   }
 
   private void initializeInputFields() {
@@ -80,5 +89,9 @@ public class CourseEdit extends GridPane implements Initializable {
       }
     });
     cbCourseDegree.getSelectionModel().selectFirst();
+  }
+
+  public ObjectProperty<Course> courseProperty() {
+    return courseProperty;
   }
 }

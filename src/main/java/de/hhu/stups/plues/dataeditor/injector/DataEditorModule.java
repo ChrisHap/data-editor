@@ -3,18 +3,21 @@ package de.hhu.stups.plues.dataeditor.injector;
 import com.google.inject.AbstractModule;
 import com.google.inject.Injector;
 import com.google.inject.Provides;
-import com.google.inject.assistedinject.FactoryModuleBuilder;
 import com.google.inject.util.Providers;
 
 import de.codecentric.centerdevice.MenuToolkit;
 
-import de.hhu.stups.plues.dataeditor.ui.components.DataListView;
-import de.hhu.stups.plues.dataeditor.ui.components.DataTreeView;
+import de.hhu.stups.plues.dataeditor.ui.components.DataEditView;
+import de.hhu.stups.plues.dataeditor.ui.components.dataedits.UnitEdit;
+import de.hhu.stups.plues.dataeditor.ui.components.datavisualization.DataListView;
+import de.hhu.stups.plues.dataeditor.ui.components.datavisualization.DataTreeView;
 import de.hhu.stups.plues.dataeditor.ui.components.LabeledTextField;
 import de.hhu.stups.plues.dataeditor.ui.components.MainMenu;
 import de.hhu.stups.plues.dataeditor.ui.components.SideBar;
-import de.hhu.stups.plues.dataeditor.ui.components.dataedits.EditViewFactories;
-import de.hhu.stups.plues.dataeditor.ui.components.dataedits.factories.CourseEditFactory;
+import de.hhu.stups.plues.dataeditor.ui.components.dataedits.AbstractUnitEdit;
+import de.hhu.stups.plues.dataeditor.ui.components.dataedits.CourseEdit;
+import de.hhu.stups.plues.dataeditor.ui.components.dataedits.LevelEdit;
+import de.hhu.stups.plues.dataeditor.ui.components.dataedits.ModuleEdit;
 import de.hhu.stups.plues.dataeditor.ui.controller.DataEditor;
 import de.hhu.stups.plues.dataeditor.ui.database.DbService;
 import javafx.fxml.FXMLLoader;
@@ -32,9 +35,14 @@ public class DataEditorModule extends AbstractModule {
 
   @Override
   protected void configure() {
+    bind(UnitEdit.class);
+    bind(CourseEdit.class);
+    bind(LevelEdit.class);
+    bind(ModuleEdit.class);
+    bind(AbstractUnitEdit.class);
     bind(LabeledTextField.class);
     bind(DbService.class);
-    bind(EditViewFactories.class);
+    bind(DataEditView.class);
     bind(DataTreeView.class);
     bind(DataListView.class);
     bind(MainMenu.class);
@@ -43,18 +51,11 @@ public class DataEditorModule extends AbstractModule {
     bind(Locale.class).toInstance(locale);
     bind(ResourceBundle.class).toInstance(bundle);
 
-    installFactories();
-
     if (IS_MAC) {
       bind(MenuToolkit.class).toInstance(MenuToolkit.toolkit(locale));
     } else {
       bind(MenuToolkit.class).toProvider(Providers.of(null));
     }
-  }
-
-
-  private void installFactories() {
-    install(new FactoryModuleBuilder().build(CourseEditFactory.class));
   }
 
   /**

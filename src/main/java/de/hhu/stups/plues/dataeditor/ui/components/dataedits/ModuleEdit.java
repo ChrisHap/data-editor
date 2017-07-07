@@ -2,7 +2,7 @@ package de.hhu.stups.plues.dataeditor.ui.components.dataedits;
 
 import com.google.inject.Inject;
 
-import de.hhu.stups.plues.data.entities.Level;
+import de.hhu.stups.plues.data.entities.Module;
 import de.hhu.stups.plues.dataeditor.ui.components.LabeledTextField;
 import de.hhu.stups.plues.dataeditor.ui.entities.EntityWrapper;
 import de.hhu.stups.plues.dataeditor.ui.layout.Inflater;
@@ -11,38 +11,48 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.layout.GridPane;
 
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class LevelEdit extends GridPane implements Initializable {
+public class ModuleEdit extends GridPane implements Initializable {
 
-  private final ObjectProperty<Level> levelProperty;
+  private final ObjectProperty<Module> moduleProperty;
 
   private ResourceBundle resources;
 
   @FXML
   @SuppressWarnings("unused")
-  private LabeledTextField txtLevel;
+  private LabeledTextField txtModule;
   @FXML
   @SuppressWarnings("unused")
-  private LabeledTextField txtMinCp;
+  private LabeledTextField txtId;
   @FXML
   @SuppressWarnings("unused")
-  private LabeledTextField txtMaxCp;
+  private LabeledTextField txtPordnr;
+  @FXML
+  @SuppressWarnings("unused")
+  private LabeledTextField txtCp;
   @FXML
   @SuppressWarnings("unused")
   private ComboBox<EntityWrapper> cbParent;
   @FXML
   @SuppressWarnings("unused")
+  private CheckBox cbMandatory;
+  @FXML
+  @SuppressWarnings("unused")
+  private CheckBox cbBundled;
+  @FXML
+  @SuppressWarnings("unused")
   private Button persistChanges;
 
   @Inject
-  public LevelEdit(final Inflater inflater) {
-    levelProperty = new SimpleObjectProperty<>();
-    inflater.inflate("components/dataedits/level_edit", this, this, "level_edit");
+  public ModuleEdit(final Inflater inflater) {
+    moduleProperty = new SimpleObjectProperty<>();
+    inflater.inflate("components/dataedits/module_edit", this, this, "module_edit");
   }
 
   @Override
@@ -57,12 +67,13 @@ public class LevelEdit extends GridPane implements Initializable {
   }
 
   private void initializeInputFields() {
-    txtLevel.setLabelText(resources.getString("level"));
-    txtMinCp.setLabelText(resources.getString("minCp"));
-    txtMaxCp.setLabelText(resources.getString("maxCp"));
+    txtModule.setLabelText(resources.getString("module"));
+    txtId.setLabelText(resources.getString("id"));
+    txtPordnr.setLabelText(resources.getString("pordnr"));
+    txtCp.setLabelText(resources.getString("credits"));
   }
 
-  public ObjectProperty<Level> levelProperty() {
-    return levelProperty;
+  public ObjectProperty<Module> moduleProperty() {
+    return moduleProperty;
   }
 }
