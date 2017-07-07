@@ -1,7 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import de.hhu.stups.plues.dataeditor.ui.components.LabeledTextField?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.VBox?>
 
-<fx:root type="GridPane" vgap="5.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml">
-
+<fx:root type="GridPane" styleClass="windowPadding" vgap="5.0" alignment="CENTER" xmlns="http://javafx.com/javafx"
+         xmlns:fx="http://javafx.com/fxml">
+    <LabeledTextField fx:id="txtLevel" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+    <VBox GridPane.columnIndex="0" GridPane.rowIndex="1">
+        <Label text="%parentLevel"/>
+        <ComboBox fx:id="cbParent" minWidth="0" maxWidth="Infinity"/>
+    </VBox>
+    <LabeledTextField fx:id="txtMinCp" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+    <LabeledTextField fx:id="txtMaxCp" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+    <Button fx:id="persistChanges" text="%persist" onAction="#persistChanges" GridPane.columnIndex="0"
+            GridPane.rowIndex="4"/>
 </fx:root>

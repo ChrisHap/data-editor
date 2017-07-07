@@ -1,3 +1,7 @@
+.windowPaddingLarge {
+    -fx-padding: 40 40 40 40;
+}
+
 .windowPadding {
     -fx-padding: 20 20 20 20;
 }
