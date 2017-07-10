@@ -12,6 +12,8 @@ import javafx.stage.Stage;
 
 public class Main extends Application {
 
+  private DataEditor root;
+
   public static void main(final String... args) {
     launch(args);
   }
@@ -20,7 +22,7 @@ public class Main extends Application {
   public void start(final Stage stage) throws Exception {
     final Injector injector = Guice.createInjector(new DataEditorModule());
 
-    final DataEditor root = injector.getInstance(DataEditor.class);
+    root = injector.getInstance(DataEditor.class);
     final Scene mainScene = new Scene(root, 1024, 768);
     root.getStylesheets().add("styles/main.css");
 
@@ -33,6 +35,7 @@ public class Main extends Application {
 
   @Override
   public void stop() {
+    root.closeApplication();
     Platform.exit();
   }
 }

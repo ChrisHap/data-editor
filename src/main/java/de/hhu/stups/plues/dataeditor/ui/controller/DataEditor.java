@@ -4,6 +4,8 @@ import com.google.inject.Inject;
 
 import de.hhu.stups.plues.dataeditor.ui.components.DataEditView;
 import de.hhu.stups.plues.dataeditor.ui.components.SideBar;
+import de.hhu.stups.plues.dataeditor.ui.database.DbService;
+import de.hhu.stups.plues.dataeditor.ui.database.events.CloseDbEvent;
 import de.hhu.stups.plues.dataeditor.ui.layout.Inflater;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
@@ -26,6 +28,7 @@ import java.util.ResourceBundle;
 
 public class DataEditor extends VBox implements Initializable {
 
+  private final DbService dbService;
   private double lastDividerPosition;
 
   private SplitPane.Divider splitPaneDivider;
@@ -47,7 +50,9 @@ public class DataEditor extends VBox implements Initializable {
   private Button btToggleDivider;
 
   @Inject
-  public DataEditor(final Inflater inflater) {
+  public DataEditor(final Inflater inflater,
+                    final DbService dbService) {
+    this.dbService = dbService;
     inflater.inflate("controller/data_editor", this, this, "main");
   }
 
@@ -64,11 +69,17 @@ public class DataEditor extends VBox implements Initializable {
     lastDividerPosition = splitPaneDivider.getPosition();
     mainSplitPane.prefHeightProperty().bind(heightProperty());
     btToggleDivider.graphicProperty().bind(Bindings.when(sideBar.showSideBarProperty())
-        .then(new FontAwesomeIconView(FontAwesomeIcon.ARROW_LEFT))
-        .otherwise(new FontAwesomeIconView(FontAwesomeIcon.ARROW_RIGHT)));
+        .then(getToggleIconView(FontAwesomeIcon.ARROW_LEFT))
+        .otherwise(getToggleIconView(FontAwesomeIcon.ARROW_RIGHT)));
     EasyBind.subscribe(sideBar.showSideBarProperty(), this::showOrHideSideBar);
     EasyBind.subscribe(mainSplitPane.heightProperty(),
         number -> updateToggleDividerPos(number.doubleValue()));
+  }
+
+  private FontAwesomeIconView getToggleIconView(final FontAwesomeIcon fontAwesomeIcon) {
+    final FontAwesomeIconView fontAwesomeIconView = new FontAwesomeIconView(fontAwesomeIcon);
+    fontAwesomeIconView.setGlyphSize(12);
+    return fontAwesomeIconView;
   }
 
   /**
@@ -119,5 +130,12 @@ public class DataEditor extends VBox implements Initializable {
   @SuppressWarnings("unused")
   private void toggleDivider() {
     sideBar.showSideBarProperty().set(!sideBar.showSideBarProperty().get());
+  }
+
+  /**
+   * Close the database when the application is closed.
+   */
+  public void closeApplication() {
+    dbService.dbEventSource().push(new CloseDbEvent());
   }
 }
