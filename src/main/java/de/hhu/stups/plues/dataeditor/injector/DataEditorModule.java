@@ -19,6 +19,7 @@ import de.hhu.stups.plues.dataeditor.ui.components.dataedits.UnitEdit;
 import de.hhu.stups.plues.dataeditor.ui.components.datavisualization.DataListView;
 import de.hhu.stups.plues.dataeditor.ui.components.datavisualization.DataTreeView;
 import de.hhu.stups.plues.dataeditor.ui.controller.DataEditor;
+import de.hhu.stups.plues.dataeditor.ui.database.DataService;
 import de.hhu.stups.plues.dataeditor.ui.database.DbService;
 import javafx.fxml.FXMLLoader;
 
@@ -41,6 +42,7 @@ public class DataEditorModule extends AbstractModule {
     bind(ModuleEdit.class);
     bind(AbstractUnitEdit.class);
     bind(LabeledTextField.class);
+    bind(DataService.class);
     bind(DbService.class);
     bind(DataEditView.class);
     bind(DataTreeView.class);
