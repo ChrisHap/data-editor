@@ -9,10 +9,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleSetProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableSet;
-
-import java.util.stream.Collectors;
 
 public class LevelWrapper implements EntityWrapper {
 
@@ -22,23 +19,19 @@ public class LevelWrapper implements EntityWrapper {
   private final IntegerProperty maxCreditsProperty;
   private final ObjectProperty<LevelWrapper> parentProperty;
   private final SetProperty<LevelWrapper> childrenProperty;
+  private final ObjectProperty<Level> levelProperty;
 
   /**
    * Initialize the property bindings according to the given level.
    */
   public LevelWrapper(final Level level) {
+    assert level != null;
     nameProperty = new SimpleStringProperty(level.getName());
     minCreditsProperty = new SimpleIntegerProperty(level.getMinCreditPoints());
     maxCreditsProperty = new SimpleIntegerProperty(level.getMaxCreditPoints());
-    assert level.getParent() != level;
-    if (level.getParent() != level) {
-      parentProperty = new SimpleObjectProperty<>(new LevelWrapper(level.getParent()));
-    } else {
-      parentProperty = new SimpleObjectProperty<>(null);
-    }
-    childrenProperty = new SimpleSetProperty<>(
-        FXCollections.observableSet(
-            level.getChildren().stream().map(LevelWrapper::new).collect(Collectors.toSet())));
+    parentProperty = new SimpleObjectProperty<>();
+    childrenProperty = new SimpleSetProperty<>();
+    levelProperty = new SimpleObjectProperty<>(level);
   }
 
   public String getNameProperty() {
@@ -101,4 +94,15 @@ public class LevelWrapper implements EntityWrapper {
     return childrenProperty;
   }
 
+  public ObjectProperty<Level> levelProperty() {
+    return levelProperty;
+  }
+
+  @Override
+  public String toString() {
+    if (levelProperty.get() == null) {
+      return "";
+    }
+    return levelProperty.get().getName();
+  }
 }

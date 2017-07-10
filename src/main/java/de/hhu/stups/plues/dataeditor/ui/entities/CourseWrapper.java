@@ -17,6 +17,7 @@ public class CourseWrapper implements EntityWrapper {
   private final StringProperty longNameProperty;
   private final ObjectProperty<CourseDegree> degreeProperty;
   private final ObjectProperty<CourseKzfa> kzfaProperty;
+  private final ObjectProperty<Course> courseProperty;
 
   /**
    * Initialize the property bindings according to the given course.
@@ -31,6 +32,7 @@ public class CourseWrapper implements EntityWrapper {
     degreeProperty = new SimpleObjectProperty<>(
         CourseDegree.getDegreeFromString(course.getDegree()));
     kzfaProperty = new SimpleObjectProperty<>(CourseKzfa.getKzfaFromString(course.getKzfa()));
+    courseProperty = new SimpleObjectProperty<>(course);
   }
 
   public String getKeyProperty() {
@@ -115,5 +117,21 @@ public class CourseWrapper implements EntityWrapper {
 
   public ObjectProperty<CourseKzfa> kzfaProperty() {
     return kzfaProperty;
+  }
+
+  public ObjectProperty<Course> courseProperty() {
+    return courseProperty;
+  }
+
+  public Course getCourse() {
+    return courseProperty.get();
+  }
+
+  @Override
+  public String toString() {
+    if (courseProperty.get() == null) {
+      return "";
+    }
+    return courseProperty.get().toString();
   }
 }

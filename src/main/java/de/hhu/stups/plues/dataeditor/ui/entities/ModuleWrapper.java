@@ -2,15 +2,15 @@ package de.hhu.stups.plues.dataeditor.ui.entities;
 
 import de.hhu.stups.plues.data.entities.Module;
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SetProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleSetProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableSet;
-
-import java.util.stream.Collectors;
 
 public class ModuleWrapper implements EntityWrapper {
 
@@ -20,21 +20,20 @@ public class ModuleWrapper implements EntityWrapper {
   private final IntegerProperty electiveUnitsProperty;
   private final SetProperty<AbstractUnitWrapper> abstractUnitsProperty;
   private final SetProperty<CourseWrapper> coursesProperty;
+  private final ObjectProperty<Module> moduleProperty;
 
   /**
    * Initialize the property bindings according to the given module.
    */
   public ModuleWrapper(final Module module) {
+    assert module != null;
     keyProperty = new SimpleStringProperty(module.getKey());
     titleProperty = new SimpleStringProperty(module.getTitle());
     pordnrProperty = new SimpleIntegerProperty(module.getPordnr());
     electiveUnitsProperty = new SimpleIntegerProperty(module.getElectiveUnits());
-    abstractUnitsProperty = new SimpleSetProperty<>(
-        FXCollections.observableSet(module.getAbstractUnits().stream()
-            .map(AbstractUnitWrapper::new).collect(Collectors.toSet())));
-    coursesProperty = new SimpleSetProperty<>(
-        FXCollections.observableSet(module.getCourses().stream()
-            .map(CourseWrapper::new).collect(Collectors.toSet())));
+    abstractUnitsProperty = new SimpleSetProperty<>(FXCollections.observableSet());
+    coursesProperty = new SimpleSetProperty<>(FXCollections.observableSet());
+    moduleProperty = new SimpleObjectProperty<>(module);
   }
 
   public String getKeyProperty() {
@@ -107,5 +106,21 @@ public class ModuleWrapper implements EntityWrapper {
 
   public SetProperty<CourseWrapper> coursesProperty() {
     return coursesProperty;
+  }
+
+  public ObjectProperty<Module> moduleProperty() {
+    return moduleProperty;
+  }
+
+  public Module getModule() {
+    return moduleProperty.get();
+  }
+
+  @Override
+  public String toString() {
+    if (moduleProperty.get() == null) {
+      return "";
+    }
+    return moduleProperty.get().getTitle();
   }
 }

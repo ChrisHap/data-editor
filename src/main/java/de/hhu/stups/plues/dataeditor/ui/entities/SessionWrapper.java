@@ -19,17 +19,20 @@ public class SessionWrapper implements EntityWrapper {
   private final IntegerProperty durationProperty;
   private final BooleanProperty tentativeProperty;
   private final ObjectProperty<Group> groupProperty;
+  private final ObjectProperty<Session> sessionProperty;
 
   /**
    * Initialize the property bindings according to the given session.
    */
   public SessionWrapper(final Session session) {
+    assert session != null;
     dayProperty = new SimpleStringProperty(session.getDay());
     timeProperty = new SimpleIntegerProperty(session.getTime());
     rhythmProperty = new SimpleIntegerProperty(session.getRhythm());
     durationProperty = new SimpleIntegerProperty(session.getDuration());
     tentativeProperty = new SimpleBooleanProperty(session.isTentative());
     groupProperty = new SimpleObjectProperty<>(session.getGroup());
+    sessionProperty = new SimpleObjectProperty<>(session);
   }
 
   public String getDayProperty() {
@@ -102,5 +105,17 @@ public class SessionWrapper implements EntityWrapper {
 
   public ObjectProperty<Group> groupProperty() {
     return groupProperty;
+  }
+
+  public ObjectProperty<Session> sessionProperty() {
+    return sessionProperty;
+  }
+
+  @Override
+  public String toString() {
+    if (sessionProperty.get() == null) {
+      return "";
+    }
+    return sessionProperty.get().toString();
   }
 }

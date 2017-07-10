@@ -1,34 +1,34 @@
 package de.hhu.stups.plues.dataeditor.ui.entities;
 
 import de.hhu.stups.plues.data.entities.Unit;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SetProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleSetProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableSet;
 
-import java.util.stream.Collectors;
-
 public class UnitWrapper implements EntityWrapper {
-
 
   private final StringProperty keyProperty;
   private final StringProperty titleProperty;
   private final SetProperty<Integer> semestersProperty;
   private final SetProperty<AbstractUnitWrapper> abstractUnitsProperty;
+  private final ObjectProperty<Unit> unitProperty;
   // TODO: groups?
 
   /**
    * Initialize the property bindings according to the given unit.
    */
   public UnitWrapper(final Unit unit) {
+    assert unit != null;
     keyProperty = new SimpleStringProperty(unit.getKey());
     titleProperty = new SimpleStringProperty(unit.getTitle());
     semestersProperty = new SimpleSetProperty<>(FXCollections.observableSet(unit.getSemesters()));
-    abstractUnitsProperty = new SimpleSetProperty<>(
-        FXCollections.observableSet(unit.getAbstractUnits().stream()
-            .map(AbstractUnitWrapper::new).collect(Collectors.toSet())));
+    abstractUnitsProperty = new SimpleSetProperty<>(FXCollections.observableSet());
+    unitProperty = new SimpleObjectProperty<>(unit);
   }
 
   public String getKeyProperty() {
@@ -39,7 +39,7 @@ public class UnitWrapper implements EntityWrapper {
     this.keyProperty.set(keyProperty);
   }
 
-  public StringProperty keyPropertyProperty() {
+  public StringProperty keyProperty() {
     return keyProperty;
   }
 
@@ -51,7 +51,7 @@ public class UnitWrapper implements EntityWrapper {
     this.titleProperty.set(titleProperty);
   }
 
-  public StringProperty titlePropertyProperty() {
+  public StringProperty titleProperty() {
     return titleProperty;
   }
 
@@ -63,7 +63,7 @@ public class UnitWrapper implements EntityWrapper {
     this.semestersProperty.set(semestersProperty);
   }
 
-  public SetProperty<Integer> semestersPropertyProperty() {
+  public SetProperty<Integer> semestersProperty() {
     return semestersProperty;
   }
 
@@ -75,8 +75,23 @@ public class UnitWrapper implements EntityWrapper {
     this.abstractUnitsProperty.set(abstractUnitsProperty);
   }
 
-  public SetProperty<AbstractUnitWrapper> abstractUnitsPropertyProperty() {
+  public SetProperty<AbstractUnitWrapper> abstractUnitsProperty() {
     return abstractUnitsProperty;
   }
 
+  public ObjectProperty<Unit> unitProperty() {
+    return unitProperty;
+  }
+
+  public Unit getUnit() {
+    return unitProperty.get();
+  }
+
+  @Override
+  public String toString() {
+    if (unitProperty.get() == null) {
+      return "";
+    }
+    return unitProperty.get().getTitle();
+  }
 }

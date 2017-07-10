@@ -1,14 +1,14 @@
 package de.hhu.stups.plues.dataeditor.ui.entities;
 
 import de.hhu.stups.plues.data.entities.AbstractUnit;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SetProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleSetProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableSet;
-
-import java.util.stream.Collectors;
 
 public class AbstractUnitWrapper implements EntityWrapper {
 
@@ -16,19 +16,18 @@ public class AbstractUnitWrapper implements EntityWrapper {
   private final StringProperty titleProperty;
   private final SetProperty<UnitWrapper> unitsProperty;
   private final SetProperty<ModuleWrapper> modulesProperty;
+  private final ObjectProperty<AbstractUnit> abstractUnitProperty;
 
   /**
    * Initialize the property bindings according to the given abstract unit.
    */
   public AbstractUnitWrapper(final AbstractUnit abstractUnit) {
+    assert abstractUnit != null;
     keyProperty = new SimpleStringProperty(abstractUnit.getKey());
     titleProperty = new SimpleStringProperty(abstractUnit.getTitle());
-    unitsProperty = new SimpleSetProperty<>(
-        FXCollections.observableSet(abstractUnit.getUnits().stream()
-            .map(UnitWrapper::new).collect(Collectors.toSet())));
-    modulesProperty = new SimpleSetProperty<>(
-        FXCollections.observableSet(abstractUnit.getModules().stream()
-            .map(ModuleWrapper::new).collect(Collectors.toSet())));
+    unitsProperty = new SimpleSetProperty<>(FXCollections.observableSet());
+    modulesProperty = new SimpleSetProperty<>(FXCollections.observableSet());
+    abstractUnitProperty = new SimpleObjectProperty<>(abstractUnit);
   }
 
   public String getKeyProperty() {
@@ -77,5 +76,21 @@ public class AbstractUnitWrapper implements EntityWrapper {
 
   public SetProperty<ModuleWrapper> modulesProperty() {
     return modulesProperty;
+  }
+
+  public ObjectProperty<AbstractUnit> abstractUnitProperty() {
+    return abstractUnitProperty;
+  }
+
+  public AbstractUnit getAbstractUnit() {
+    return abstractUnitProperty.get();
+  }
+
+  @Override
+  public String toString() {
+    if (abstractUnitProperty.get() == null) {
+      return "";
+    }
+    return abstractUnitProperty.get().getTitle();
   }
 }
