@@ -4,8 +4,9 @@ import java.io.File;
 
 public class LoadDbEvent implements DbEvent {
 
+  private static final DbEventType eventType = DbEventType.LOAD_DB;
+
   private final File dbFile;
-  private final DbEventType eventType = DbEventType.LOAD_DB;
 
   public LoadDbEvent(final File dbFile) {
     this.dbFile = dbFile;
