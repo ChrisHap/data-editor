@@ -14,9 +14,13 @@
                 <FontAwesomeIconView glyphName="FOLDER_OPEN" size="14"/>
             </graphic>
         </MenuItem>
-        <MenuItem fx:id="menuItemSaveDbAs" onAction="#saveDbAs" disable="true" mnemonicParsing="false" text="%saveDbAs"
-                  accelerator="Shortcut+Shift+S"/>
-        <MenuItem fx:id="menuItemExportDb" onAction="#exportDb" disable="true" mnemonicParsing="false"
+        <MenuItem fx:id="menuItemSaveDbAs" onAction="#saveDbAs" mnemonicParsing="false" text="%saveDbAs"
+                  accelerator="Shortcut+Shift+S">
+            <graphic>
+                <FontAwesomeIconView glyphName="SAVE" size="14"/>
+            </graphic>
+        </MenuItem>
+        <MenuItem fx:id="menuItemExportDb" onAction="#exportDb" mnemonicParsing="false"
                   text="%exportDb" accelerator="Shortcut+E">
             <graphic>
                 <FontAwesomeIconView glyphName="SHARE_SQUARE_ALT" size="14"/>

@@ -11,13 +11,20 @@ import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.ResourceBundle;
 
 public class MainMenu extends MenuBar implements Initializable {
 
+  private final Logger logger = LoggerFactory.getLogger(getClass());
   private final DbService dbService;
 
   private ResourceBundle resources;
@@ -42,6 +49,8 @@ public class MainMenu extends MenuBar implements Initializable {
   @Override
   public void initialize(final URL location, final ResourceBundle resources) {
     this.resources = resources;
+    menuItemSaveDbAs.disableProperty().bind(dbService.storeProperty().isNull());
+    menuItemExportDb.disableProperty().bind(dbService.storeProperty().isNull());
   }
 
   /**
@@ -67,7 +76,21 @@ public class MainMenu extends MenuBar implements Initializable {
   @FXML
   @SuppressWarnings("unused")
   private void saveDbAs() {
-
+    final Path source = dbService.getDbFile().toPath();
+    final FileChooser fileChooser = new FileChooser();
+    final FileChooser.ExtensionFilter extFilter =
+        new FileChooser.ExtensionFilter("SQLite Database (*.sqlite3)", "*.sqlite3");
+    fileChooser.getExtensionFilters().add(extFilter);
+    fileChooser.setInitialFileName(source.getFileName().toString());
+    final File file = fileChooser.showSaveDialog(this.getScene().getWindow());
+    if (file != null) {
+      final Path destination = file.toPath();
+      try {
+        Files.copy(source, destination, StandardCopyOption.REPLACE_EXISTING);
+      } catch (final IOException exception) {
+        logger.error("Error saving .sqlite3 database to " + destination.toString(), exception);
+      }
+    }
   }
 
   /**
@@ -76,7 +99,7 @@ public class MainMenu extends MenuBar implements Initializable {
   @FXML
   @SuppressWarnings("unused")
   private void exportDb() {
-
+    //
   }
 
   /**
