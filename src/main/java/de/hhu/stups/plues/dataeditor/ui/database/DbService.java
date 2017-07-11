@@ -37,6 +37,9 @@ public class DbService {
   private void handleDbEvent(final DbEvent dbEvent) {
     switch (dbEvent.getEventType()) {
       case LOAD_DB:
+        if (storeProperty.get() != null) {
+          storeProperty.get().close();
+        }
         final File dbFile = ((LoadDbEvent) dbEvent).getDbFile();
         try {
           storeProperty.set(new SqliteStore(dbFile.getPath()));

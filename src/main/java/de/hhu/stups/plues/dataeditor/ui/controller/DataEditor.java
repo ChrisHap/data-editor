@@ -132,9 +132,6 @@ public class DataEditor extends VBox implements Initializable {
     sideBar.showSideBarProperty().set(!sideBar.showSideBarProperty().get());
   }
 
-  /**
-   * Close the database when the application is closed.
-   */
   public void closeApplication() {
     dbService.dbEventSource().push(new CloseDbEvent());
   }

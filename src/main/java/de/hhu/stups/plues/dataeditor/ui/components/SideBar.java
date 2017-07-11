@@ -44,6 +44,8 @@ public class SideBar extends VBox implements Initializable {
     this.resources = resources;
     getChildren().remove(dataListView);
     initializeComboBox();
+    dataTreeView.prefWidthProperty().bind(widthProperty());
+    dataListView.prefWidthProperty().bind(widthProperty());
   }
 
   /**

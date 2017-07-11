@@ -25,7 +25,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.TreeTableView;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.GridPane;
 import org.controlsfx.control.textfield.CustomTextField;
 
 import java.net.URL;
@@ -35,7 +35,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Singleton
-public class DataTreeView extends VBox implements Initializable {
+public class DataTreeView extends GridPane implements Initializable {
 
   private final DataService dataService;
 
@@ -63,13 +63,14 @@ public class DataTreeView extends VBox implements Initializable {
   @Override
   public void initialize(final URL location, final ResourceBundle resources) {
     this.resources = resources;
-    treeTableView.prefHeightProperty().bind(this.heightProperty());
     treeTableRoot = new TreeItem<>();
     treeTableView.setRoot(treeTableRoot);
     treeTableColumnName.setCellValueFactory(param ->
         new SimpleStringProperty(param.getValue().getValue().toString()));
     txtQuery.setLeft(FontAwesomeIconFactory.get().createIcon(FontAwesomeIcon.SEARCH, "12"));
     dataService.dataChangeEventSource().subscribe(this::updateDataTree);
+    treeTableView.prefWidthProperty().bind(widthProperty());
+    txtQuery.prefWidthProperty().bind(widthProperty());
   }
 
   /**
@@ -77,6 +78,7 @@ public class DataTreeView extends VBox implements Initializable {
    */
   private void updateDataTree(final DataChangeEvent dataChangeEvent) {
     if (dataChangeEvent.getDataChangeType().reloadDb()) {
+      treeTableRoot.getChildren().clear();
       reloadData();
     } else if (dataChangeEvent.getDataChangeType().changeEntity()) {
       updateSingleEntity(dataChangeEvent.getChangedEntity());

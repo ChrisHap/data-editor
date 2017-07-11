@@ -3,6 +3,7 @@ package de.hhu.stups.plues.dataeditor.ui.components;
 import com.google.inject.Inject;
 
 import de.hhu.stups.plues.dataeditor.ui.database.DbService;
+import de.hhu.stups.plues.dataeditor.ui.database.events.CloseDbEvent;
 import de.hhu.stups.plues.dataeditor.ui.database.events.LoadDbEvent;
 import de.hhu.stups.plues.dataeditor.ui.layout.Inflater;
 import javafx.fxml.FXML;
