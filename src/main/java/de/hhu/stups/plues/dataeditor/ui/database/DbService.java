@@ -52,6 +52,9 @@ public class DbService {
         // TODO: update entity using ((UpdateDbEvent) dbEvent).getEntityWrapper()
         break;
       case CLOSE_DB:
+        if (storeProperty.get() == null) {
+          break;
+        }
         storeProperty.get().close();
         break;
       default:
