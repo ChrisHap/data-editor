@@ -1,32 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import de.hhu.stups.plues.dataeditor.ui.components.dataedits.AbstractUnitEdit?>
-<?import de.hhu.stups.plues.dataeditor.ui.components.dataedits.CourseEdit?>
-<?import de.hhu.stups.plues.dataeditor.ui.components.dataedits.LevelEdit?>
-<?import de.hhu.stups.plues.dataeditor.ui.components.dataedits.ModuleEdit?>
-<?import de.hhu.stups.plues.dataeditor.ui.components.dataedits.UnitEdit?>
-<?import javafx.scene.control.Accordion?>
-<?import javafx.scene.control.TitledPane?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.TabPane?>
 
-<fx:root type="VBox" styleClass="windowPaddingLarge" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml">
-    <Accordion expandedPane="$titledPaneCourseEdit">
-        <panes>
-            <TitledPane fx:id="titledPaneCourseEdit" text="%course">
-                <CourseEdit fx:id="courseEdit"/>
-            </TitledPane>
-            <TitledPane fx:id="titledPaneLevelEdit" text="%level">
-                <LevelEdit fx:id="levelEdit"/>
-            </TitledPane>
-            <TitledPane fx:id="titledPaneModuleEdit" text="%module">
-                <ModuleEdit fx:id="moduleEdit"/>
-            </TitledPane>
-            <TitledPane fx:id="titledPaneAbstractUnitEdit" text="%abstract_unit">
-                <AbstractUnitEdit fx:id="abstractUnitEdit"/>
-            </TitledPane>
-            <TitledPane fx:id="titledPaneUnitEdit" text="%unit">
-                <UnitEdit fx:id="unitEdit"/>
-            </TitledPane>
-        </panes>
-    </Accordion>
-</fx:root>
+<fx:root type="TabPane" xmlns="http://javafx.com/javafx"
+         xmlns:fx="http://javafx.com/fxml"/>
