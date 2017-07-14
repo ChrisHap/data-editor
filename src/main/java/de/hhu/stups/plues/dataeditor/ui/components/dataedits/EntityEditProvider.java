@@ -32,15 +32,19 @@ public class EntityEditProvider {
   public CourseEdit getCourseEdit() {
     return courseEditProvider.get();
   }
+
   public LevelEdit getLevelEdit() {
     return levelEditProvider.get();
   }
+
   public ModuleEdit getModuleEdit() {
     return moduleEditProvider.get();
   }
+
   public AbstractUnitEdit getAbstractUnitEdit() {
     return abstractUnitEditProvider.get();
   }
+
   public UnitEdit getUnitEdit() {
     return unitEditProvider.get();
   }
