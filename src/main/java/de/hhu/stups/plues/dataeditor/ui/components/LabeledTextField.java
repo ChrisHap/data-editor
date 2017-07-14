@@ -57,4 +57,8 @@ public class LabeledTextField extends VBox implements Initializable {
   public BooleanProperty disableTextFieldProperty() {
     return textField.disableProperty();
   }
+
+  public void clear() {
+    textField.clear();
+  }
 }
