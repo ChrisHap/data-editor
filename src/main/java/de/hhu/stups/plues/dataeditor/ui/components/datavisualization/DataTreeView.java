@@ -8,6 +8,7 @@ import de.hhu.stups.plues.data.entities.AbstractUnit;
 import de.hhu.stups.plues.data.entities.Course;
 import de.hhu.stups.plues.data.entities.Level;
 import de.hhu.stups.plues.data.entities.Module;
+import de.hhu.stups.plues.data.entities.ModuleLevel;
 import de.hhu.stups.plues.data.entities.Unit;
 import de.hhu.stups.plues.dataeditor.ui.database.DataService;
 import de.hhu.stups.plues.dataeditor.ui.database.DbService;
@@ -25,7 +26,8 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.TreeTableView;
-import javafx.scene.layout.GridPane;
+import javafx.scene.input.MouseButton;
+import javafx.scene.layout.VBox;
 import org.controlsfx.control.textfield.CustomTextField;
 
 import java.net.URL;
@@ -35,9 +37,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Singleton
-public class DataTreeView extends GridPane implements Initializable {
+public class DataTreeView extends VBox implements Initializable {
 
   private final DataService dataService;
+  private final DataContextMenu dataContextMenu;
 
   private ResourceBundle resources;
 
@@ -53,10 +56,15 @@ public class DataTreeView extends GridPane implements Initializable {
 
   private TreeItem<EntityWrapper> treeTableRoot;
 
+  /**
+   * Initialize the {@link DataService} and context menu provider.
+   */
   @Inject
   public DataTreeView(final Inflater inflater,
-                      final DataService dataService) {
+                      final DataService dataService,
+                      final DataContextMenu dataContextMenu) {
     this.dataService = dataService;
+    this.dataContextMenu = dataContextMenu;
     inflater.inflate("components/datavisualization/data_tree_view", this, this, "data_view");
   }
 
@@ -71,17 +79,35 @@ public class DataTreeView extends GridPane implements Initializable {
     dataService.dataChangeEventSource().subscribe(this::updateDataTree);
     treeTableView.prefWidthProperty().bind(widthProperty());
     txtQuery.prefWidthProperty().bind(widthProperty());
+    treeTableView.setOnMouseClicked(event -> {
+      dataContextMenu.hide();
+      final TreeItem<EntityWrapper> selectedTreeItem =
+          treeTableView.getSelectionModel().getSelectedItem();
+      if (MouseButton.SECONDARY.equals(event.getButton()) && selectedTreeItem != null
+          && selectedTreeItem.getValue().getEntityType() != null) {
+        dataContextMenu.setEntityWrapper(selectedTreeItem.getValue());
+        dataContextMenu.show(this, event.getScreenX(), event.getScreenY());
+      }
+    });
   }
 
   /**
    * Load the data in {@link #treeTableView} when {@link DbService#storeProperty} has changed.
    */
   private void updateDataTree(final DataChangeEvent dataChangeEvent) {
-    if (dataChangeEvent.getDataChangeType().reloadDb()) {
-      treeTableRoot.getChildren().clear();
-      reloadData();
-    } else if (dataChangeEvent.getDataChangeType().changeEntity()) {
-      updateSingleEntity(dataChangeEvent.getChangedEntity());
+    switch (dataChangeEvent.getDataChangeType()) {
+      case RELOAD_DB:
+        treeTableRoot.getChildren().clear();
+        reloadData();
+        break;
+      case CHANGE_ENTITY:
+        updateSingleEntity(dataChangeEvent.getChangedEntity());
+        break;
+      case NEW_ENTITY:
+        // TODO:
+        break;
+      default:
+        break;
     }
   }
 
@@ -119,11 +145,21 @@ public class DataTreeView extends GridPane implements Initializable {
    */
   private void addLevelToTreeItem(final TreeItem<EntityWrapper> treeItemParent,
                                   final Level level) {
-    final LevelWrapper levelWrapper = dataService.getLevelWrappers().get(level.getId().toString());
+    final LevelWrapper levelWrapper = dataService.getLevelWrappers().get(level.getId());
     final TreeItem<EntityWrapper> treeItemLevel = new TreeItem<>(levelWrapper);
     treeItemParent.getChildren().add(treeItemLevel);
     level.getChildren().forEach(subLevel -> addLevelToTreeItem(treeItemLevel, subLevel));
-    level.getModules().forEach(module -> addModuleToTreeItem(treeItemLevel, module));
+    level.getModuleLevels().forEach(moduleLevel ->
+        addModuleLevelToTreeItem(treeItemLevel, moduleLevel));
+
+  }
+
+  private void addModuleLevelToTreeItem(final TreeItem<EntityWrapper> treeItemParent,
+                                        final ModuleLevel moduleLevel) {
+    final TreeItem<EntityWrapper> moduleLevelTreeItem =
+        new TreeItem<>(dataService.getModuleLevelWrappers().get(moduleLevel.getId()));
+    treeItemParent.getChildren().add(moduleLevelTreeItem);
+    addModuleToTreeItem(moduleLevelTreeItem, moduleLevel.getModule());
   }
 
   private void addModuleToTreeItem(final TreeItem<EntityWrapper> treeItemParent,

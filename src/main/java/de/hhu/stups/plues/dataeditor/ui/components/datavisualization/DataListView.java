@@ -14,6 +14,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.GridPane;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
@@ -25,6 +26,7 @@ import java.util.ResourceBundle;
 public class DataListView extends GridPane implements Initializable {
 
   private final DataService dataService;
+  private final DataContextMenu dataContextMenu;
 
   private ResourceBundle resources;
 
@@ -38,10 +40,15 @@ public class DataListView extends GridPane implements Initializable {
   @SuppressWarnings("unused")
   private ListView<EntityWrapper> listView;
 
+  /**
+   * Initialize {@link DataService} and {@link DataContextMenu}.
+   */
   @Inject
   public DataListView(final Inflater inflater,
-                      final DataService dataService) {
+                      final DataService dataService,
+                      final DataContextMenu dataContextMenu) {
     this.dataService = dataService;
+    this.dataContextMenu = dataContextMenu;
     inflater.inflate("components/datavisualization/data_list_view", this, this, "data_view");
   }
 
@@ -56,6 +63,14 @@ public class DataListView extends GridPane implements Initializable {
     dataService.dataChangeEventSource().subscribe(dataChangeEvent -> {
       if (dataChangeEvent.getDataChangeType().reloadDb()) {
         loadData(cbEntityType.getSelectionModel().getSelectedItem());
+      }
+    });
+    listView.setOnMouseClicked(event -> {
+      dataContextMenu.hide();
+      final EntityWrapper selectedEntityWrapper = listView.getSelectionModel().getSelectedItem();
+      if (selectedEntityWrapper != null && MouseButton.SECONDARY.equals(event.getButton())) {
+        dataContextMenu.setEntityWrapper(selectedEntityWrapper);
+        dataContextMenu.show(this, event.getScreenX(), event.getScreenY());
       }
     });
   }
@@ -88,6 +103,9 @@ public class DataListView extends GridPane implements Initializable {
         break;
       case MODULE:
         listView.getItems().addAll(dataService.getModuleWrappers().values());
+        break;
+      case MODULE_LEVEL:
+        listView.getItems().addAll(dataService.getModuleLevelWrappers().values());
         break;
       case ABSTRACT_UNIT:
         listView.getItems().addAll(dataService.getAbstractUnitWrappers().values());
