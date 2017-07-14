@@ -12,10 +12,11 @@ import de.hhu.stups.plues.dataeditor.ui.components.LabeledTextField;
 import de.hhu.stups.plues.dataeditor.ui.components.MainMenu;
 import de.hhu.stups.plues.dataeditor.ui.components.SideBar;
 import de.hhu.stups.plues.dataeditor.ui.components.dataedits.AbstractUnitEdit;
-import de.hhu.stups.plues.dataeditor.ui.components.dataedits.CourseEdit;
+import de.hhu.stups.plues.dataeditor.ui.components.dataedits.EntityEditProvider;
 import de.hhu.stups.plues.dataeditor.ui.components.dataedits.LevelEdit;
 import de.hhu.stups.plues.dataeditor.ui.components.dataedits.ModuleEdit;
 import de.hhu.stups.plues.dataeditor.ui.components.dataedits.UnitEdit;
+import de.hhu.stups.plues.dataeditor.ui.components.datavisualization.DataContextMenu;
 import de.hhu.stups.plues.dataeditor.ui.components.datavisualization.DataListView;
 import de.hhu.stups.plues.dataeditor.ui.components.datavisualization.DataTreeView;
 import de.hhu.stups.plues.dataeditor.ui.controller.DataEditor;
@@ -37,14 +38,15 @@ public class DataEditorModule extends AbstractModule {
   @Override
   protected void configure() {
     bind(UnitEdit.class);
-    bind(CourseEdit.class);
     bind(LevelEdit.class);
     bind(ModuleEdit.class);
     bind(AbstractUnitEdit.class);
     bind(LabeledTextField.class);
     bind(DataService.class);
     bind(DbService.class);
+    bind(EntityEditProvider.class);
     bind(DataEditView.class);
+    bind(DataContextMenu.class);
     bind(DataTreeView.class);
     bind(DataListView.class);
     bind(MainMenu.class);
