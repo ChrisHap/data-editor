@@ -94,4 +94,9 @@ public class UnitWrapper implements EntityWrapper {
     }
     return unitProperty.get().getTitle();
   }
+
+  @Override
+  public EntityType getEntityType() {
+    return EntityType.UNIT;
+  }
 }

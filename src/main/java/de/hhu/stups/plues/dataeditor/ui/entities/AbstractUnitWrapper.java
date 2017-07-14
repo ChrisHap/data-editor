@@ -93,4 +93,9 @@ public class AbstractUnitWrapper implements EntityWrapper {
     }
     return abstractUnitProperty.get().getTitle();
   }
+
+  @Override
+  public EntityType getEntityType() {
+    return EntityType.ABSTRACT_UNIT;
+  }
 }

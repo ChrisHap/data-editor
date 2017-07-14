@@ -1,9 +1,12 @@
 package de.hhu.stups.plues.dataeditor.ui.entities;
 
 import de.hhu.stups.plues.data.entities.Module;
+import de.hhu.stups.plues.data.entities.ModuleLevel;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SetProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleSetProperty;
@@ -18,8 +21,10 @@ public class ModuleWrapper implements EntityWrapper {
   private final StringProperty titleProperty;
   private final IntegerProperty pordnrProperty;
   private final IntegerProperty electiveUnitsProperty;
+  private final BooleanProperty bundledProperty;
   private final SetProperty<AbstractUnitWrapper> abstractUnitsProperty;
   private final SetProperty<CourseWrapper> coursesProperty;
+  private final SetProperty<ModuleLevelWrapper> moduleLevelsProperty;
   private final ObjectProperty<Module> moduleProperty;
 
   /**
@@ -30,13 +35,15 @@ public class ModuleWrapper implements EntityWrapper {
     keyProperty = new SimpleStringProperty(module.getKey());
     titleProperty = new SimpleStringProperty(module.getTitle());
     pordnrProperty = new SimpleIntegerProperty(module.getPordnr());
+    bundledProperty = new SimpleBooleanProperty(module.getBundled());
     electiveUnitsProperty = new SimpleIntegerProperty(module.getElectiveUnits());
     abstractUnitsProperty = new SimpleSetProperty<>(FXCollections.observableSet());
     coursesProperty = new SimpleSetProperty<>(FXCollections.observableSet());
     moduleProperty = new SimpleObjectProperty<>(module);
+    moduleLevelsProperty = new SimpleSetProperty<>(FXCollections.observableSet());
   }
 
-  public String getKeyProperty() {
+  public String getKey() {
     return keyProperty.get();
   }
 
@@ -48,7 +55,7 @@ public class ModuleWrapper implements EntityWrapper {
     return keyProperty;
   }
 
-  public String getTitleProperty() {
+  public String getTitle() {
     return titleProperty.get();
   }
 
@@ -60,7 +67,7 @@ public class ModuleWrapper implements EntityWrapper {
     return titleProperty;
   }
 
-  public int getPordnrProperty() {
+  public int getPordnr() {
     return pordnrProperty.get();
   }
 
@@ -72,7 +79,11 @@ public class ModuleWrapper implements EntityWrapper {
     return pordnrProperty;
   }
 
-  public int getElectiveUnitsProperty() {
+  public BooleanProperty bundledProperty() {
+    return bundledProperty;
+  }
+
+  public int getElectiveUnits() {
     return electiveUnitsProperty.get();
   }
 
@@ -84,7 +95,7 @@ public class ModuleWrapper implements EntityWrapper {
     return electiveUnitsProperty;
   }
 
-  public ObservableSet<AbstractUnitWrapper> getAbstractUnitsProperty() {
+  public ObservableSet<AbstractUnitWrapper> getAbstractUnits() {
     return abstractUnitsProperty.get();
   }
 
@@ -96,11 +107,19 @@ public class ModuleWrapper implements EntityWrapper {
     return abstractUnitsProperty;
   }
 
-  public ObservableSet<CourseWrapper> getCoursesProperty() {
+  public SetProperty<ModuleLevelWrapper> moduleLevelsProperty() {
+    return moduleLevelsProperty;
+  }
+
+  public void setModuleLevelsProperty(final ObservableSet<ModuleLevelWrapper> moduleLevels) {
+    moduleLevelsProperty.set(moduleLevels);
+  }
+
+  public ObservableSet<CourseWrapper> getCourses() {
     return coursesProperty.get();
   }
 
-  public void setCoursesProperty(ObservableSet<CourseWrapper> coursesProperty) {
+  public void setCoursesProperty(final ObservableSet<CourseWrapper> coursesProperty) {
     this.coursesProperty.set(coursesProperty);
   }
 
@@ -122,5 +141,14 @@ public class ModuleWrapper implements EntityWrapper {
       return "";
     }
     return moduleProperty.get().getTitle();
+  }
+
+  @Override
+  public EntityType getEntityType() {
+    return EntityType.MODULE;
+  }
+
+  public ObservableSet<ModuleLevelWrapper> getModuleLevels() {
+    return moduleLevelsProperty.get();
   }
 }

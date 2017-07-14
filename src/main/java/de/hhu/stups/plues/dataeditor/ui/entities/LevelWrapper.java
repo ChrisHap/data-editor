@@ -13,11 +13,11 @@ import javafx.collections.ObservableSet;
 
 public class LevelWrapper implements EntityWrapper {
 
-
   private final StringProperty nameProperty;
   private final IntegerProperty minCreditsProperty;
   private final IntegerProperty maxCreditsProperty;
   private final ObjectProperty<LevelWrapper> parentProperty;
+  private final ObjectProperty<CourseWrapper> courseProperty;
   private final SetProperty<LevelWrapper> childrenProperty;
   private final ObjectProperty<Level> levelProperty;
 
@@ -32,6 +32,7 @@ public class LevelWrapper implements EntityWrapper {
     parentProperty = new SimpleObjectProperty<>();
     childrenProperty = new SimpleSetProperty<>();
     levelProperty = new SimpleObjectProperty<>(level);
+    courseProperty = new SimpleObjectProperty<>();
   }
 
   public String getNameProperty() {
@@ -70,7 +71,7 @@ public class LevelWrapper implements EntityWrapper {
     return maxCreditsProperty;
   }
 
-  public LevelWrapper getParentProperty() {
+  public LevelWrapper getParent() {
     return parentProperty.get();
   }
 
@@ -80,6 +81,14 @@ public class LevelWrapper implements EntityWrapper {
 
   public ObjectProperty<LevelWrapper> parentProperty() {
     return parentProperty;
+  }
+
+  public ObjectProperty<CourseWrapper> courseProperty() {
+    return courseProperty;
+  }
+
+  public void setCourseProperty(final CourseWrapper courseWrapper) {
+    courseProperty.set(courseWrapper);
   }
 
   public ObservableSet<LevelWrapper> getChildrenProperty() {
@@ -104,5 +113,18 @@ public class LevelWrapper implements EntityWrapper {
       return "";
     }
     return levelProperty.get().getName();
+  }
+
+  @Override
+  public EntityType getEntityType() {
+    return EntityType.LEVEL;
+  }
+
+  public Level getLevel() {
+    return levelProperty.get();
+  }
+
+  public CourseWrapper getCourseWrapper() {
+    return courseProperty.get();
   }
 }

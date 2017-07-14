@@ -118,4 +118,9 @@ public class SessionWrapper implements EntityWrapper {
     }
     return sessionProperty.get().toString();
   }
+
+  @Override
+  public EntityType getEntityType() {
+    return EntityType.SESSION;
+  }
 }

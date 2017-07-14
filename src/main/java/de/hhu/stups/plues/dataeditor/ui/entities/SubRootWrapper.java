@@ -17,4 +17,9 @@ public class SubRootWrapper implements EntityWrapper {
   public String toString() {
     return text;
   }
+
+  @Override
+  public EntityType getEntityType() {
+    return null;
+  }
 }
