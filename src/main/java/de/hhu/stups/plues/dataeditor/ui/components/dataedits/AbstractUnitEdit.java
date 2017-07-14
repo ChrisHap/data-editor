@@ -3,6 +3,7 @@ package de.hhu.stups.plues.dataeditor.ui.components.dataedits;
 import com.google.inject.Inject;
 
 import de.hhu.stups.plues.dataeditor.ui.components.LabeledTextField;
+import de.hhu.stups.plues.dataeditor.ui.entities.AbstractUnitWrapper;
 import de.hhu.stups.plues.dataeditor.ui.layout.Inflater;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -14,6 +15,7 @@ import java.util.ResourceBundle;
 
 public class AbstractUnitEdit extends GridPane implements Initializable {
 
+  private AbstractUnitWrapper abstractUnitWrapper;
   private ResourceBundle resources;
 
   @FXML
@@ -31,7 +33,6 @@ public class AbstractUnitEdit extends GridPane implements Initializable {
   @FXML
   @SuppressWarnings("unused")
   private Button persistChanges;
-
 
   @Inject
   public AbstractUnitEdit(final Inflater inflater) {
@@ -54,5 +55,14 @@ public class AbstractUnitEdit extends GridPane implements Initializable {
   @FXML
   public void persistChanges() {
 
+  }
+
+  public void setAbstractUnitWrapper(final AbstractUnitWrapper abstractUnitWrapper) {
+    this.abstractUnitWrapper = abstractUnitWrapper;
+    loadData();
+  }
+
+  private void loadData() {
+    // TODO
   }
 }

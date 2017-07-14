@@ -2,26 +2,27 @@ package de.hhu.stups.plues.dataeditor.ui.components.dataedits;
 
 import com.google.inject.Inject;
 
-import de.hhu.stups.plues.data.entities.Module;
 import de.hhu.stups.plues.dataeditor.ui.components.LabeledTextField;
-import de.hhu.stups.plues.dataeditor.ui.entities.EntityWrapper;
+import de.hhu.stups.plues.dataeditor.ui.entities.AbstractUnitWrapper;
+import de.hhu.stups.plues.dataeditor.ui.entities.ModuleLevelWrapper;
+import de.hhu.stups.plues.dataeditor.ui.entities.ModuleWrapper;
 import de.hhu.stups.plues.dataeditor.ui.layout.Inflater;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
-import javafx.scene.control.ComboBox;
+import javafx.scene.control.ListView;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
 
 import java.net.URL;
 import java.util.ResourceBundle;
 
 public class ModuleEdit extends GridPane implements Initializable {
 
-  private final ObjectProperty<Module> moduleProperty;
-
+  private ModuleWrapper moduleWrapper;
   private ResourceBundle resources;
 
   @FXML
@@ -29,29 +30,34 @@ public class ModuleEdit extends GridPane implements Initializable {
   private LabeledTextField txtModule;
   @FXML
   @SuppressWarnings("unused")
-  private LabeledTextField txtId;
+  private LabeledTextField txtKey;
   @FXML
   @SuppressWarnings("unused")
   private LabeledTextField txtPordnr;
-  @FXML
-  @SuppressWarnings("unused")
-  private LabeledTextField txtCp;
-  @FXML
-  @SuppressWarnings("unused")
-  private ComboBox<EntityWrapper> cbParent;
-  @FXML
-  @SuppressWarnings("unused")
-  private CheckBox cbMandatory;
   @FXML
   @SuppressWarnings("unused")
   private CheckBox cbBundled;
   @FXML
   @SuppressWarnings("unused")
   private Button persistChanges;
+  @FXML
+  @SuppressWarnings("unused")
+  private VBox referenceBox;
+  @FXML
+  @SuppressWarnings("unused")
+  private ToggleButton btAbstractUnits;
+  @FXML
+  @SuppressWarnings("unused")
+  private ToggleButton btModuleLevels;
+  @FXML
+  @SuppressWarnings("unused")
+  private ListView<AbstractUnitWrapper> listViewAbstractUnits;
+  @FXML
+  @SuppressWarnings("unused")
+  private ListView<ModuleLevelWrapper> listViewModuleLevels;
 
   @Inject
   public ModuleEdit(final Inflater inflater) {
-    moduleProperty = new SimpleObjectProperty<>();
     inflater.inflate("components/dataedits/module_edit", this, this, "module_edit");
   }
 
@@ -59,21 +65,48 @@ public class ModuleEdit extends GridPane implements Initializable {
   public void initialize(final URL location, final ResourceBundle resources) {
     this.resources = resources;
     initializeInputFields();
+    referenceBox.getChildren().remove(listViewModuleLevels);
   }
 
   @FXML
+  @SuppressWarnings("unused")
   public void persistChanges() {
+    //
+  }
 
+  @FXML
+  @SuppressWarnings("unused")
+  public void showAbstractUnits() {
+    referenceBox.getChildren().remove(listViewModuleLevels);
+    referenceBox.getChildren().add(listViewAbstractUnits);
+  }
+
+  @FXML
+  @SuppressWarnings("unused")
+  public void showModuleLevels() {
+    referenceBox.getChildren().remove(listViewAbstractUnits);
+    referenceBox.getChildren().add(listViewModuleLevels);
   }
 
   private void initializeInputFields() {
     txtModule.setLabelText(resources.getString("module"));
-    txtId.setLabelText(resources.getString("id"));
+    txtKey.setLabelText(resources.getString("id"));
     txtPordnr.setLabelText(resources.getString("pordnr"));
-    txtCp.setLabelText(resources.getString("credits"));
   }
 
-  public ObjectProperty<Module> moduleProperty() {
-    return moduleProperty;
+  public void setModuleWrapper(final ModuleWrapper moduleWrapper) {
+    this.moduleWrapper = moduleWrapper;
+    loadData();
+  }
+
+  private void loadData() {
+    txtModule.textProperty().bind(moduleWrapper.titleProperty());
+    txtKey.textProperty().bind(Bindings.createStringBinding(
+        () -> String.valueOf(moduleWrapper.keyProperty().get())));
+    txtPordnr.textProperty().bind(Bindings.createStringBinding(
+        () -> String.valueOf(moduleWrapper.pordnrProperty().get())));
+    listViewAbstractUnits.getItems().addAll(moduleWrapper.getAbstractUnits());
+    listViewModuleLevels.getItems().addAll(moduleWrapper.getModuleLevels());
+    cbBundled.setSelected(moduleWrapper.bundledProperty().get());
   }
 }

@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 
 import de.hhu.stups.plues.dataeditor.ui.components.LabeledTextField;
 import de.hhu.stups.plues.dataeditor.ui.entities.EntityWrapper;
+import de.hhu.stups.plues.dataeditor.ui.entities.UnitWrapper;
 import de.hhu.stups.plues.dataeditor.ui.layout.Inflater;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -46,6 +47,7 @@ public class UnitEdit extends GridPane implements Initializable {
   @FXML
   @SuppressWarnings("unused")
   private Button btRemoveSession;
+  private UnitWrapper unitWrapper;
 
   @Inject
   public UnitEdit(final Inflater inflater) {
@@ -83,5 +85,14 @@ public class UnitEdit extends GridPane implements Initializable {
     txtUnit.setLabelText(resources.getString("unit"));
     txtId.setLabelText(resources.getString("id"));
     txtSemester.setLabelText(resources.getString("semester"));
+  }
+
+  public void setUnitWrapper(final UnitWrapper unitWrapper) {
+    this.unitWrapper = unitWrapper;
+    loadData();
+  }
+
+  private void loadData() {
+    // TODO
   }
 }
