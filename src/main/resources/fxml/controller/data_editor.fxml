@@ -13,8 +13,8 @@
     <SplitPane fx:id="mainSplitPane" dividerPositions="0.25" maxWidth="Infinity" maxHeight="Infinity">
         <SideBar fx:id="sideBar"/>
         <AnchorPane fx:id="contentAnchorPane" minWidth="0" maxWidth="Infinity">
+            <DataEditView fx:id="dataEditView"/>
             <Button fx:id="btToggleDivider" onAction="#toggleDivider" AnchorPane.leftAnchor="0.0"/>
-            <DataEditView fx:id="dataEditView" AnchorPane.leftAnchor="40.0"/>
         </AnchorPane>
     </SplitPane>
 </fx:root>
