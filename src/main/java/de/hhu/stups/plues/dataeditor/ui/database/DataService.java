@@ -4,15 +4,21 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import de.hhu.stups.plues.data.SqliteStore;
+import de.hhu.stups.plues.data.entities.Course;
+import de.hhu.stups.plues.data.entities.Level;
+import de.hhu.stups.plues.data.entities.Module;
 import de.hhu.stups.plues.dataeditor.ui.database.events.DataChangeEvent;
 import de.hhu.stups.plues.dataeditor.ui.database.events.DataChangeType;
 import de.hhu.stups.plues.dataeditor.ui.entities.AbstractUnitWrapper;
 import de.hhu.stups.plues.dataeditor.ui.entities.CourseWrapper;
 import de.hhu.stups.plues.dataeditor.ui.entities.LevelWrapper;
+import de.hhu.stups.plues.dataeditor.ui.entities.ModuleLevelWrapper;
 import de.hhu.stups.plues.dataeditor.ui.entities.ModuleWrapper;
 import de.hhu.stups.plues.dataeditor.ui.entities.SessionWrapper;
 import de.hhu.stups.plues.dataeditor.ui.entities.UnitWrapper;
+import javafx.beans.property.ListProperty;
 import javafx.beans.property.MapProperty;
+import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleMapProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
@@ -29,8 +35,11 @@ public class DataService {
 
   private final EventSource<DataChangeEvent> dataChangeEventSource;
   private final MapProperty<String, CourseWrapper> courseWrappersProperty;
-  private final MapProperty<String, LevelWrapper> levelWrappersProperty;
+  private final ListProperty<CourseWrapper> majorCourseWrappersProperty;
+  private final ListProperty<CourseWrapper> minorCourseWrappersProperty;
+  private final MapProperty<Integer, LevelWrapper> levelWrappersProperty;
   private final MapProperty<String, ModuleWrapper> moduleWrappersProperty;
+  private final MapProperty<Integer, ModuleLevelWrapper> moduleLevelWrappersProperty;
   private final MapProperty<String, AbstractUnitWrapper> abstractUnitWrappersProperty;
   private final MapProperty<String, UnitWrapper> unitWrappersProperty;
   private final MapProperty<String, SessionWrapper> sessionWrappersProperty;
@@ -42,8 +51,11 @@ public class DataService {
   @Inject
   public DataService(final DbService dbService) {
     courseWrappersProperty = new SimpleMapProperty<>(FXCollections.observableHashMap());
+    majorCourseWrappersProperty = new SimpleListProperty<>(FXCollections.observableArrayList());
+    minorCourseWrappersProperty = new SimpleListProperty<>(FXCollections.observableArrayList());
     levelWrappersProperty = new SimpleMapProperty<>(FXCollections.observableHashMap());
     moduleWrappersProperty = new SimpleMapProperty<>(FXCollections.observableHashMap());
+    moduleLevelWrappersProperty = new SimpleMapProperty<>(FXCollections.observableHashMap());
     abstractUnitWrappersProperty = new SimpleMapProperty<>(FXCollections.observableHashMap());
     unitWrappersProperty = new SimpleMapProperty<>(FXCollections.observableHashMap());
     sessionWrappersProperty = new SimpleMapProperty<>(FXCollections.observableHashMap());
@@ -66,12 +78,21 @@ public class DataService {
    * Initialize all map properties on the first level.
    */
   private void initializeEntitiesFlat(final SqliteStore sqliteStore) {
-    sqliteStore.getCourses().forEach(course ->
-        courseWrappersProperty.put(course.getKey(), new CourseWrapper(course)));
+    sqliteStore.getCourses().forEach(course -> {
+      final CourseWrapper courseWrapper = new CourseWrapper(course);
+      courseWrappersProperty.put(course.getKey(), courseWrapper);
+      if (course.isMajor()) {
+        majorCourseWrappersProperty.add(courseWrapper);
+      } else {
+        minorCourseWrappersProperty.add(courseWrapper);
+      }
+    });
     sqliteStore.getLevels().forEach(level ->
-        levelWrappersProperty.put(level.getId().toString(), new LevelWrapper(level)));
+        levelWrappersProperty.put(level.getId(), new LevelWrapper(level)));
     sqliteStore.getModules().forEach(module ->
         moduleWrappersProperty.put(module.getKey(), new ModuleWrapper(module)));
+    sqliteStore.getModuleLevels().forEach(moduleLevel ->
+        moduleLevelWrappersProperty.put(moduleLevel.getId(), new ModuleLevelWrapper(moduleLevel)));
     sqliteStore.getAbstractUnits().forEach(abstractUnit ->
         abstractUnitWrappersProperty.put(abstractUnit.getKey(),
             new AbstractUnitWrapper(abstractUnit)));
@@ -111,6 +132,41 @@ public class DataService {
             unitWrapper.getUnit().getAbstractUnits().stream()
                 .map(abstractUnit -> abstractUnitWrappersProperty.get(abstractUnit.getKey()))
                 .collect(Collectors.toSet())));
+    // add majors and minors to course wrappers
+    courseWrappersProperty.values().forEach(courseWrapper -> {
+      courseWrapper.majorCourseWrapperProperty().addAll(
+          courseWrapper.getCourse().getMajorCourses().stream()
+              .map(course -> courseWrappersProperty().get(course.getKey()))
+              .collect(Collectors.toSet()));
+      courseWrapper.minorCourseWrapperProperty().addAll(
+          courseWrapper.getCourse().getMinorCourses().stream()
+              .map(course -> courseWrappersProperty().get(course.getKey()))
+              .collect(Collectors.toSet()));
+    });
+    levelWrappersProperty.values().forEach(levelWrapper -> {
+      if (levelWrapper.getLevel().getParent() != null) {
+        levelWrapper.setParentProperty(levelWrappersProperty.get(levelWrapper.getLevel().getParent()
+            .getId()));
+      }
+      if (levelWrapper.getLevel().getCourse() != null) {
+        levelWrapper.setCourseProperty(courseWrappersProperty().get(levelWrapper.getLevel()
+            .getCourse().getKey()));
+      }
+    });
+    moduleLevelWrappersProperty.values().forEach(moduleLevelWrapper -> {
+      final Course course = moduleLevelWrapper.getModuleLevel().getCourse();
+      if (course != null) {
+        moduleLevelWrapper.courseProperty().set(courseWrappersProperty.get(course.getKey()));
+      }
+      final Module module = moduleLevelWrapper.getModuleLevel().getModule();
+      if (module != null) {
+        moduleLevelWrapper.moduleProperty().set(moduleWrappersProperty.get(module.getKey()));
+      }
+      final Level level = moduleLevelWrapper.getModuleLevel().getLevel();
+      if (level != null) {
+        moduleLevelWrapper.levelProperty().set(levelWrappersProperty.get(level.getId()));
+      }
+    });
   }
 
   private void clear() {
@@ -130,11 +186,19 @@ public class DataService {
     return courseWrappersProperty;
   }
 
-  public ObservableMap<String, LevelWrapper> getLevelWrappers() {
+  public ListProperty<CourseWrapper> majorCourseWrappersProperty() {
+    return majorCourseWrappersProperty;
+  }
+
+  public ListProperty<CourseWrapper> minorCourseWrappersProperty() {
+    return minorCourseWrappersProperty;
+  }
+
+  public ObservableMap<Integer, LevelWrapper> getLevelWrappers() {
     return levelWrappersProperty.get();
   }
 
-  public MapProperty<String, LevelWrapper> levelWrappersProperty() {
+  public MapProperty<Integer, LevelWrapper> levelWrappersProperty() {
     return levelWrappersProperty;
   }
 
@@ -144,6 +208,14 @@ public class DataService {
 
   public MapProperty<String, ModuleWrapper> moduleWrappersProperty() {
     return moduleWrappersProperty;
+  }
+
+  public ObservableMap<Integer, ModuleLevelWrapper> getModuleLevelWrappers() {
+    return moduleLevelWrappersProperty.get();
+  }
+
+  public MapProperty<Integer, ModuleLevelWrapper> moduleLevelWrappersProperty() {
+    return moduleLevelWrappersProperty;
   }
 
   public ObservableMap<String, AbstractUnitWrapper> getAbstractUnitWrappers() {
