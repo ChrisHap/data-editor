@@ -7,7 +7,6 @@ import com.google.inject.Singleton;
 @Singleton
 public class EntityEditProvider {
 
-  private final Provider<CourseEdit> courseEditProvider;
   private final Provider<LevelEdit> levelEditProvider;
   private final Provider<ModuleEdit> moduleEditProvider;
   private final Provider<AbstractUnitEdit> abstractUnitEditProvider;
@@ -17,20 +16,14 @@ public class EntityEditProvider {
    * Delegate provider for edit views.
    */
   @Inject
-  public EntityEditProvider(final Provider<CourseEdit> courseEditProvider,
-                            final Provider<LevelEdit> levelEditProvider,
+  public EntityEditProvider(final Provider<LevelEdit> levelEditProvider,
                             final Provider<ModuleEdit> moduleEditProvider,
                             final Provider<AbstractUnitEdit> abstractUnitEditProvider,
                             final Provider<UnitEdit> unitEditProvider) {
-    this.courseEditProvider = courseEditProvider;
     this.levelEditProvider = levelEditProvider;
     this.moduleEditProvider = moduleEditProvider;
     this.abstractUnitEditProvider = abstractUnitEditProvider;
     this.unitEditProvider = unitEditProvider;
-  }
-
-  public CourseEdit getCourseEdit() {
-    return courseEditProvider.get();
   }
 
   public LevelEdit getLevelEdit() {
