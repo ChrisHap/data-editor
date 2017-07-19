@@ -1,8 +1,8 @@
 package de.hhu.stups.plues.dataeditor.ui.components.dataedits;
 
 import com.google.inject.Inject;
-import com.google.inject.Provider;
 import com.google.inject.Singleton;
+
 import de.hhu.stups.plues.dataeditor.ui.components.dataedits.factories.AbstractUnitEditFactory;
 import de.hhu.stups.plues.dataeditor.ui.components.dataedits.factories.CourseEditFactory;
 import de.hhu.stups.plues.dataeditor.ui.components.dataedits.factories.LevelEditFactory;
