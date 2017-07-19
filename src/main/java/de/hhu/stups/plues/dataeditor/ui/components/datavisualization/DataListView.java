@@ -104,9 +104,6 @@ public class DataListView extends GridPane implements Initializable {
       case MODULE:
         listView.getItems().addAll(dataService.getModuleWrappers().values());
         break;
-      case MODULE_LEVEL:
-        listView.getItems().addAll(dataService.getModuleLevelWrappers().values());
-        break;
       case ABSTRACT_UNIT:
         listView.getItems().addAll(dataService.getAbstractUnitWrappers().values());
         break;

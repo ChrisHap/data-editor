@@ -8,7 +8,6 @@ import de.hhu.stups.plues.data.entities.AbstractUnit;
 import de.hhu.stups.plues.data.entities.Course;
 import de.hhu.stups.plues.data.entities.Level;
 import de.hhu.stups.plues.data.entities.Module;
-import de.hhu.stups.plues.data.entities.ModuleLevel;
 import de.hhu.stups.plues.data.entities.Unit;
 import de.hhu.stups.plues.dataeditor.ui.database.DataService;
 import de.hhu.stups.plues.dataeditor.ui.database.DbService;
@@ -73,8 +72,12 @@ public class DataTreeView extends VBox implements Initializable {
     this.resources = resources;
     treeTableRoot = new TreeItem<>();
     treeTableView.setRoot(treeTableRoot);
-    treeTableColumnName.setCellValueFactory(param ->
-        new SimpleStringProperty(param.getValue().getValue().toString()));
+    treeTableColumnName.setCellValueFactory(param -> {
+      if (param.getValue() == null) {
+        return new SimpleStringProperty("");
+      }
+      return new SimpleStringProperty(param.getValue().getValue().toString());
+    });
     txtQuery.setLeft(FontAwesomeIconFactory.get().createIcon(FontAwesomeIcon.SEARCH, "12"));
     dataService.dataChangeEventSource().subscribe(this::updateDataTree);
     treeTableView.prefWidthProperty().bind(widthProperty());
@@ -149,17 +152,7 @@ public class DataTreeView extends VBox implements Initializable {
     final TreeItem<EntityWrapper> treeItemLevel = new TreeItem<>(levelWrapper);
     treeItemParent.getChildren().add(treeItemLevel);
     level.getChildren().forEach(subLevel -> addLevelToTreeItem(treeItemLevel, subLevel));
-    level.getModuleLevels().forEach(moduleLevel ->
-        addModuleLevelToTreeItem(treeItemLevel, moduleLevel));
-
-  }
-
-  private void addModuleLevelToTreeItem(final TreeItem<EntityWrapper> treeItemParent,
-                                        final ModuleLevel moduleLevel) {
-    final TreeItem<EntityWrapper> moduleLevelTreeItem =
-        new TreeItem<>(dataService.getModuleLevelWrappers().get(moduleLevel.getId()));
-    treeItemParent.getChildren().add(moduleLevelTreeItem);
-    addModuleToTreeItem(moduleLevelTreeItem, moduleLevel.getModule());
+    level.getModules().forEach(module -> addModuleToTreeItem(treeItemLevel, module));
   }
 
   private void addModuleToTreeItem(final TreeItem<EntityWrapper> treeItemParent,
