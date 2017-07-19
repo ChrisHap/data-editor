@@ -37,16 +37,10 @@ public class DbService {
   private void handleDbEvent(final DbEvent dbEvent) {
     switch (dbEvent.getEventType()) {
       case LOAD_DB:
-        if (storeProperty.get() != null) {
-          storeProperty.get().close();
-        }
-        final File dbFile = ((LoadDbEvent) dbEvent).getDbFile();
-        try {
-          storeProperty.set(new SqliteStore(dbFile.getPath()));
-          dbFileProperty.set(dbFile);
-        } catch (final StoreException storeException) {
-          logger.error("Error when loading the sqlite database " + dbFile, storeException);
-        }
+        final Thread loadDbThread =
+            new Thread(getLoadDbRunnable(((LoadDbEvent) dbEvent).getDbFile()));
+        loadDbThread.setDaemon(true);
+        loadDbThread.start();
         break;
       case UPDATE_DB:
         // TODO: update entity using ((UpdateDbEvent) dbEvent).getEntityWrapper()
@@ -60,6 +54,20 @@ public class DbService {
       default:
         break;
     }
+  }
+
+  private Runnable getLoadDbRunnable(final File dbFile) {
+    return () -> {
+      if (storeProperty.get() != null) {
+        storeProperty.get().close();
+      }
+      try {
+        storeProperty.set(new SqliteStore(dbFile.getPath()));
+        dbFileProperty.set(dbFile);
+      } catch (final StoreException storeException) {
+        logger.error("Error when loading the sqlite database " + dbFile, storeException);
+      }
+    };
   }
 
   public EventSource<DbEvent> dbEventSource() {
