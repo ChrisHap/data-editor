@@ -4,15 +4,11 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import de.hhu.stups.plues.data.SqliteStore;
-import de.hhu.stups.plues.data.entities.Course;
-import de.hhu.stups.plues.data.entities.Level;
-import de.hhu.stups.plues.data.entities.Module;
 import de.hhu.stups.plues.dataeditor.ui.database.events.DataChangeEvent;
 import de.hhu.stups.plues.dataeditor.ui.database.events.DataChangeType;
 import de.hhu.stups.plues.dataeditor.ui.entities.AbstractUnitWrapper;
 import de.hhu.stups.plues.dataeditor.ui.entities.CourseWrapper;
 import de.hhu.stups.plues.dataeditor.ui.entities.LevelWrapper;
-import de.hhu.stups.plues.dataeditor.ui.entities.ModuleLevelWrapper;
 import de.hhu.stups.plues.dataeditor.ui.entities.ModuleWrapper;
 import de.hhu.stups.plues.dataeditor.ui.entities.SessionWrapper;
 import de.hhu.stups.plues.dataeditor.ui.entities.UnitWrapper;
@@ -39,7 +35,6 @@ public class DataService {
   private final ListProperty<CourseWrapper> minorCourseWrappersProperty;
   private final MapProperty<Integer, LevelWrapper> levelWrappersProperty;
   private final MapProperty<String, ModuleWrapper> moduleWrappersProperty;
-  private final MapProperty<Integer, ModuleLevelWrapper> moduleLevelWrappersProperty;
   private final MapProperty<String, AbstractUnitWrapper> abstractUnitWrappersProperty;
   private final MapProperty<String, UnitWrapper> unitWrappersProperty;
   private final MapProperty<String, SessionWrapper> sessionWrappersProperty;
@@ -55,7 +50,6 @@ public class DataService {
     minorCourseWrappersProperty = new SimpleListProperty<>(FXCollections.observableArrayList());
     levelWrappersProperty = new SimpleMapProperty<>(FXCollections.observableHashMap());
     moduleWrappersProperty = new SimpleMapProperty<>(FXCollections.observableHashMap());
-    moduleLevelWrappersProperty = new SimpleMapProperty<>(FXCollections.observableHashMap());
     abstractUnitWrappersProperty = new SimpleMapProperty<>(FXCollections.observableHashMap());
     unitWrappersProperty = new SimpleMapProperty<>(FXCollections.observableHashMap());
     sessionWrappersProperty = new SimpleMapProperty<>(FXCollections.observableHashMap());
@@ -91,8 +85,6 @@ public class DataService {
         levelWrappersProperty.put(level.getId(), new LevelWrapper(level)));
     sqliteStore.getModules().forEach(module ->
         moduleWrappersProperty.put(module.getKey(), new ModuleWrapper(module)));
-    sqliteStore.getModuleLevels().forEach(moduleLevel ->
-        moduleLevelWrappersProperty.put(moduleLevel.getId(), new ModuleLevelWrapper(moduleLevel)));
     sqliteStore.getAbstractUnits().forEach(abstractUnit ->
         abstractUnitWrappersProperty.put(abstractUnit.getKey(),
             new AbstractUnitWrapper(abstractUnit)));
@@ -153,20 +145,6 @@ public class DataService {
             .getCourse().getKey()));
       }
     });
-    moduleLevelWrappersProperty.values().forEach(moduleLevelWrapper -> {
-      final Course course = moduleLevelWrapper.getModuleLevel().getCourse();
-      if (course != null) {
-        moduleLevelWrapper.courseProperty().set(courseWrappersProperty.get(course.getKey()));
-      }
-      final Module module = moduleLevelWrapper.getModuleLevel().getModule();
-      if (module != null) {
-        moduleLevelWrapper.moduleProperty().set(moduleWrappersProperty.get(module.getKey()));
-      }
-      final Level level = moduleLevelWrapper.getModuleLevel().getLevel();
-      if (level != null) {
-        moduleLevelWrapper.levelProperty().set(levelWrappersProperty.get(level.getId()));
-      }
-    });
   }
 
   private void clear() {
@@ -208,14 +186,6 @@ public class DataService {
 
   public MapProperty<String, ModuleWrapper> moduleWrappersProperty() {
     return moduleWrappersProperty;
-  }
-
-  public ObservableMap<Integer, ModuleLevelWrapper> getModuleLevelWrappers() {
-    return moduleLevelWrappersProperty.get();
-  }
-
-  public MapProperty<Integer, ModuleLevelWrapper> moduleLevelWrappersProperty() {
-    return moduleLevelWrappersProperty;
   }
 
   public ObservableMap<String, AbstractUnitWrapper> getAbstractUnitWrappers() {
