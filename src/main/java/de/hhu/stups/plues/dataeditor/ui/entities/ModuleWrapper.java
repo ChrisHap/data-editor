@@ -1,7 +1,6 @@
 package de.hhu.stups.plues.dataeditor.ui.entities;
 
 import de.hhu.stups.plues.data.entities.Module;
-import de.hhu.stups.plues.data.entities.ModuleLevel;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
@@ -24,7 +23,6 @@ public class ModuleWrapper implements EntityWrapper {
   private final BooleanProperty bundledProperty;
   private final SetProperty<AbstractUnitWrapper> abstractUnitsProperty;
   private final SetProperty<CourseWrapper> coursesProperty;
-  private final SetProperty<ModuleLevelWrapper> moduleLevelsProperty;
   private final ObjectProperty<Module> moduleProperty;
 
   /**
@@ -40,7 +38,6 @@ public class ModuleWrapper implements EntityWrapper {
     abstractUnitsProperty = new SimpleSetProperty<>(FXCollections.observableSet());
     coursesProperty = new SimpleSetProperty<>(FXCollections.observableSet());
     moduleProperty = new SimpleObjectProperty<>(module);
-    moduleLevelsProperty = new SimpleSetProperty<>(FXCollections.observableSet());
   }
 
   public String getKey() {
@@ -107,14 +104,6 @@ public class ModuleWrapper implements EntityWrapper {
     return abstractUnitsProperty;
   }
 
-  public SetProperty<ModuleLevelWrapper> moduleLevelsProperty() {
-    return moduleLevelsProperty;
-  }
-
-  public void setModuleLevelsProperty(final ObservableSet<ModuleLevelWrapper> moduleLevels) {
-    moduleLevelsProperty.set(moduleLevels);
-  }
-
   public ObservableSet<CourseWrapper> getCourses() {
     return coursesProperty.get();
   }
@@ -146,9 +135,5 @@ public class ModuleWrapper implements EntityWrapper {
   @Override
   public EntityType getEntityType() {
     return EntityType.MODULE;
-  }
-
-  public ObservableSet<ModuleLevelWrapper> getModuleLevels() {
-    return moduleLevelsProperty.get();
   }
 }
