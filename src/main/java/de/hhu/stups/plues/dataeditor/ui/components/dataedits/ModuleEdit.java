@@ -1,10 +1,10 @@
 package de.hhu.stups.plues.dataeditor.ui.components.dataedits;
 
 import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
 
 import de.hhu.stups.plues.dataeditor.ui.components.LabeledTextField;
 import de.hhu.stups.plues.dataeditor.ui.entities.AbstractUnitWrapper;
-import de.hhu.stups.plues.dataeditor.ui.entities.ModuleLevelWrapper;
 import de.hhu.stups.plues.dataeditor.ui.entities.ModuleWrapper;
 import de.hhu.stups.plues.dataeditor.ui.layout.Inflater;
 import javafx.beans.binding.Bindings;
@@ -13,7 +13,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ListView;
-import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 
@@ -45,19 +44,12 @@ public class ModuleEdit extends GridPane implements Initializable {
   private VBox referenceBox;
   @FXML
   @SuppressWarnings("unused")
-  private ToggleButton btAbstractUnits;
-  @FXML
-  @SuppressWarnings("unused")
-  private ToggleButton btModuleLevels;
-  @FXML
-  @SuppressWarnings("unused")
   private ListView<AbstractUnitWrapper> listViewAbstractUnits;
-  @FXML
-  @SuppressWarnings("unused")
-  private ListView<ModuleLevelWrapper> listViewModuleLevels;
 
   @Inject
-  public ModuleEdit(final Inflater inflater) {
+  public ModuleEdit(final Inflater inflater,
+                    @Assisted final ModuleWrapper moduleWrapper) {
+    this.moduleWrapper = moduleWrapper;
     inflater.inflate("components/dataedits/module_edit", this, this, "module_edit");
   }
 
@@ -65,7 +57,7 @@ public class ModuleEdit extends GridPane implements Initializable {
   public void initialize(final URL location, final ResourceBundle resources) {
     this.resources = resources;
     initializeInputFields();
-    referenceBox.getChildren().remove(listViewModuleLevels);
+    loadData();
   }
 
   @FXML
@@ -74,29 +66,10 @@ public class ModuleEdit extends GridPane implements Initializable {
     //
   }
 
-  @FXML
-  @SuppressWarnings("unused")
-  public void showAbstractUnits() {
-    referenceBox.getChildren().remove(listViewModuleLevels);
-    referenceBox.getChildren().add(listViewAbstractUnits);
-  }
-
-  @FXML
-  @SuppressWarnings("unused")
-  public void showModuleLevels() {
-    referenceBox.getChildren().remove(listViewAbstractUnits);
-    referenceBox.getChildren().add(listViewModuleLevels);
-  }
-
   private void initializeInputFields() {
     txtModule.setLabelText(resources.getString("module"));
     txtKey.setLabelText(resources.getString("id"));
     txtPordnr.setLabelText(resources.getString("pordnr"));
-  }
-
-  public void setModuleWrapper(final ModuleWrapper moduleWrapper) {
-    this.moduleWrapper = moduleWrapper;
-    loadData();
   }
 
   private void loadData() {
@@ -106,7 +79,6 @@ public class ModuleEdit extends GridPane implements Initializable {
     txtPordnr.textProperty().bind(Bindings.createStringBinding(
         () -> String.valueOf(moduleWrapper.pordnrProperty().get())));
     listViewAbstractUnits.getItems().addAll(moduleWrapper.getAbstractUnits());
-    listViewModuleLevels.getItems().addAll(moduleWrapper.getModuleLevels());
     cbBundled.setSelected(moduleWrapper.bundledProperty().get());
   }
 }

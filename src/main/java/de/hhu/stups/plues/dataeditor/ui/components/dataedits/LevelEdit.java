@@ -1,6 +1,7 @@
 package de.hhu.stups.plues.dataeditor.ui.components.dataedits;
 
 import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
 
 import de.hhu.stups.plues.dataeditor.ui.components.LabeledTextField;
 import de.hhu.stups.plues.dataeditor.ui.database.DataService;
@@ -54,10 +55,15 @@ public class LevelEdit extends GridPane implements Initializable {
   @SuppressWarnings("unused")
   private Button persistChanges;
 
+  /**
+   * Initialize level edit.
+   */
   @Inject
   public LevelEdit(final Inflater inflater,
-                   final DataService dataService) {
+                   final DataService dataService,
+                   @Assisted final LevelWrapper levelWrapper) {
     this.dataService = dataService;
+    this.levelWrapper = levelWrapper;
     inflater.inflate("components/dataedits/level_edit", this, this, "level_edit");
   }
 
@@ -70,6 +76,7 @@ public class LevelEdit extends GridPane implements Initializable {
         showParentLevels(newValue));
     rbParentCourse.selectedProperty().addListener((observable, oldValue, newValue) ->
         showParentCourses(newValue));
+    loadLevelData();
   }
 
   private void showParentCourses(final boolean show) {
@@ -106,11 +113,6 @@ public class LevelEdit extends GridPane implements Initializable {
     txtLevel.setLabelText(resources.getString("level"));
     txtMinCp.setLabelText(resources.getString("minCp"));
     txtMaxCp.setLabelText(resources.getString("maxCp"));
-  }
-
-  public void setLevelWrapper(final LevelWrapper levelWrapper) {
-    this.levelWrapper = levelWrapper;
-    loadLevelData();
   }
 
   private void loadLevelData() {

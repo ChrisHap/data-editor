@@ -3,43 +3,54 @@ package de.hhu.stups.plues.dataeditor.ui.components.dataedits;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.Singleton;
+import de.hhu.stups.plues.dataeditor.ui.components.dataedits.factories.AbstractUnitEditFactory;
+import de.hhu.stups.plues.dataeditor.ui.components.dataedits.factories.CourseEditFactory;
+import de.hhu.stups.plues.dataeditor.ui.components.dataedits.factories.LevelEditFactory;
+import de.hhu.stups.plues.dataeditor.ui.components.dataedits.factories.ModuleEditFactory;
+import de.hhu.stups.plues.dataeditor.ui.components.dataedits.factories.UnitEditFactory;
 
 @Singleton
-public class EntityEditProvider {
+public class EditFactoryProvider {
 
-  private final Provider<LevelEdit> levelEditProvider;
-  private final Provider<ModuleEdit> moduleEditProvider;
-  private final Provider<AbstractUnitEdit> abstractUnitEditProvider;
-  private final Provider<UnitEdit> unitEditProvider;
+  private final CourseEditFactory courseEditFactory;
+  private final AbstractUnitEditFactory abstractUnitEditFactory;
+  private final UnitEditFactory unitEditFactory;
+  private ModuleEditFactory moduleEditFactory;
+  private LevelEditFactory levelEditFactory;
 
   /**
    * Delegate provider for edit views.
    */
   @Inject
-  public EntityEditProvider(final Provider<LevelEdit> levelEditProvider,
-                            final Provider<ModuleEdit> moduleEditProvider,
-                            final Provider<AbstractUnitEdit> abstractUnitEditProvider,
-                            final Provider<UnitEdit> unitEditProvider) {
-    this.levelEditProvider = levelEditProvider;
-    this.moduleEditProvider = moduleEditProvider;
-    this.abstractUnitEditProvider = abstractUnitEditProvider;
-    this.unitEditProvider = unitEditProvider;
+  public EditFactoryProvider(final CourseEditFactory courseEditFactory,
+                             final AbstractUnitEditFactory abstractUnitEditFactory,
+                             final UnitEditFactory unitEditFactory,
+                             final ModuleEditFactory moduleEditFactory,
+                             final LevelEditFactory levelEditFactory) {
+    this.courseEditFactory = courseEditFactory;
+    this.abstractUnitEditFactory = abstractUnitEditFactory;
+    this.unitEditFactory = unitEditFactory;
+    this.moduleEditFactory = moduleEditFactory;
+    this.levelEditFactory = levelEditFactory;
   }
 
-  public LevelEdit getLevelEdit() {
-    return levelEditProvider.get();
+  public CourseEditFactory getCourseEditFactory() {
+    return courseEditFactory;
   }
 
-  public ModuleEdit getModuleEdit() {
-    return moduleEditProvider.get();
+  public AbstractUnitEditFactory getAbstractUnitEditFactory() {
+    return abstractUnitEditFactory;
   }
 
-  public AbstractUnitEdit getAbstractUnitEdit() {
-    return abstractUnitEditProvider.get();
+  public UnitEditFactory getUnitEditFactory() {
+    return unitEditFactory;
   }
 
-  public UnitEdit getUnitEdit() {
-    return unitEditProvider.get();
+  public ModuleEditFactory getModuleEditFactory() {
+    return moduleEditFactory;
   }
 
+  public LevelEditFactory getLevelEditFactory() {
+    return levelEditFactory;
+  }
 }

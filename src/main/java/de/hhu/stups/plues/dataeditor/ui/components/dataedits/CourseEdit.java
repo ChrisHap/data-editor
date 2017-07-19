@@ -1,6 +1,7 @@
 package de.hhu.stups.plues.dataeditor.ui.components.dataedits;
 
 import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
 
 import de.hhu.stups.plues.dataeditor.ui.components.LabeledTextField;
 import de.hhu.stups.plues.dataeditor.ui.database.DataService;
@@ -67,8 +68,10 @@ public class CourseEdit extends GridPane implements Initializable {
    */
   @Inject
   public CourseEdit(final Inflater inflater,
-                    final DataService dataService) {
+                    final DataService dataService,
+                    @Assisted final CourseWrapper courseWrapper) {
     this.dataService = dataService;
+    this.courseWrapper = courseWrapper;
     inflater.inflate("components/dataedits/course_edit", this, this, "course_edit");
   }
 
@@ -83,6 +86,7 @@ public class CourseEdit extends GridPane implements Initializable {
         loadMajorsOrMinors());
     rbMinorCourse.selectedProperty().addListener((observable, oldValue, newValue) ->
         loadMajorsOrMinors());
+    loadCourseData();
   }
 
   private void loadMajorsOrMinors() {
@@ -144,13 +148,5 @@ public class CourseEdit extends GridPane implements Initializable {
 
   public CourseWrapper getCourseWrapper() {
     return courseWrapper;
-  }
-
-  /**
-   * Set the {@link #courseWrapper} and load the course data.
-   */
-  public void setCourseWrapper(final CourseWrapper courseWrapper) {
-    this.courseWrapper = courseWrapper;
-    loadCourseData();
   }
 }
