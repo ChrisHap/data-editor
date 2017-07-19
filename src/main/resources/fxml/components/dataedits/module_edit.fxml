@@ -3,14 +3,12 @@
 <?import de.hhu.stups.plues.dataeditor.ui.components.LabeledTextField?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.layout.RowConstraints?>
-<?import org.controlsfx.control.SegmentedButton?>
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
-<?import javafx.scene.layout.ColumnConstraints?>
 
 <fx:root type="GridPane" styleClass="windowPaddingLarge" vgap="5.0" alignment="CENTER" xmlns="http://javafx.com/javafx"
          xmlns:fx="http://javafx.com/fxml">
@@ -31,19 +29,8 @@
     <LabeledTextField fx:id="txtPordnr" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
     <CheckBox fx:id="cbBundled" text="%bundled" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
     <VBox fx:id="referenceBox" spacing="5.0" GridPane.columnIndex="0" GridPane.rowIndex="4">
-        <SegmentedButton>
-            <padding>
-                <Insets left="20" right="20"/>
-            </padding>
-            <buttons>
-                <ToggleButton fx:id="btAbstractUnits" onAction="#showAbstractUnits" text="%abstractUnits"
-                              selected="true" prefWidth="200.0"/>
-                <ToggleButton fx:id="btModuleLevels" onAction="#showModuleLevels" text="%moduleLevels"
-                              prefWidth="200.0"/>
-            </buttons>
-        </SegmentedButton>
+        <Label text="%abstractUnits"/>
         <ListView fx:id="listViewAbstractUnits"/>
-        <ListView fx:id="listViewModuleLevels"/>
     </VBox>
     <Button fx:id="persistChanges" text="%persist" onAction="#persistChanges" GridPane.columnIndex="0"
             GridPane.rowIndex="5"/>
