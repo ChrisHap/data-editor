@@ -58,6 +58,7 @@ public class DbService {
 
   private Runnable getLoadDbRunnable(final File dbFile) {
     return () -> {
+      // close old store if another database has been loaded
       if (storeProperty.get() != null) {
         storeProperty.get().close();
       }

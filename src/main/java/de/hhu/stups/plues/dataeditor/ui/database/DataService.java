@@ -8,6 +8,7 @@ import de.hhu.stups.plues.dataeditor.ui.database.events.DataChangeEvent;
 import de.hhu.stups.plues.dataeditor.ui.database.events.DataChangeType;
 import de.hhu.stups.plues.dataeditor.ui.entities.AbstractUnitWrapper;
 import de.hhu.stups.plues.dataeditor.ui.entities.CourseWrapper;
+import de.hhu.stups.plues.dataeditor.ui.entities.GroupWrapper;
 import de.hhu.stups.plues.dataeditor.ui.entities.LevelWrapper;
 import de.hhu.stups.plues.dataeditor.ui.entities.ModuleWrapper;
 import de.hhu.stups.plues.dataeditor.ui.entities.SessionWrapper;
@@ -38,6 +39,7 @@ public class DataService {
   private final MapProperty<String, AbstractUnitWrapper> abstractUnitWrappersProperty;
   private final MapProperty<String, UnitWrapper> unitWrappersProperty;
   private final MapProperty<String, SessionWrapper> sessionWrappersProperty;
+  private final MapProperty<String, GroupWrapper> groupWrappersProperty;
 
   /**
    * Initialize the map properties to store and manage the database entity wrapper and subscribe to
@@ -53,6 +55,7 @@ public class DataService {
     abstractUnitWrappersProperty = new SimpleMapProperty<>(FXCollections.observableHashMap());
     unitWrappersProperty = new SimpleMapProperty<>(FXCollections.observableHashMap());
     sessionWrappersProperty = new SimpleMapProperty<>(FXCollections.observableHashMap());
+    groupWrappersProperty = new SimpleMapProperty<>(FXCollections.observableHashMap());
     dataChangeEventSource = new EventSource<>();
 
     EasyBind.subscribe(dbService.storeProperty(), this::loadData);
@@ -90,6 +93,8 @@ public class DataService {
             new AbstractUnitWrapper(abstractUnit)));
     sqliteStore.getUnits().forEach(unit ->
         unitWrappersProperty.put(unit.getKey(), new UnitWrapper(unit)));
+    sqliteStore.getGroups().forEach(group ->
+        groupWrappersProperty.put(String.valueOf(group.getId()), new GroupWrapper(group)));
     sqliteStore.getSessions().forEach(session ->
         sessionWrappersProperty.put(String.valueOf(session.getId()), new SessionWrapper(session)));
   }
@@ -119,11 +124,16 @@ public class DataService {
               .map(course -> courseWrappersProperty.get(course.getKey()))
               .collect(Collectors.toSet()));
     });
-    unitWrappersProperty.values().forEach(unitWrapper ->
-        unitWrapper.abstractUnitsProperty().addAll(
-            unitWrapper.getUnit().getAbstractUnits().stream()
-                .map(abstractUnit -> abstractUnitWrappersProperty.get(abstractUnit.getKey()))
-                .collect(Collectors.toSet())));
+    unitWrappersProperty.values().forEach(unitWrapper -> {
+      unitWrapper.abstractUnitsProperty().addAll(
+          unitWrapper.getUnit().getAbstractUnits().stream()
+              .map(abstractUnit -> abstractUnitWrappersProperty.get(abstractUnit.getKey()))
+              .collect(Collectors.toSet()));
+      unitWrapper.groupsProperty().addAll(
+          unitWrapper.getUnit().getGroups().stream()
+              .map(group -> groupWrappersProperty.get(String.valueOf(group.getId())))
+              .collect(Collectors.toSet()));
+    });
     // add majors and minors to course wrappers
     courseWrappersProperty.values().forEach(courseWrapper -> {
       courseWrapper.majorCourseWrapperProperty().addAll(
@@ -137,7 +147,7 @@ public class DataService {
     });
     levelWrappersProperty.values().forEach(levelWrapper -> {
       if (levelWrapper.getLevel().getParent() != null) {
-        levelWrapper.setParentProperty(levelWrappersProperty.get(levelWrapper.getLevel().getParent()
+        levelWrapper.setParent(levelWrappersProperty.get(levelWrapper.getLevel().getParent()
             .getId()));
       }
       if (levelWrapper.getLevel().getCourse() != null) {
@@ -145,15 +155,25 @@ public class DataService {
             .getCourse().getKey()));
       }
     });
+    groupWrappersProperty.values().forEach(groupWrapper -> {
+      groupWrapper.setUnit(unitWrappersProperty.get(groupWrapper.getGroup().getUnit().getKey()));
+      groupWrapper.sessionsProperty().addAll(
+          groupWrapper.getGroup().getSessions().stream()
+              .map(session -> sessionWrappersProperty.get(String.valueOf(session.getId())))
+              .collect(Collectors.toSet()));
+    });
   }
 
   private void clear() {
     courseWrappersProperty.clear();
+    majorCourseWrappersProperty.clear();
+    minorCourseWrappersProperty.clear();
     levelWrappersProperty.clear();
     moduleWrappersProperty.clear();
     abstractUnitWrappersProperty.clear();
     unitWrappersProperty.clear();
     sessionWrappersProperty.clear();
+    groupWrappersProperty.clear();
   }
 
   public ObservableMap<String, CourseWrapper> getCourseWrappers() {
@@ -162,6 +182,14 @@ public class DataService {
 
   public MapProperty<String, CourseWrapper> courseWrappersProperty() {
     return courseWrappersProperty;
+  }
+
+  public MapProperty<String, GroupWrapper> groupWrappersProperty() {
+    return groupWrappersProperty;
+  }
+
+  public ObservableMap<String, GroupWrapper> getGroupWrappers() {
+    return groupWrappersProperty.get();
   }
 
   public ListProperty<CourseWrapper> majorCourseWrappersProperty() {
