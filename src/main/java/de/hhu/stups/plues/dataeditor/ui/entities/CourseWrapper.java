@@ -14,6 +14,7 @@ import javafx.collections.ObservableSet;
 
 public class CourseWrapper implements EntityWrapper {
 
+  private final IntegerProperty idProperty;
   private final StringProperty keyProperty;
   private final IntegerProperty poProperty;
   private final IntegerProperty creditPointsProperty;
@@ -26,7 +27,7 @@ public class CourseWrapper implements EntityWrapper {
   private final ObjectProperty<Course> courseProperty;
 
   /**
-   * Initialize the property bindings according to the given course.
+   * Initialize the property bindings according to the given {@link Course}.
    */
   public CourseWrapper(final Course course) {
     keyProperty = new SimpleStringProperty(course.getKey());
@@ -40,73 +41,86 @@ public class CourseWrapper implements EntityWrapper {
     courseProperty = new SimpleObjectProperty<>(course);
     majorCourseWrapperProperty = new SimpleSetProperty<>(FXCollections.observableSet());
     minorCourseWrapperProperty = new SimpleSetProperty<>(FXCollections.observableSet());
+    idProperty = new SimpleIntegerProperty(course.getId());
   }
 
-  public String getKeyProperty() {
+  public int getId() {
+    return idProperty.get();
+  }
+
+  public void setId(int id) {
+    this.idProperty.set(id);
+  }
+
+  public IntegerProperty idProperty() {
+    return idProperty;
+  }
+
+  public String getKey() {
     return keyProperty.get();
   }
 
-  public void setKeyProperty(String keyProperty) {
-    this.keyProperty.set(keyProperty);
+  public void setKey(String key) {
+    this.keyProperty.set(key);
   }
 
   public StringProperty keyProperty() {
     return keyProperty;
   }
 
-  public int getPoProperty() {
+  public int getPo() {
     return poProperty.get();
   }
 
-  public void setPoProperty(int poProperty) {
-    this.poProperty.set(poProperty);
+  public void setPo(int po) {
+    this.poProperty.set(po);
   }
 
   public IntegerProperty poProperty() {
     return poProperty;
   }
 
-  public int getCreditPointsProperty() {
+  public int getCreditPoints() {
     return creditPointsProperty.get();
   }
 
-  public void setCreditPointsProperty(int creditPointsProperty) {
-    this.creditPointsProperty.set(creditPointsProperty);
+  public void setCreditPoints(int creditPoints) {
+    this.creditPointsProperty.set(creditPoints);
   }
 
   public IntegerProperty creditPointsProperty() {
     return creditPointsProperty;
   }
 
-  public String getShortNameProperty() {
+  public String getShortName() {
     return shortNameProperty.get();
   }
 
-  public void setShortNameProperty(String shortNameProperty) {
-    this.shortNameProperty.set(shortNameProperty);
+  public void setShortName(String shortName) {
+    this.shortNameProperty.set(shortName);
   }
 
   public StringProperty shortNameProperty() {
     return shortNameProperty;
   }
 
-  public String getLongNameProperty() {
+  public String getLongName() {
     return longNameProperty.get();
   }
 
-  public void setLongNameProperty(String longNameProperty) {
-    this.longNameProperty.set(longNameProperty);
+  public void setLongName(String longName) {
+    this.longNameProperty.set(longName);
   }
 
   public StringProperty longNameProperty() {
     return longNameProperty;
   }
 
-  public CourseDegree getDegreeProperty() {
+  public CourseDegree getDegree() {
     return degreeProperty.get();
   }
 
-  public void setDegreeProperty(CourseDegree degreeProperty) {
+  public void setDegree(CourseDegree degreeProperty) {
     this.degreeProperty.set(degreeProperty);
   }
 
@@ -114,12 +128,12 @@ public class CourseWrapper implements EntityWrapper {
     return degreeProperty;
   }
 
-  public CourseKzfa getKzfaProperty() {
+  public CourseKzfa getKzfa() {
     return kzfaProperty.get();
   }
 
-  public void setKzfaProperty(CourseKzfa kzfaProperty) {
-    this.kzfaProperty.set(kzfaProperty);
+  public void setKzfa(CourseKzfa kzfa) {
+    this.kzfaProperty.set(kzfa);
   }
 
   public ObjectProperty<CourseKzfa> kzfaProperty() {

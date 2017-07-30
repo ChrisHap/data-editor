@@ -1,8 +1,10 @@
 package de.hhu.stups.plues.dataeditor.ui.entities;
 
 import de.hhu.stups.plues.data.entities.AbstractUnit;
+import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SetProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleSetProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -12,6 +14,7 @@ import javafx.collections.ObservableSet;
 
 public class AbstractUnitWrapper implements EntityWrapper {
 
+  private final IntegerProperty idProperty;
   private final StringProperty keyProperty;
   private final StringProperty titleProperty;
   private final SetProperty<UnitWrapper> unitsProperty;
@@ -19,7 +22,7 @@ public class AbstractUnitWrapper implements EntityWrapper {
   private final ObjectProperty<AbstractUnit> abstractUnitProperty;
 
   /**
-   * Initialize the property bindings according to the given abstract unit.
+   * Initialize the property bindings according to the given {@link AbstractUnit}.
    */
   public AbstractUnitWrapper(final AbstractUnit abstractUnit) {
     assert abstractUnit != null;
@@ -28,13 +31,26 @@ public class AbstractUnitWrapper implements EntityWrapper {
     unitsProperty = new SimpleSetProperty<>(FXCollections.observableSet());
     modulesProperty = new SimpleSetProperty<>(FXCollections.observableSet());
     abstractUnitProperty = new SimpleObjectProperty<>(abstractUnit);
+    idProperty = new SimpleIntegerProperty(abstractUnit.getId());
   }
 
-  public String getKeyProperty() {
+  public int getId() {
+    return idProperty.get();
+  }
+
+  public void setId(int id) {
+    this.idProperty.set(id);
+  }
+
+  public IntegerProperty idProperty() {
+    return idProperty;
+  }
+
+  public String getKey() {
     return keyProperty.get();
   }
 
-  public void setKeyProperty(String keyProperty) {
+  public void setKey(String keyProperty) {
     this.keyProperty.set(keyProperty);
   }
 
@@ -42,11 +58,11 @@ public class AbstractUnitWrapper implements EntityWrapper {
     return keyProperty;
   }
 
-  public String getTitleProperty() {
+  public String getTitle() {
     return titleProperty.get();
   }
 
-  public void setTitleProperty(String titleProperty) {
+  public void setTitle(String titleProperty) {
     this.titleProperty.set(titleProperty);
   }
 
@@ -54,11 +70,11 @@ public class AbstractUnitWrapper implements EntityWrapper {
     return titleProperty;
   }
 
-  public ObservableSet<UnitWrapper> getUnitsProperty() {
+  public ObservableSet<UnitWrapper> getUnits() {
     return unitsProperty.get();
   }
 
-  public void setUnitsProperty(ObservableSet<UnitWrapper> unitsProperty) {
+  public void setUnits(ObservableSet<UnitWrapper> unitsProperty) {
     this.unitsProperty.set(unitsProperty);
   }
 
@@ -66,11 +82,11 @@ public class AbstractUnitWrapper implements EntityWrapper {
     return unitsProperty;
   }
 
-  public ObservableSet<ModuleWrapper> getModulesProperty() {
+  public ObservableSet<ModuleWrapper> getModules() {
     return modulesProperty.get();
   }
 
-  public void setModulesProperty(ObservableSet<ModuleWrapper> modulesProperty) {
+  public void setModules(ObservableSet<ModuleWrapper> modulesProperty) {
     this.modulesProperty.set(modulesProperty);
   }
 

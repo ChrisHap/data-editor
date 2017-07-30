@@ -16,6 +16,7 @@ import javafx.collections.ObservableSet;
 
 public class ModuleWrapper implements EntityWrapper {
 
+  private final IntegerProperty idProperty;
   private final StringProperty keyProperty;
   private final StringProperty titleProperty;
   private final IntegerProperty pordnrProperty;
@@ -26,7 +27,7 @@ public class ModuleWrapper implements EntityWrapper {
   private final ObjectProperty<Module> moduleProperty;
 
   /**
-   * Initialize the property bindings according to the given module.
+   * Initialize the property bindings according to the given {@link Module}.
    */
   public ModuleWrapper(final Module module) {
     assert module != null;
@@ -38,6 +39,19 @@ public class ModuleWrapper implements EntityWrapper {
     abstractUnitsProperty = new SimpleSetProperty<>(FXCollections.observableSet());
     coursesProperty = new SimpleSetProperty<>(FXCollections.observableSet());
     moduleProperty = new SimpleObjectProperty<>(module);
+    idProperty = new SimpleIntegerProperty(module.getId());
+  }
+
+  public int getId() {
+    return idProperty.get();
+  }
+
+  public IntegerProperty idProperty() {
+    return idProperty;
+  }
+
+  public void setId(int id) {
+    this.idProperty.set(id);
   }
 
   public String getKey() {

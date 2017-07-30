@@ -13,6 +13,7 @@ import javafx.collections.ObservableSet;
 
 public class LevelWrapper implements EntityWrapper {
 
+  private final IntegerProperty idProperty;
   private final StringProperty nameProperty;
   private final IntegerProperty minCreditsProperty;
   private final IntegerProperty maxCreditsProperty;
@@ -22,7 +23,7 @@ public class LevelWrapper implements EntityWrapper {
   private final ObjectProperty<Level> levelProperty;
 
   /**
-   * Initialize the property bindings according to the given level.
+   * Initialize the property bindings according to the given {@link Level}.
    */
   public LevelWrapper(final Level level) {
     assert level != null;
@@ -33,14 +34,27 @@ public class LevelWrapper implements EntityWrapper {
     childrenProperty = new SimpleSetProperty<>();
     levelProperty = new SimpleObjectProperty<>(level);
     courseProperty = new SimpleObjectProperty<>();
+    idProperty = new SimpleIntegerProperty(level.getId());
+  }
+
+  public int getId() {
+    return idProperty.get();
+  }
+
+  public void setId(int id) {
+    this.idProperty.set(id);
+  }
+
+  public IntegerProperty idProperty() {
+    return idProperty;
   }
 
   public String getNameProperty() {
     return nameProperty.get();
   }
 
-  public void setNameProperty(String nameProperty) {
-    this.nameProperty.set(nameProperty);
+  public void setNameProperty(final String name) {
+    this.nameProperty.set(name);
   }
 
   public StringProperty nameProperty() {
@@ -51,8 +65,8 @@ public class LevelWrapper implements EntityWrapper {
     return minCreditsProperty.get();
   }
 
-  public void setMinCreditsProperty(int minCreditsProperty) {
-    this.minCreditsProperty.set(minCreditsProperty);
+  public void setMinCredits(final int minCredits) {
+    this.minCreditsProperty.set(minCredits);
   }
 
   public IntegerProperty minCreditsProperty() {
@@ -63,8 +77,8 @@ public class LevelWrapper implements EntityWrapper {
     return maxCreditsProperty.get();
   }
 
-  public void setMaxCreditsProperty(int maxCreditsProperty) {
-    this.maxCreditsProperty.set(maxCreditsProperty);
+  public void setMaxCredits(final int maxCredits) {
+    this.maxCreditsProperty.set(maxCredits);
   }
 
   public IntegerProperty maxCreditsProperty() {
@@ -75,8 +89,8 @@ public class LevelWrapper implements EntityWrapper {
     return parentProperty.get();
   }
 
-  public void setParentProperty(LevelWrapper parentProperty) {
-    this.parentProperty.set(parentProperty);
+  public void setParent(final LevelWrapper parent) {
+    this.parentProperty.set(parent);
   }
 
   public ObjectProperty<LevelWrapper> parentProperty() {
@@ -95,8 +109,8 @@ public class LevelWrapper implements EntityWrapper {
     return childrenProperty.get();
   }
 
-  public void setChildrenProperty(ObservableSet<LevelWrapper> childrenProperty) {
-    this.childrenProperty.set(childrenProperty);
+  public void setChildrenProperty(final ObservableSet<LevelWrapper> children) {
+    this.childrenProperty.set(children);
   }
 
   public SetProperty<LevelWrapper> childrenProperty() {

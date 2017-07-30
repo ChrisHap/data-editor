@@ -13,6 +13,7 @@ import javafx.beans.property.StringProperty;
 
 public class SessionWrapper implements EntityWrapper {
 
+  private final IntegerProperty idProperty;
   private final StringProperty dayProperty;
   private final IntegerProperty timeProperty;
   private final IntegerProperty rhythmProperty;
@@ -22,7 +23,7 @@ public class SessionWrapper implements EntityWrapper {
   private final ObjectProperty<Session> sessionProperty;
 
   /**
-   * Initialize the property bindings according to the given session.
+   * Initialize the property bindings according to the given {@link Session}.
    */
   public SessionWrapper(final Session session) {
     assert session != null;
@@ -33,9 +34,22 @@ public class SessionWrapper implements EntityWrapper {
     tentativeProperty = new SimpleBooleanProperty(session.isTentative());
     groupProperty = new SimpleObjectProperty<>(session.getGroup());
     sessionProperty = new SimpleObjectProperty<>(session);
+    idProperty = new SimpleIntegerProperty(session.getId());
   }
 
-  public String getDayProperty() {
+  public int getId() {
+    return idProperty.get();
+  }
+
+  public void setId(int id) {
+    this.idProperty.set(id);
+  }
+
+  public IntegerProperty idProperty() {
+    return idProperty;
+  }
+
+  public String getDay() {
     return dayProperty.get();
   }
 
@@ -47,7 +61,7 @@ public class SessionWrapper implements EntityWrapper {
     return dayProperty;
   }
 
-  public int getTimeProperty() {
+  public int getTime() {
     return timeProperty.get();
   }
 
@@ -59,7 +73,7 @@ public class SessionWrapper implements EntityWrapper {
     return timeProperty;
   }
 
-  public int getRhythmProperty() {
+  public int getRhythm() {
     return rhythmProperty.get();
   }
 
@@ -71,7 +85,7 @@ public class SessionWrapper implements EntityWrapper {
     return rhythmProperty;
   }
 
-  public int getDurationProperty() {
+  public int getDuration() {
     return durationProperty.get();
   }
 
@@ -91,16 +105,20 @@ public class SessionWrapper implements EntityWrapper {
     this.tentativeProperty.set(tentativeProperty);
   }
 
+  public boolean isTentative() {
+    return tentativeProperty.get();
+  }
+
   public BooleanProperty tentativeProperty() {
     return tentativeProperty;
   }
 
-  public Group getGroupProperty() {
+  public Group getGroup() {
     return groupProperty.get();
   }
 
-  public void setGroupProperty(Group groupProperty) {
-    this.groupProperty.set(groupProperty);
+  public void setGroup(Group group) {
+    this.groupProperty.set(group);
   }
 
   public ObjectProperty<Group> groupProperty() {
