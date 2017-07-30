@@ -13,10 +13,13 @@ import de.hhu.stups.plues.dataeditor.ui.components.LabeledTextField;
 import de.hhu.stups.plues.dataeditor.ui.components.MainMenu;
 import de.hhu.stups.plues.dataeditor.ui.components.SideBar;
 import de.hhu.stups.plues.dataeditor.ui.components.dataedits.EditFactoryProvider;
+import de.hhu.stups.plues.dataeditor.ui.components.dataedits.GroupEdit;
 import de.hhu.stups.plues.dataeditor.ui.components.dataedits.factories.AbstractUnitEditFactory;
 import de.hhu.stups.plues.dataeditor.ui.components.dataedits.factories.CourseEditFactory;
+import de.hhu.stups.plues.dataeditor.ui.components.dataedits.factories.GroupEditFactory;
 import de.hhu.stups.plues.dataeditor.ui.components.dataedits.factories.LevelEditFactory;
 import de.hhu.stups.plues.dataeditor.ui.components.dataedits.factories.ModuleEditFactory;
+import de.hhu.stups.plues.dataeditor.ui.components.dataedits.factories.SessionEditFactory;
 import de.hhu.stups.plues.dataeditor.ui.components.dataedits.factories.UnitEditFactory;
 import de.hhu.stups.plues.dataeditor.ui.components.datavisualization.DataContextMenu;
 import de.hhu.stups.plues.dataeditor.ui.components.datavisualization.DataListView;
@@ -58,6 +61,8 @@ public class DataEditorModule extends AbstractModule {
     install(new FactoryModuleBuilder().build(LevelEditFactory.class));
     install(new FactoryModuleBuilder().build(ModuleEditFactory.class));
     install(new FactoryModuleBuilder().build(UnitEditFactory.class));
+    install(new FactoryModuleBuilder().build(GroupEditFactory.class));
+    install(new FactoryModuleBuilder().build(SessionEditFactory.class));
 
 
     if (IS_MAC) {
