@@ -20,7 +20,7 @@ targetCompatibility = 1.8
 
 version '1.0-SNAPSHOT'
 
-mainClassName = "de.hhu.stups.plues.ui.Main"
+mainClassName = "de.hhu.stups.plues.dataeditor.ui.Main"
 
 applicationDefaultJvmArgs = ["-Dapple.awt.UIElement=true"]
 def appName = "plues-data-editor" + project.version
