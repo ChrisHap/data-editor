@@ -12,6 +12,9 @@ import de.hhu.stups.plues.dataeditor.ui.entities.CourseWrapper;
 import de.hhu.stups.plues.dataeditor.ui.layout.Inflater;
 
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -21,6 +24,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.RadioButton;
 import javafx.scene.layout.GridPane;
 import javafx.util.StringConverter;
+import org.fxmisc.easybind.EasyBind;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -28,6 +32,7 @@ import java.util.ResourceBundle;
 public class CourseEdit extends GridPane implements Initializable {
 
   private final DataService dataService;
+  private final BooleanProperty dataChangedProperty;
 
   private CourseWrapper courseWrapper;
   private ResourceBundle resources;
@@ -55,7 +60,7 @@ public class CourseEdit extends GridPane implements Initializable {
   private RadioButton rbMinorCourse;
   @FXML
   @SuppressWarnings("unused")
-  private Button persistChanges;
+  private Button btPersistChanges;
   @FXML
   @SuppressWarnings("unused")
   private Label lbMajorsOrMinors;
@@ -72,21 +77,39 @@ public class CourseEdit extends GridPane implements Initializable {
                     @Assisted final CourseWrapper courseWrapper) {
     this.dataService = dataService;
     this.courseWrapper = courseWrapper;
+    dataChangedProperty = new SimpleBooleanProperty(false);
     inflater.inflate("components/dataedits/course_edit", this, this, "course_edit");
   }
 
   @Override
   public void initialize(final URL location, final ResourceBundle resources) {
     this.resources = resources;
+    btPersistChanges.disableProperty().bind(dataChangedProperty.not());
     initializeCbDegree();
     initializeInputFields();
     lbMajorsOrMinors.textProperty().bind(Bindings.when(rbMajorCourse.selectedProperty())
         .then(resources.getString("minors")).otherwise(resources.getString("majors")));
-    rbMajorCourse.selectedProperty().addListener((observable, oldValue, newValue) ->
-        loadMajorsOrMinors());
-    rbMinorCourse.selectedProperty().addListener((observable, oldValue, newValue) ->
-        loadMajorsOrMinors());
+    setDataListener();
     loadCourseData();
+  }
+
+  /**
+   * Update data if the wrapper has changed.
+   */
+  private void setDataListener() {
+    EasyBind.subscribe(courseWrapper.longNameProperty(), s -> setFullName());
+    EasyBind.subscribe(courseWrapper.shortNameProperty(), s -> setShortName());
+    EasyBind.subscribe(courseWrapper.creditPointsProperty(), number -> setCreditPoints());
+    EasyBind.subscribe(courseWrapper.poProperty(), number -> setPversion());
+    EasyBind.subscribe(courseWrapper.courseProperty(), course -> selectMajorOrMinor());
+    EasyBind.subscribe(courseWrapper.degreeProperty(), course -> selectCourseDegree());
+    EasyBind.subscribe(rbMajorCourse.selectedProperty(), aBoolean -> loadMajorsOrMinors());
+    EasyBind.subscribe(rbMinorCourse.selectedProperty(), aBoolean -> loadMajorsOrMinors());
+    updateDataChanged();
+  }
+
+  private void selectCourseDegree() {
+    cbCourseDegree.getSelectionModel().select(courseWrapper.getDegree());
   }
 
   private void loadMajorsOrMinors() {
@@ -103,13 +126,27 @@ public class CourseEdit extends GridPane implements Initializable {
     }
   }
 
+  private void updateDataChanged() {
+    EasyBind.subscribe(txtFullName.textProperty(), s -> dataChangedProperty.set(true));
+    EasyBind.subscribe(txtShortName.textProperty(), s -> dataChangedProperty.set(true));
+    EasyBind.subscribe(txtPVersion.textProperty(), s -> dataChangedProperty.set(true));
+    EasyBind.subscribe(txtCreditPoints.textProperty(), s -> dataChangedProperty.set(true));
+    EasyBind.subscribe(listViewMajorsOrMinors.itemsProperty(), s -> dataChangedProperty.set(true));
+    EasyBind.subscribe(rbMajorCourse.selectedProperty(), s -> dataChangedProperty.set(true));
+    EasyBind.subscribe(rbMinorCourse.selectedProperty(), s -> dataChangedProperty.set(true));
+    EasyBind.subscribe(cbCourseDegree.selectionModelProperty(), s -> dataChangedProperty.set(true));
+  }
+
   private void loadCourseData() {
-    txtFullName.textProperty().bind(courseWrapper.longNameProperty());
-    txtShortName.textProperty().bind(courseWrapper.shortNameProperty());
-    txtCreditPoints.textProperty().bind(Bindings.createStringBinding(
-        () -> String.valueOf(courseWrapper.creditPointsProperty().get())));
-    txtPVersion.textProperty().bind(Bindings.createStringBinding(
-        () -> String.valueOf(courseWrapper.poProperty().get())));
+    setFullName();
+    setShortName();
+    setCreditPoints();
+    setPversion();
+    selectMajorOrMinor();
+    dataChangedProperty.set(false);
+  }
+
+  private void selectMajorOrMinor() {
     if (courseWrapper.getCourse().isMajor()) {
       rbMajorCourse.setSelected(true);
     } else {
@@ -117,11 +154,33 @@ public class CourseEdit extends GridPane implements Initializable {
     }
   }
 
+  private void setPversion() {
+    txtPVersion.setText(String.valueOf(courseWrapper.poProperty().get()));
+
+  }
+
+  private void setCreditPoints() {
+    txtCreditPoints.setText(String.valueOf(courseWrapper.creditPointsProperty().get()));
+  }
+
+  private void setShortName() {
+    txtShortName.setText(courseWrapper.getShortName());
+  }
+
+  private void setFullName() {
+    txtFullName.setText(courseWrapper.getLongName());
+  }
+
+  /**
+   * Push the {@link #courseWrapper} to the {@link #dataService} and set
+   * {@link #dataChangedProperty} to false.
+   */
   @FXML
   @SuppressWarnings("unused")
   public void persistChanges() {
     dataService.dataChangeEventSource().push(
         new DataChangeEvent(DataChangeType.STORE_ENTITY, courseWrapper));
+    dataChangedProperty.set(false);
   }
 
   private void initializeInputFields() {
