@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import de.hhu.stups.plues.dataeditor.ui.components.LabeledTextField?>
+<?import org.controlsfx.control.SegmentedButton?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+
+<fx:root type="GridPane" alignment="CENTER" vgap="5.0" styleClass="windowPaddingLarge" xmlns="http://javafx.com/javafx"
+         xmlns:fx="http://javafx.com/fxml">
+    <columnConstraints>
+        <ColumnConstraints percentWidth="100.0"/>
+    </columnConstraints>
+    <rowConstraints>
+        <RowConstraints percentHeight="5.0"/>
+        <RowConstraints percentHeight="5.0"/>
+        <RowConstraints percentHeight="25.0"/>
+        <RowConstraints percentHeight="5.0"/>
+        <RowConstraints percentHeight="60.0"/>
+    </rowConstraints>
+    <LabeledTextField fx:id="txtAbstractUnit" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+    <LabeledTextField fx:id="txtId" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+    <VBox fx:id="referencedEntitiesBox" GridPane.columnIndex="0" GridPane.rowIndex="2" spacing="5.0">
+        <SegmentedButton>
+            <buttons>
+                <ToggleButton fx:id="btAbstractUnits" onAction="#showModules" text="%modules"
+                              selected="true" prefWidth="200.0"/>
+                <ToggleButton fx:id="btModuleLevels" onAction="#showUnits" text="%units"
+                              prefWidth="200.0"/>
+            </buttons>
+        </SegmentedButton>
+        <ListView fx:id="listViewModules"/>
+        <ListView fx:id="listViewUnits"/>
+    </VBox>
+    <Button fx:id="btPersistChanges" text="%persist" onAction="#persistChanges" GridPane.columnIndex="0"
+            GridPane.rowIndex="3"/>
+</fx:root>

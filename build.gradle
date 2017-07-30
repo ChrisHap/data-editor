@@ -20,7 +20,7 @@ targetCompatibility = 1.8
 
 version '1.0-SNAPSHOT'
 
-mainClassName = "de.hhu.stups.plues.ui.Main"
+mainClassName = "de.hhu.stups.plues.dataeditor.ui.Main"
 
 applicationDefaultJvmArgs = ["-Dapple.awt.UIElement=true"]
 def appName = "plues-data-editor" + project.version
@@ -60,6 +60,8 @@ dependencies {
     compile 'ch.qos.logback:logback-core:1.2.3' // EPL
     compile 'ch.qos.logback:logback-classic:1.2.3' // EPL
     compile group: 'org.codehaus.janino', name: 'janino', version: '3.0.7'
+
+    compile project(':model-generator')
 
     testCompile group: 'junit', name: 'junit', version: '4.12'
     testCompile 'org.mockito:mockito-core:2.8.+'
