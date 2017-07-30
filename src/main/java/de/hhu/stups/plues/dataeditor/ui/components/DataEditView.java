@@ -16,8 +16,10 @@ import de.hhu.stups.plues.dataeditor.ui.database.events.DbEventType;
 import de.hhu.stups.plues.dataeditor.ui.entities.AbstractUnitWrapper;
 import de.hhu.stups.plues.dataeditor.ui.entities.CourseWrapper;
 import de.hhu.stups.plues.dataeditor.ui.entities.EntityWrapper;
+import de.hhu.stups.plues.dataeditor.ui.entities.GroupWrapper;
 import de.hhu.stups.plues.dataeditor.ui.entities.LevelWrapper;
 import de.hhu.stups.plues.dataeditor.ui.entities.ModuleWrapper;
+import de.hhu.stups.plues.dataeditor.ui.entities.SessionWrapper;
 import de.hhu.stups.plues.dataeditor.ui.entities.UnitWrapper;
 import de.hhu.stups.plues.dataeditor.ui.layout.Inflater;
 import javafx.fxml.Initializable;
@@ -93,6 +95,14 @@ public class DataEditView extends TabPane implements Initializable {
         tab.setText(resources.getString("unit"));
         tab.setContent(editFactoryProvider.getUnitEditFactory().create(null));
         break;
+      case GROUP:
+        tab.setText(resources.getString("group"));
+        tab.setContent(editFactoryProvider.getGroupEditFactory().create(null));
+        break;
+      case SESSION:
+        tab.setText(resources.getString("session"));
+        tab.setContent(editFactoryProvider.getSessionEditFactory().create(null));
+        break;
       default:
         break;
     }
@@ -132,6 +142,16 @@ public class DataEditView extends TabPane implements Initializable {
         final UnitEdit unitEdit = editFactoryProvider.getUnitEditFactory()
             .create((UnitWrapper) entityWrapper);
         tab.setContent(unitEdit);
+        break;
+      case GROUP:
+        tab.setText(resources.getString("group"));
+        tab.setContent(editFactoryProvider.getGroupEditFactory()
+            .create((GroupWrapper) entityWrapper));
+        break;
+      case SESSION:
+        tab.setText(resources.getString("session"));
+        tab.setContent(editFactoryProvider.getSessionEditFactory()
+            .create((SessionWrapper) entityWrapper));
         break;
       default:
         break;
