@@ -32,6 +32,6 @@
         <Label text="%abstractUnits"/>
         <ListView fx:id="listViewAbstractUnits"/>
     </VBox>
-    <Button fx:id="persistChanges" text="%persist" onAction="#persistChanges" GridPane.columnIndex="0"
+    <Button fx:id="btPersistChanges" text="%persist" onAction="#persistChanges" GridPane.columnIndex="0"
             GridPane.rowIndex="5"/>
 </fx:root>

@@ -23,10 +23,10 @@
                 <FXCollections fx:factory="observableArrayList">
                     <EntityType fx:value="COURSE"/>
                     <EntityType fx:value="MODULE"/>
-                    <EntityType fx:value="MODULE_LEVEL"/>
                     <EntityType fx:value="LEVEL"/>
                     <EntityType fx:value="ABSTRACT_UNIT"/>
                     <EntityType fx:value="UNIT"/>
+                    <EntityType fx:value="GROUP"/>
                     <EntityType fx:value="SESSION"/>
                 </FXCollections>
             </items>
