@@ -110,6 +110,9 @@ public class DataListView extends GridPane implements Initializable {
       case UNIT:
         listView.getItems().addAll(dataService.getUnitWrappers().values());
         break;
+      case GROUP:
+        listView.getItems().addAll(dataService.getGroupWrappers().values());
+        break;
       case SESSION:
         listView.getItems().addAll(dataService.getSessionWrappers().values());
         break;

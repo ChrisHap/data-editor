@@ -178,7 +178,9 @@ public class DataTreeView extends VBox implements Initializable {
         .get(unit.getKey()));
     treeItemParent.getChildren().add(unitTreeItem);
     unit.getGroups().forEach(group -> {
-      final TreeItem<EntityWrapper> treeItemGroup = new TreeItem<>();
+      final TreeItem<EntityWrapper> treeItemGroup = new TreeItem<>(
+          dataService.groupWrappersProperty().get(String.valueOf(group.getId())));
+      unitTreeItem.getChildren().add(treeItemGroup);
       group.getSessions().forEach(session -> treeItemGroup.getChildren().add(
           new TreeItem<>(dataService.sessionWrappersProperty()
               .get(String.valueOf(session.getId())))));

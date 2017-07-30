@@ -52,14 +52,14 @@ public class DataContextMenu extends ContextMenu {
       case MODULE:
         resourceName = "addModule";
         break;
-      case MODULE_LEVEL:
-        resourceName = "addModuleLevel";
-        break;
       case ABSTRACT_UNIT:
         resourceName = "addAbstractUnit";
         break;
       case UNIT:
         resourceName = "addUnit";
+        break;
+      case GROUP:
+        resourceName = "addGroup";
         break;
       case SESSION:
         resourceName = "addSession";
