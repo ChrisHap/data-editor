@@ -5,7 +5,7 @@ import de.hhu.stups.plues.dataeditor.ui.entities.EntityWrapper;
 public class UpdateDbEvent implements DbEvent {
 
   private final EntityWrapper entityWrapper;
-  private final DbEventType eventType = DbEventType.UPDATE_DB;
+  private static final DbEventType eventType = DbEventType.UPDATE_DB;
 
   public UpdateDbEvent(final EntityWrapper entityWrapper) {
     this.entityWrapper = entityWrapper;

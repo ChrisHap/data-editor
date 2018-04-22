@@ -1,8 +1,5 @@
 package de.hhu.stups.plues.dataeditor.ui.database;
 
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
-
 import de.hhu.stups.plues.data.SqliteStore;
 import de.hhu.stups.plues.dataeditor.ui.database.events.DataChangeEvent;
 import de.hhu.stups.plues.dataeditor.ui.database.events.DataChangeType;
@@ -21,13 +18,15 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
 import org.fxmisc.easybind.EasyBind;
 import org.reactfx.EventSource;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.stream.Collectors;
 
 /**
  * A simple data service providing several map properties to manage the database entity wrapper.
  */
-@Singleton
+@Component
 public class DataService {
 
   private final EventSource<DataChangeEvent> dataChangeEventSource;
@@ -45,7 +44,8 @@ public class DataService {
    * Initialize the map properties to store and manage the database entity wrapper and subscribe to
    * {@link DbService}.
    */
-  @Inject
+
+  @Autowired
   public DataService(final DbService dbService) {
     courseWrappersProperty = new SimpleMapProperty<>(FXCollections.observableHashMap());
     majorCourseWrappersProperty = new SimpleListProperty<>(FXCollections.observableArrayList());

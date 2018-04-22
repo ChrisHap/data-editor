@@ -1,8 +1,5 @@
 package de.hhu.stups.plues.dataeditor.ui.components.dataedits;
 
-import com.google.inject.Inject;
-import com.google.inject.assistedinject.Assisted;
-
 import de.hhu.stups.plues.dataeditor.ui.components.LabeledTextField;
 import de.hhu.stups.plues.dataeditor.ui.database.DataService;
 import de.hhu.stups.plues.dataeditor.ui.database.events.DataChangeEvent;
@@ -10,11 +7,9 @@ import de.hhu.stups.plues.dataeditor.ui.database.events.DataChangeType;
 import de.hhu.stups.plues.dataeditor.ui.entities.CourseDegree;
 import de.hhu.stups.plues.dataeditor.ui.entities.CourseWrapper;
 import de.hhu.stups.plues.dataeditor.ui.layout.Inflater;
-
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -71,10 +66,9 @@ public class CourseEdit extends GridPane implements Initializable {
   /**
    * Inject the {@link DataService}.
    */
-  @Inject
   public CourseEdit(final Inflater inflater,
                     final DataService dataService,
-                    @Assisted final CourseWrapper courseWrapper) {
+                    final CourseWrapper courseWrapper) {
     this.dataService = dataService;
     this.courseWrapper = courseWrapper;
     dataChangedProperty = new SimpleBooleanProperty(false);

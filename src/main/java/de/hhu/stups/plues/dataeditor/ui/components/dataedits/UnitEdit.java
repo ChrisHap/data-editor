@@ -1,8 +1,5 @@
 package de.hhu.stups.plues.dataeditor.ui.components.dataedits;
 
-import com.google.inject.Inject;
-import com.google.inject.assistedinject.Assisted;
-
 import de.hhu.stups.plues.dataeditor.ui.components.LabeledTextField;
 import de.hhu.stups.plues.dataeditor.ui.database.DataService;
 import de.hhu.stups.plues.dataeditor.ui.database.events.DataChangeEvent;
@@ -53,10 +50,9 @@ public class UnitEdit extends GridPane implements Initializable {
   /**
    * Initialize unit edit.
    */
-  @Inject
   public UnitEdit(final Inflater inflater,
                   final DataService dataService,
-                  @Assisted final UnitWrapper unitWrapper) {
+                  final UnitWrapper unitWrapper) {
     this.dataService = dataService;
     this.unitWrapper = unitWrapper;
     dataChangedProperty = new SimpleBooleanProperty(false);

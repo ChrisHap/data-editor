@@ -1,13 +1,14 @@
 package de.hhu.stups.plues.dataeditor.ui.layout;
 
-import com.google.inject.Inject;
-
 import de.hhu.stups.plues.dataeditor.exceptions.InflaterException;
+
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -20,12 +21,15 @@ import java.util.stream.Collectors;
 /**
  * Inflates a layout from a filename.
  */
+
+@Component
+@Scope("prototype")
 public class Inflater {
 
   private static final ResourceBundle MAIN_BUNDLE = ResourceBundle.getBundle("lang.main");
   private final FXMLLoader loader;
 
-  @Inject
+  @Autowired
   public Inflater(final FXMLLoader loader) {
     this.loader = loader;
   }
@@ -93,13 +97,12 @@ public class Inflater {
     bundles[bundleNames.length] = MAIN_BUNDLE;
 
     loader.setResources(new CustomMultiResourceBundle(bundles));
-
     try {
       return loader.load();
-    } catch (final IOException ignored) {
+    } catch (final IOException exception) {
       final Logger logger = LoggerFactory.getLogger(getClass());
-      logger.error("Exception in FXML Loader", ignored);
-      throw new InflaterException(ignored);
+      logger.error("Exception in FXML Loader", exception);
+      throw new InflaterException(exception);
     }
   }
 

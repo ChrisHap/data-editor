@@ -1,8 +1,5 @@
 package de.hhu.stups.plues.dataeditor.ui.components.dataedits;
 
-import com.google.inject.Inject;
-import com.google.inject.assistedinject.Assisted;
-
 import de.hhu.stups.plues.data.entities.Group;
 import de.hhu.stups.plues.dataeditor.ui.components.LabeledTextField;
 import de.hhu.stups.plues.dataeditor.ui.database.DataService;
@@ -55,10 +52,9 @@ public class SessionEdit extends GridPane implements Initializable {
   /**
    * Initialize session edit.
    */
-  @Inject
   public SessionEdit(final Inflater inflater,
                      final DataService dataService,
-                     @Assisted final SessionWrapper sessionWrapper) {
+                     final SessionWrapper sessionWrapper) {
     this.sessionWrapper = sessionWrapper;
     this.dataService = dataService;
     dataChangedProperty = new SimpleBooleanProperty(false);

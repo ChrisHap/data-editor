@@ -1,7 +1,5 @@
 package de.hhu.stups.plues.dataeditor.ui.components.datavisualization;
 
-import com.google.inject.Inject;
-
 import de.hhu.stups.plues.dataeditor.ui.database.DataService;
 import de.hhu.stups.plues.dataeditor.ui.database.events.DataChangeEvent;
 import de.hhu.stups.plues.dataeditor.ui.database.events.DataChangeType;
@@ -10,9 +8,12 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.ResourceBundle;
 
+@Component
 public class DataContextMenu extends ContextMenu {
 
   private final ObjectProperty<EntityWrapper> entityWrapperProperty;
@@ -23,7 +24,7 @@ public class DataContextMenu extends ContextMenu {
   /**
    * Initialize the menu items and {@link #entityWrapperProperty}.
    */
-  @Inject
+  @Autowired
   public DataContextMenu(final DataService dataService) {
     resources = ResourceBundle.getBundle("lang.data_context_menu");
     entityWrapperProperty = new SimpleObjectProperty<>();

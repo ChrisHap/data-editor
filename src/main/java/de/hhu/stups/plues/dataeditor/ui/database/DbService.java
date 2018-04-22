@@ -1,8 +1,5 @@
 package de.hhu.stups.plues.dataeditor.ui.database;
 
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
-
 import de.hhu.stups.plues.data.SqliteStore;
 import de.hhu.stups.plues.data.StoreException;
 import de.hhu.stups.plues.dataeditor.ui.database.events.DbEvent;
@@ -12,10 +9,12 @@ import javafx.beans.property.SimpleObjectProperty;
 import org.reactfx.EventSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import java.io.File;
 
-@Singleton
+@javax.inject.Singleton
+@Component
 public class DbService {
 
   private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -26,7 +25,6 @@ public class DbService {
   /**
    * The database service to load and modify a .sqlite3 database.
    */
-  @Inject
   public DbService() {
     dbEventSource = new EventSource<>();
     dbEventSource.subscribe(this::handleDbEvent);

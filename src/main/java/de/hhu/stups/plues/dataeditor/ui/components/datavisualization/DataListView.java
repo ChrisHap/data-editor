@@ -1,7 +1,5 @@
 package de.hhu.stups.plues.dataeditor.ui.components.datavisualization;
 
-import com.google.inject.Inject;
-
 import de.hhu.stups.plues.dataeditor.ui.database.DataService;
 import de.hhu.stups.plues.dataeditor.ui.entities.EntityType;
 import de.hhu.stups.plues.dataeditor.ui.entities.EntityWrapper;
@@ -19,10 +17,13 @@ import javafx.scene.layout.GridPane;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
 import org.controlsfx.control.textfield.CustomTextField;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.net.URL;
 import java.util.ResourceBundle;
 
+@Component
 public class DataListView extends GridPane implements Initializable {
 
   private final DataService dataService;
@@ -43,7 +44,7 @@ public class DataListView extends GridPane implements Initializable {
   /**
    * Initialize {@link DataService} and {@link DataContextMenu}.
    */
-  @Inject
+  @Autowired
   public DataListView(final Inflater inflater,
                       final DataService dataService,
                       final DataContextMenu dataContextMenu) {

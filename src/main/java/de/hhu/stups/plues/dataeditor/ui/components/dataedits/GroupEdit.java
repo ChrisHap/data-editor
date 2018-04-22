@@ -1,8 +1,5 @@
 package de.hhu.stups.plues.dataeditor.ui.components.dataedits;
 
-import com.google.inject.Inject;
-import com.google.inject.assistedinject.Assisted;
-
 import de.hhu.stups.plues.dataeditor.ui.components.LabeledTextField;
 import de.hhu.stups.plues.dataeditor.ui.database.DataService;
 import de.hhu.stups.plues.dataeditor.ui.database.events.DataChangeEvent;
@@ -12,7 +9,6 @@ import de.hhu.stups.plues.dataeditor.ui.entities.SessionWrapper;
 import de.hhu.stups.plues.dataeditor.ui.layout.Inflater;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -52,10 +48,9 @@ public class GroupEdit extends GridPane implements Initializable {
   /**
    * Initialize group edit.
    */
-  @Inject
   public GroupEdit(final Inflater inflater,
                    final DataService dataService,
-                   @Assisted final GroupWrapper groupWrapper) {
+                   final GroupWrapper groupWrapper) {
     this.groupWrapper = groupWrapper;
     this.dataService = dataService;
     dataChangedProperty = new SimpleBooleanProperty(false);

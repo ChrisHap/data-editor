@@ -1,7 +1,5 @@
 package de.hhu.stups.plues.dataeditor.ui.controller;
 
-import com.google.inject.Inject;
-
 import de.hhu.stups.plues.dataeditor.ui.components.DataEditView;
 import de.hhu.stups.plues.dataeditor.ui.components.SideBar;
 import de.hhu.stups.plues.dataeditor.ui.database.DbService;
@@ -22,10 +20,13 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 import org.fxmisc.easybind.EasyBind;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 
 import java.net.URL;
 import java.util.ResourceBundle;
 
+@Controller
 public class DataEditor extends VBox implements Initializable {
 
   private final DbService dbService;
@@ -49,12 +50,13 @@ public class DataEditor extends VBox implements Initializable {
   @SuppressWarnings("unused")
   private Button btToggleDivider;
 
-  @Inject
+  @Autowired
   public DataEditor(final Inflater inflater,
                     final DbService dbService) {
     this.dbService = dbService;
     inflater.inflate("controller/data_editor", this, this, "main");
   }
+
 
   @Override
   public void initialize(final URL location, final ResourceBundle resources) {

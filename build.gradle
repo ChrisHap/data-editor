@@ -48,6 +48,7 @@ repositories {
 }
 
 dependencies {
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: '2.0.1.RELEASE'
     compile 'com.google.code.findbugs:annotations:3.0.1u2'
     compile 'de.jensd:fontawesomefx-fontawesome:4.7.0-3'
     compile group: 'org.fxmisc.easybind', name: 'easybind', version: '1.0.3'

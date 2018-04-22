@@ -1,7 +1,5 @@
 package de.hhu.stups.plues.dataeditor.ui.components;
 
-import com.google.inject.Inject;
-
 import de.hhu.stups.plues.dataeditor.ui.components.datavisualization.DataListView;
 import de.hhu.stups.plues.dataeditor.ui.components.datavisualization.DataTreeView;
 import de.hhu.stups.plues.dataeditor.ui.components.datavisualization.VisualizationType;
@@ -14,10 +12,13 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
 import org.fxmisc.easybind.EasyBind;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.net.URL;
 import java.util.ResourceBundle;
 
+@Component
 public class SideBar extends VBox implements Initializable {
 
   private final BooleanProperty showSideBarProperty;
@@ -33,8 +34,8 @@ public class SideBar extends VBox implements Initializable {
   @SuppressWarnings("unused")
   private DataListView dataListView;
 
-  @Inject
-  public SideBar(final Inflater inflater) {
+  @Autowired
+  public SideBar(final Inflater inflater, DataListView dataListView, DataTreeView dataTreeView) {
     showSideBarProperty = new SimpleBooleanProperty(true);
     inflater.inflate("components/side_bar", this, this, "side_bar");
   }

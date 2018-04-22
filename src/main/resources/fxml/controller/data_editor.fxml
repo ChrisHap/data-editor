@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import de.hhu.stups.plues.dataeditor.ui.components.LabeledTextField?>
 <?import de.hhu.stups.plues.dataeditor.ui.components.DataEditView?>
 <?import de.hhu.stups.plues.dataeditor.ui.components.MainMenu?>
 <?import de.hhu.stups.plues.dataeditor.ui.components.SideBar?>

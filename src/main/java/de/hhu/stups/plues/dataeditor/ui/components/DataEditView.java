@@ -1,10 +1,8 @@
 package de.hhu.stups.plues.dataeditor.ui.components;
 
-import com.google.inject.Inject;
-
 import de.hhu.stups.plues.dataeditor.ui.components.dataedits.AbstractUnitEdit;
 import de.hhu.stups.plues.dataeditor.ui.components.dataedits.CourseEdit;
-import de.hhu.stups.plues.dataeditor.ui.components.dataedits.EditFactoryProvider;
+import de.hhu.stups.plues.dataeditor.ui.components.dataedits.EditViewProvider;
 import de.hhu.stups.plues.dataeditor.ui.components.dataedits.LevelEdit;
 import de.hhu.stups.plues.dataeditor.ui.components.dataedits.ModuleEdit;
 import de.hhu.stups.plues.dataeditor.ui.components.dataedits.UnitEdit;
@@ -25,29 +23,32 @@ import de.hhu.stups.plues.dataeditor.ui.layout.Inflater;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.net.URL;
 import java.util.ResourceBundle;
 
+@Component
 public class DataEditView extends TabPane implements Initializable {
 
   private final DataService dataService;
   private final DbService dbService;
-  private final EditFactoryProvider editFactoryProvider;
+  private final EditViewProvider editViewProvider;
 
   private ResourceBundle resources;
 
   /**
    * Inject the {@link DataService}.
    */
-  @Inject
+  @Autowired
   public DataEditView(final Inflater inflater,
                       final DataService dataService,
                       final DbService dbService,
-                      final EditFactoryProvider editFactoryProvider) {
+                      final EditViewProvider editViewProvider) {
     this.dataService = dataService;
     this.dbService = dbService;
-    this.editFactoryProvider = editFactoryProvider;
+    this.editViewProvider = editViewProvider;
     inflater.inflate("components/data_edit_view", this, this, "data_edit_view");
   }
 
@@ -77,31 +78,31 @@ public class DataEditView extends TabPane implements Initializable {
     switch (entityWrapper.getEntityType()) {
       case COURSE:
         tab.setText(resources.getString("course"));
-        tab.setContent(editFactoryProvider.getCourseEditFactory().create(null));
+        tab.setContent(editViewProvider.getCourseEditView(null));
         break;
       case LEVEL:
         tab.setText(resources.getString("level"));
-        tab.setContent(editFactoryProvider.getLevelEditFactory().create(null));
+        tab.setContent(editViewProvider.getLevelEditView(null));
         break;
       case MODULE:
         tab.setText(resources.getString("module"));
-        tab.setContent(editFactoryProvider.getModuleEditFactory().create(null));
+        tab.setContent(editViewProvider.getModuleEditView(null));
         break;
       case ABSTRACT_UNIT:
         tab.setText(resources.getString("abstract_unit"));
-        tab.setContent(editFactoryProvider.getAbstractUnitEditFactory().create(null));
+        tab.setContent(editViewProvider.getAbstractUnitEditView(null));
         break;
       case UNIT:
         tab.setText(resources.getString("unit"));
-        tab.setContent(editFactoryProvider.getUnitEditFactory().create(null));
+        tab.setContent(editViewProvider.getUnitEditView(null));
         break;
       case GROUP:
         tab.setText(resources.getString("group"));
-        tab.setContent(editFactoryProvider.getGroupEditFactory().create(null));
+        tab.setContent(editViewProvider.getGroupEditView(null));
         break;
       case SESSION:
         tab.setText(resources.getString("session"));
-        tab.setContent(editFactoryProvider.getSessionEditFactory().create(null));
+        tab.setContent(editViewProvider.getSessionEditView(null));
         break;
       default:
         break;
@@ -115,43 +116,41 @@ public class DataEditView extends TabPane implements Initializable {
     switch (entityWrapper.getEntityType()) {
       case COURSE:
         tab.setText(resources.getString("course"));
-        final CourseEdit courseEdit = editFactoryProvider.getCourseEditFactory()
-            .create((CourseWrapper) entityWrapper);
+        final CourseEdit courseEdit =
+                editViewProvider.getCourseEditView((CourseWrapper) entityWrapper);
         tab.setContent(courseEdit);
         break;
       case LEVEL:
         tab.setText(resources.getString("level"));
-        final LevelEdit levelEdit = editFactoryProvider.getLevelEditFactory()
-            .create((LevelWrapper) entityWrapper);
+        final LevelEdit levelEdit =
+                editViewProvider.getLevelEditView((LevelWrapper) entityWrapper);
         tab.setContent(levelEdit);
         break;
       case MODULE:
         tab.setText(resources.getString("module"));
-        final ModuleEdit moduleEdit = editFactoryProvider.getModuleEditFactory()
-            .create((ModuleWrapper) entityWrapper);
+        final ModuleEdit moduleEdit =
+                editViewProvider.getModuleEditView((ModuleWrapper) entityWrapper);
         tab.setContent(moduleEdit);
         break;
       case ABSTRACT_UNIT:
         tab.setText(resources.getString("abstract_unit"));
-        final AbstractUnitEdit abstractUnitEdit = editFactoryProvider.getAbstractUnitEditFactory()
-            .create((AbstractUnitWrapper) entityWrapper);
+        final AbstractUnitEdit abstractUnitEdit =
+                editViewProvider.getAbstractUnitEditView((AbstractUnitWrapper) entityWrapper);
         tab.setContent(abstractUnitEdit);
         break;
       case UNIT:
         tab.setText(resources.getString("unit"));
-        final UnitEdit unitEdit = editFactoryProvider.getUnitEditFactory()
-            .create((UnitWrapper) entityWrapper);
+        final UnitEdit unitEdit =
+                editViewProvider.getUnitEditView((UnitWrapper) entityWrapper);
         tab.setContent(unitEdit);
         break;
       case GROUP:
         tab.setText(resources.getString("group"));
-        tab.setContent(editFactoryProvider.getGroupEditFactory()
-            .create((GroupWrapper) entityWrapper));
+        tab.setContent(editViewProvider.getGroupEditView((GroupWrapper) entityWrapper));
         break;
       case SESSION:
         tab.setText(resources.getString("session"));
-        tab.setContent(editFactoryProvider.getSessionEditFactory()
-            .create((SessionWrapper) entityWrapper));
+        tab.setContent(editViewProvider.getSessionEditView((SessionWrapper) entityWrapper));
         break;
       default:
         break;

@@ -1,9 +1,5 @@
 package de.hhu.stups.plues.dataeditor.ui.components.datavisualization;
 
-import com.google.inject.Inject;
-
-import com.google.inject.Singleton;
-
 import de.hhu.stups.plues.data.entities.AbstractUnit;
 import de.hhu.stups.plues.data.entities.Course;
 import de.hhu.stups.plues.data.entities.Level;
@@ -28,6 +24,8 @@ import javafx.scene.control.TreeTableView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.VBox;
 import org.controlsfx.control.textfield.CustomTextField;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.net.URL;
 import java.util.Map;
@@ -35,7 +33,7 @@ import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@Singleton
+@Component
 public class DataTreeView extends VBox implements Initializable {
 
   private final DataService dataService;
@@ -58,7 +56,7 @@ public class DataTreeView extends VBox implements Initializable {
   /**
    * Initialize the {@link DataService} and context menu provider.
    */
-  @Inject
+  @Autowired
   public DataTreeView(final Inflater inflater,
                       final DataService dataService,
                       final DataContextMenu dataContextMenu) {

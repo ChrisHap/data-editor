@@ -1,7 +1,5 @@
 package de.hhu.stups.plues.dataeditor.ui.components;
 
-import com.google.inject.Inject;
-
 import de.hhu.stups.plues.dataeditor.ui.layout.Inflater;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
@@ -12,15 +10,19 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import java.net.URL;
 import java.util.ResourceBundle;
-
 
 /**
  * A {@link VBox} containing a {@link Label} and a {@link TextField}. The input text is exposed by
  * {@link #textProperty()}.
  */
+@Component
+@Scope("prototype")
 public class LabeledTextField extends VBox implements Initializable {
 
   private StringProperty labelTextProperty;
@@ -32,7 +34,7 @@ public class LabeledTextField extends VBox implements Initializable {
   @SuppressWarnings("unused")
   private TextField textField;
 
-  @Inject
+  @Autowired
   public LabeledTextField(final Inflater inflater) {
     labelTextProperty = new SimpleStringProperty();
     inflater.inflate("components/labeled_text_field", this, this);
@@ -40,7 +42,9 @@ public class LabeledTextField extends VBox implements Initializable {
 
   @Override
   public void initialize(final URL location, final ResourceBundle resources) {
-    label.textProperty().bind(labelTextProperty);
+    if (label != null) {
+      label.textProperty().bind(labelTextProperty);
+    }
   }
 
   public void setLabelText(String labelText) {
