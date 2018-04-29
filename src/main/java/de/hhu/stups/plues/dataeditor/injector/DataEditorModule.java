@@ -16,31 +16,14 @@ public class DataEditorModule {
   private final ConfigurableApplicationContext context;
   private final Locale locale = new Locale("en");
   private final ResourceBundle bundle = ResourceBundle.getBundle("lang.main", locale);
+  private static final boolean IS_MAC = System.getProperty("os.name", "")
+          .toLowerCase().contains("mac");
 
   @Autowired
   public DataEditorModule(ConfigurableApplicationContext context) {
     this.context = context;
   }
 
-  private static final boolean IS_MAC = System.getProperty("os.name", "")
-      .toLowerCase().contains("mac");
-
-  /**
-   * Following the given Code example
-   * //    if (IS_MAC) {
-   * //      bind(MenuToolkit.class).toInstance(MenuToolkit.toolkit(locale));
-   * //    } else {
-   * //      bind(MenuToolkit.class).toProvider(Providers.of(null));
-   * //    }
-   * @return the requested MenuToolkit
-   */
-  @Bean
-  public MenuToolkit getMenuToolkit() {
-    if (IS_MAC) {
-      return MenuToolkit.toolkit(locale);
-    }
-    return null;
-  }
 
   @Bean
   public Locale getLocale() {

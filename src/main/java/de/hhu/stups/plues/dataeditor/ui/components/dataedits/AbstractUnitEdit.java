@@ -62,7 +62,7 @@ public class AbstractUnitEdit extends GridPane implements Initializable {
   /**
    * Initialize abstract unit edit.
    */
-  public AbstractUnitEdit(final Inflater inflater,
+  AbstractUnitEdit(final Inflater inflater,
                           final DataService dataService,
                           final AbstractUnitWrapper abstractUnitWrapper) {
     this.dataService = dataService;

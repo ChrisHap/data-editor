@@ -48,7 +48,7 @@ public class GroupEdit extends GridPane implements Initializable {
   /**
    * Initialize group edit.
    */
-  public GroupEdit(final Inflater inflater,
+  GroupEdit(final Inflater inflater,
                    final DataService dataService,
                    final GroupWrapper groupWrapper) {
     this.groupWrapper = groupWrapper;

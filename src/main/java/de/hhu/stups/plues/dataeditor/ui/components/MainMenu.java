@@ -105,7 +105,7 @@ public class MainMenu extends MenuBar {
   @FXML
   @SuppressWarnings("unused")
   private void exportDb() {
-    //TODO Discard this method or implement it.
+    //TODO Eventuell später.
   }
 
   /**

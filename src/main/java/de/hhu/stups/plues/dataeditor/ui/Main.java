@@ -19,28 +19,18 @@ public class Main extends Application {
   private ConfigurableApplicationContext springContext;
   private DataEditor root;
 
-  /**
-   * Die main Methode ist der Einstiegspunkt des Programms und startet die Anwendung.
-   * @param args Die übergebenen Kommandozeilenargumente.
-   */
   public static void main(final String... args) {
     launch(args);
   }
 
-  /**
-   * Die Methode initialisiert die Spring Komponente der Anwendung.
-   * Sie überschreibt die Methode der Oberklasse Application.
-   * Sie wird automatisch vor der Methode start aufgerufen.
-   * @throws Exception wird von der Oberklasse benötigt.
-   */
   @Override
-  public void init() throws Exception {
+  public void init() {
     springContext = SpringApplication.run(Main.class);
   }
 
 
   @Override
-  public void start(final Stage stage) throws Exception {
+  public void start(final Stage stage) {
     root = springContext.getBean(DataEditor.class);
     final Scene mainScene = new Scene(root, 1024, 768);
     root.getStylesheets().add("styles/main.css");
@@ -59,6 +49,7 @@ public class Main extends Application {
     Platform.exit();
   }
 
+  //TODO später vielleicht anders erhalten
   @Bean
   public ConfigurableApplicationContext getSpringContext() {
     return springContext;

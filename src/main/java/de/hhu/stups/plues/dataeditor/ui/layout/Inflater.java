@@ -18,10 +18,6 @@ import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-/**
- * Inflates a layout from a filename.
- */
-
 @Component
 @Scope("prototype")
 public class Inflater {

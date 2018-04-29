@@ -52,7 +52,7 @@ public class SessionEdit extends GridPane implements Initializable {
   /**
    * Initialize session edit.
    */
-  public SessionEdit(final Inflater inflater,
+  SessionEdit(final Inflater inflater,
                      final DataService dataService,
                      final SessionWrapper sessionWrapper) {
     this.sessionWrapper = sessionWrapper;

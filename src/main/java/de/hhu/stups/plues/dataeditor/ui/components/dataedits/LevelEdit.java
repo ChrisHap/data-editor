@@ -60,7 +60,7 @@ public class LevelEdit extends GridPane implements Initializable {
   /**
    * Initialize level edit.
    */
-  public LevelEdit(final Inflater inflater,
+  LevelEdit(final Inflater inflater,
                    final DataService dataService,
                    final LevelWrapper levelWrapper) {
     this.dataService = dataService;

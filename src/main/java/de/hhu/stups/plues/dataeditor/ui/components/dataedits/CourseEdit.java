@@ -66,7 +66,7 @@ public class CourseEdit extends GridPane implements Initializable {
   /**
    * Inject the {@link DataService}.
    */
-  public CourseEdit(final Inflater inflater,
+  CourseEdit(final Inflater inflater,
                     final DataService dataService,
                     final CourseWrapper courseWrapper) {
     this.dataService = dataService;
@@ -91,6 +91,8 @@ public class CourseEdit extends GridPane implements Initializable {
    * Update data if the wrapper has changed.
    */
   private void setDataListener() {
+    //TODO Bindings Klasse anschauen
+    //Um z.B. Nullpointer abzufangen
     EasyBind.subscribe(courseWrapper.longNameProperty(), s -> setFullName());
     EasyBind.subscribe(courseWrapper.shortNameProperty(), s -> setShortName());
     EasyBind.subscribe(courseWrapper.creditPointsProperty(), number -> setCreditPoints());

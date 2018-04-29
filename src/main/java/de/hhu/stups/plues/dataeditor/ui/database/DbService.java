@@ -13,7 +13,6 @@ import org.springframework.stereotype.Component;
 
 import java.io.File;
 
-@javax.inject.Singleton
 @Component
 public class DbService {
 

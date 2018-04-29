@@ -21,12 +21,12 @@ import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 import org.fxmisc.easybind.EasyBind;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
+import org.springframework.stereotype.Component;
 
 import java.net.URL;
 import java.util.ResourceBundle;
 
-@Controller
+@Component
 public class DataEditor extends VBox implements Initializable {
 
   private final DbService dbService;

@@ -50,7 +50,7 @@ public class UnitEdit extends GridPane implements Initializable {
   /**
    * Initialize unit edit.
    */
-  public UnitEdit(final Inflater inflater,
+  UnitEdit(final Inflater inflater,
                   final DataService dataService,
                   final UnitWrapper unitWrapper) {
     this.dataService = dataService;

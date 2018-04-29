@@ -54,7 +54,7 @@ public class ModuleEdit extends GridPane implements Initializable {
   /**
    * Initialize module edit.
    */
-  public ModuleEdit(final Inflater inflater,
+  ModuleEdit(final Inflater inflater,
                     final DataService dataService,
                     final ModuleWrapper moduleWrapper) {
     this.dataService = dataService;
