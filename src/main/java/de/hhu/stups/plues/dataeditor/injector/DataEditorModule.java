@@ -1,8 +1,8 @@
 package de.hhu.stups.plues.dataeditor.injector;
 
-import de.codecentric.centerdevice.MenuToolkit;
 import javafx.fxml.FXMLLoader;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,14 +10,13 @@ import org.springframework.context.annotation.Scope;
 
 import java.util.Locale;
 import java.util.ResourceBundle;
+import javax.sql.DataSource;
 
 @Configuration
 public class DataEditorModule {
   private final ConfigurableApplicationContext context;
   private final Locale locale = new Locale("en");
   private final ResourceBundle bundle = ResourceBundle.getBundle("lang.main", locale);
-  private static final boolean IS_MAC = System.getProperty("os.name", "")
-          .toLowerCase().contains("mac");
 
   @Autowired
   public DataEditorModule(ConfigurableApplicationContext context) {
@@ -48,6 +47,19 @@ public class DataEditorModule {
     fxmlLoader.setControllerFactory(context::getBean);
     fxmlLoader.setResources(bundle);
     return fxmlLoader;
+  }
+
+  /**
+   * Provide the DataSource.
+   */
+  @Bean
+  public DataSource dataSource() {
+    //TODO dynamisch umsetzen
+    DataSourceBuilder dataSourceBuilder = DataSourceBuilder.create();
+    dataSourceBuilder.type(org.sqlite.SQLiteDataSource.class);
+    dataSourceBuilder.driverClassName("org.sqlite.JDBC");
+    dataSourceBuilder.url("jdbc:sqlite:cs.sqlite3");
+    return dataSourceBuilder.build();
   }
 
 }
