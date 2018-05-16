@@ -1,6 +1,5 @@
 package de.hhu.stups.plues.dataeditor.ui.entities;
 
-import de.hhu.stups.plues.data.entities.Course;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SetProperty;
@@ -12,20 +11,38 @@ import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableSet;
 
+import javax.persistence.*;
+
+@Entity
+@Access(AccessType.PROPERTY)
+@Table(name="courses")
 public class CourseWrapper implements EntityWrapper {
 
-  private final IntegerProperty idProperty;
-  private final StringProperty keyProperty;
-  private final IntegerProperty poProperty;
-  private final IntegerProperty creditPointsProperty;
-  private final StringProperty shortNameProperty;
-  private final StringProperty longNameProperty;
-  private final ObjectProperty<CourseDegree> degreeProperty;
-  private final ObjectProperty<CourseKzfa> kzfaProperty;
-  private final SetProperty<CourseWrapper> majorCourseWrapperProperty;
-  private final SetProperty<CourseWrapper> minorCourseWrapperProperty;
-  private final ObjectProperty<Course> courseProperty;
+  private IntegerProperty idProperty;
+  private StringProperty keyProperty;
+  private IntegerProperty poProperty;
+  private IntegerProperty creditPointsProperty;
+  private StringProperty shortNameProperty;
+  private StringProperty longNameProperty;
+  private ObjectProperty<CourseDegree> degreeProperty;
+  private ObjectProperty<CourseKzfa> kzfaProperty;
+  private SetProperty<CourseWrapper> majorCourseWrapperProperty;
+  private SetProperty<CourseWrapper> minorCourseWrapperProperty;
+  private ObjectProperty<Course> courseProperty;
 
+  protected CourseWrapper(){
+    keyProperty = new SimpleStringProperty();
+    poProperty = new SimpleIntegerProperty();
+    creditPointsProperty = new SimpleIntegerProperty();
+    shortNameProperty = new SimpleStringProperty();
+    longNameProperty = new SimpleStringProperty();
+    degreeProperty = new SimpleObjectProperty<>();
+    kzfaProperty = new SimpleObjectProperty<>();
+    courseProperty = new SimpleObjectProperty<>();
+    majorCourseWrapperProperty = new SimpleSetProperty<>(FXCollections.observableSet());
+    minorCourseWrapperProperty = new SimpleSetProperty<>(FXCollections.observableSet());
+    idProperty = new SimpleIntegerProperty();
+  }
   /**
    * Initialize the property bindings according to the given {@link Course}.
    */
@@ -44,6 +61,9 @@ public class CourseWrapper implements EntityWrapper {
     idProperty = new SimpleIntegerProperty(course.getId());
   }
 
+  @Id
+  @Column(name = "id")
+  @GeneratedValue(strategy = GenerationType.AUTO)
   public int getId() {
     return idProperty.get();
   }
@@ -56,6 +76,7 @@ public class CourseWrapper implements EntityWrapper {
     return idProperty;
   }
 
+  @Column(name = "key")
   public String getKey() {
     return keyProperty.get();
   }
@@ -68,6 +89,7 @@ public class CourseWrapper implements EntityWrapper {
     return keyProperty;
   }
 
+  @Column(name = "po")
   public int getPo() {
     return poProperty.get();
   }
@@ -80,6 +102,7 @@ public class CourseWrapper implements EntityWrapper {
     return poProperty;
   }
 
+  @Column(name = "credit_poins")
   public int getCreditPoints() {
     return creditPointsProperty.get();
   }
@@ -92,6 +115,7 @@ public class CourseWrapper implements EntityWrapper {
     return creditPointsProperty;
   }
 
+  @Column(name = "short_name")
   public String getShortName() {
     return shortNameProperty.get();
   }
@@ -104,6 +128,7 @@ public class CourseWrapper implements EntityWrapper {
     return shortNameProperty;
   }
 
+  @Column(name = "name")
   public String getLongName() {
     return longNameProperty.get();
   }
@@ -116,6 +141,7 @@ public class CourseWrapper implements EntityWrapper {
     return longNameProperty;
   }
 
+  @Column(name = "degree")
   public CourseDegree getDegree() {
     return degreeProperty.get();
   }
@@ -128,6 +154,7 @@ public class CourseWrapper implements EntityWrapper {
     return degreeProperty;
   }
 
+  @Column(name = "kzfa")
   public CourseKzfa getKzfa() {
     return kzfaProperty.get();
   }
@@ -152,6 +179,7 @@ public class CourseWrapper implements EntityWrapper {
     return minorCourseWrapperProperty;
   }
 
+  @Transient
   public Course getCourse() {
     return courseProperty.get();
   }
@@ -165,15 +193,22 @@ public class CourseWrapper implements EntityWrapper {
   }
 
   @Override
+  @Transient
   public EntityType getEntityType() {
     return EntityType.COURSE;
   }
 
+  @Transient
   public ObservableSet<CourseWrapper> getMajorCourseWrappers() {
     return majorCourseWrapperProperty.get();
   }
 
+  @Transient
   public ObservableSet<CourseWrapper> getMinorCourseWrappers() {
     return minorCourseWrapperProperty.get();
+  }
+
+  public void setEntityType(){
+
   }
 }

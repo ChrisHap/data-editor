@@ -3,13 +3,8 @@ package de.hhu.stups.plues.dataeditor.ui.database;
 import de.hhu.stups.plues.data.SqliteStore;
 import de.hhu.stups.plues.dataeditor.ui.database.events.DataChangeEvent;
 import de.hhu.stups.plues.dataeditor.ui.database.events.DataChangeType;
-import de.hhu.stups.plues.dataeditor.ui.entities.AbstractUnitWrapper;
-import de.hhu.stups.plues.dataeditor.ui.entities.CourseWrapper;
-import de.hhu.stups.plues.dataeditor.ui.entities.GroupWrapper;
-import de.hhu.stups.plues.dataeditor.ui.entities.LevelWrapper;
-import de.hhu.stups.plues.dataeditor.ui.entities.ModuleWrapper;
-import de.hhu.stups.plues.dataeditor.ui.entities.SessionWrapper;
-import de.hhu.stups.plues.dataeditor.ui.entities.UnitWrapper;
+import de.hhu.stups.plues.dataeditor.ui.entities.*;
+import de.hhu.stups.plues.dataeditor.ui.entities.repositories.*;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.MapProperty;
 import javafx.beans.property.SimpleListProperty;
@@ -19,8 +14,12 @@ import javafx.collections.ObservableMap;
 import org.fxmisc.easybind.EasyBind;
 import org.reactfx.EventSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
+import javax.sql.DataSource;
+import java.util.Iterator;
 import java.util.stream.Collectors;
 
 /**
@@ -39,6 +38,22 @@ public class DataService {
   private final MapProperty<String, UnitWrapper> unitWrappersProperty;
   private final MapProperty<String, SessionWrapper> sessionWrappersProperty;
   private final MapProperty<String, GroupWrapper> groupWrappersProperty;
+  @Autowired
+  private CourseRepository courseRepository;
+  @Autowired
+  private LevelRepository levelRepository;
+  @Autowired
+  private ModuleRepository moduleRepository;
+  @Autowired
+  private AbstractUnitRepository abstractUnitRepository;
+  @Autowired
+  private UnitRepository unitRepository;
+  @Autowired
+  private GroupRepository groupRepository;
+  @Autowired
+  private SessionRepository sessionRepository;
+
+  private ConfigurableApplicationContext context;
 
   /**
    * Initialize the map properties to store and manage the database entity wrapper and subscribe to
@@ -46,7 +61,7 @@ public class DataService {
    */
 
   @Autowired
-  public DataService(final DbService dbService) {
+  public DataService(final DbService dbService, ConfigurableApplicationContext context) {
     courseWrappersProperty = new SimpleMapProperty<>(FXCollections.observableHashMap());
     majorCourseWrappersProperty = new SimpleListProperty<>(FXCollections.observableArrayList());
     minorCourseWrappersProperty = new SimpleListProperty<>(FXCollections.observableArrayList());
@@ -57,6 +72,7 @@ public class DataService {
     sessionWrappersProperty = new SimpleMapProperty<>(FXCollections.observableHashMap());
     groupWrappersProperty = new SimpleMapProperty<>(FXCollections.observableHashMap());
     dataChangeEventSource = new EventSource<>();
+    this.context=context;
 
     EasyBind.subscribe(dbService.storeProperty(), this::loadData);
   }
@@ -66,7 +82,7 @@ public class DataService {
       return;
     }
     clear();
-    initializeEntitiesFlat(sqliteStore);
+    initializeEntitiesFlat();
     initializeEntitiesNested();
     dataChangeEventSource.push(new DataChangeEvent(DataChangeType.RELOAD_DB));
   }
@@ -74,8 +90,8 @@ public class DataService {
   /**
    * Initialize all map properties on the first level.
    */
-  private void initializeEntitiesFlat(final SqliteStore sqliteStore) {
-    sqliteStore.getCourses().forEach(course -> {
+  private void initializeEntitiesFlat() {
+    courseRepository.findAll().forEach(course -> {
       final CourseWrapper courseWrapper = new CourseWrapper(course);
       courseWrappersProperty.put(course.getKey(), courseWrapper);
       if (course.isMajor()) {
@@ -84,27 +100,27 @@ public class DataService {
         minorCourseWrappersProperty.add(courseWrapper);
       }
     });
-    sqliteStore.getLevels().forEach(level ->
+    levelRepository.findAll().forEach(level ->
         levelWrappersProperty.put(level.getId(), new LevelWrapper(level)));
-    sqliteStore.getModules().forEach(module ->
+    moduleRepository.findAll().forEach(module ->
         moduleWrappersProperty.put(module.getKey(), new ModuleWrapper(module)));
-    sqliteStore.getAbstractUnits().forEach(abstractUnit ->
+    abstractUnitRepository.findAll().forEach(abstractUnit ->
         abstractUnitWrappersProperty.put(abstractUnit.getKey(),
             new AbstractUnitWrapper(abstractUnit)));
-    sqliteStore.getUnits().forEach(unit ->
+    unitRepository.findAll().forEach(unit ->
         unitWrappersProperty.put(unit.getKey(), new UnitWrapper(unit)));
-    sqliteStore.getGroups().forEach(group ->
+    groupRepository.findAll().forEach(group ->
         groupWrappersProperty.put(String.valueOf(group.getId()), new GroupWrapper(group)));
-    sqliteStore.getSessions().forEach(session ->
+    sessionRepository.findAll().forEach(session ->
         sessionWrappersProperty.put(String.valueOf(session.getId()), new SessionWrapper(session)));
   }
 
   /**
    * Initialize the nested {@link de.hhu.stups.plues.dataeditor.ui.entities.EntityWrapper} after
-   * calling {@link #initializeEntitiesFlat(SqliteStore)} since we need to use the wrapper defined
+   * calling {@link #initializeEntitiesFlat()} since we need to use the wrapper defined
    * there.
    */
-  private void initializeEntitiesNested() {
+  public void initializeEntitiesNested() {
     abstractUnitWrappersProperty.values().forEach(abstractUnitWrapper -> {
       abstractUnitWrapper.modulesProperty().addAll(
           abstractUnitWrapper.getAbstractUnit().getModules().stream()

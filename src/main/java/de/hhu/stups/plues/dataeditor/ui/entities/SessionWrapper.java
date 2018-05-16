@@ -1,7 +1,5 @@
 package de.hhu.stups.plues.dataeditor.ui.entities;
 
-import de.hhu.stups.plues.data.entities.Group;
-import de.hhu.stups.plues.data.entities.Session;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;

@@ -1,12 +1,12 @@
 package de.hhu.stups.plues.dataeditor.ui.components.dataedits;
 
-import de.hhu.stups.plues.data.entities.AbstractUnit;
-import de.hhu.stups.plues.data.entities.Course;
-import de.hhu.stups.plues.data.entities.Group;
-import de.hhu.stups.plues.data.entities.Level;
-import de.hhu.stups.plues.data.entities.Module;
-import de.hhu.stups.plues.data.entities.Session;
-import de.hhu.stups.plues.data.entities.Unit;
+import de.hhu.stups.plues.dataeditor.ui.entities.AbstractUnit;
+import de.hhu.stups.plues.dataeditor.ui.entities.Course;
+import de.hhu.stups.plues.dataeditor.ui.entities.Group;
+import de.hhu.stups.plues.dataeditor.ui.entities.Level;
+import de.hhu.stups.plues.dataeditor.ui.entities.Module;
+import de.hhu.stups.plues.dataeditor.ui.entities.Session;
+import de.hhu.stups.plues.dataeditor.ui.entities.Unit;
 import de.hhu.stups.plues.dataeditor.ui.database.DataService;
 import de.hhu.stups.plues.dataeditor.ui.entities.AbstractUnitWrapper;
 import de.hhu.stups.plues.dataeditor.ui.entities.CourseWrapper;

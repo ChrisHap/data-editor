@@ -61,5 +61,4 @@ public class DataEditorModule {
     dataSourceBuilder.url("jdbc:sqlite:cs.sqlite3");
     return dataSourceBuilder.build();
   }
-
 }
