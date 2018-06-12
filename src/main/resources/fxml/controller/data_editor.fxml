@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import de.hhu.stups.plues.dataeditor.ui.components.LabeledTextField?>
 <?import de.hhu.stups.plues.dataeditor.ui.components.DataEditView?>
 <?import de.hhu.stups.plues.dataeditor.ui.components.MainMenu?>
 <?import de.hhu.stups.plues.dataeditor.ui.components.SideBar?>
@@ -8,14 +7,16 @@
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import org.controlsfx.control.StatusBar?>
 
 <fx:root type="VBox" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
     <MainMenu/>
-    <SplitPane fx:id="mainSplitPane" dividerPositions="0.25" maxWidth="Infinity" maxHeight="Infinity">
+    <SplitPane fx:id="mainSplitPane" dividerPositions="0.25" maxWidth="Infinity">
         <SideBar fx:id="sideBar"/>
         <AnchorPane fx:id="contentAnchorPane" minWidth="0" maxWidth="Infinity">
             <DataEditView fx:id="dataEditView"/>
             <Button fx:id="btToggleDivider" onAction="#toggleDivider" AnchorPane.leftAnchor="0.0"/>
         </AnchorPane>
     </SplitPane>
+    <StatusBar fx:id="statusBar" minHeight="50"/>
 </fx:root>

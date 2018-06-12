@@ -16,10 +16,8 @@ import org.reactfx.EventSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.DataSource;
-import java.util.Iterator;
 import java.util.stream.Collectors;
 
 /**
@@ -74,11 +72,21 @@ public class DataService {
     dataChangeEventSource = new EventSource<>();
     this.context=context;
 
-    EasyBind.subscribe(dbService.storeProperty(), this::loadData);
+    EasyBind.subscribe(dbService.dataSourceProperty(), this::loadData);
+    dataChangeEventSource.subscribe(this::persistData);
   }
 
-  private void loadData(final SqliteStore sqliteStore) {
-    if (sqliteStore == null) {
+  private void persistData(DataChangeEvent dataChangeEvent){
+    if(!dataChangeEvent.getDataChangeType().storeEntity()){
+      return;
+    }
+    if(dataChangeEvent.getChangedEntity().getEntityType()==EntityType.COURSE){
+      courseRepository.save(((CourseWrapper)dataChangeEvent.getChangedEntity()).getCourse());
+    }
+  }
+
+  private void loadData(final DataSource dataSource) {
+    if (dataSource == null) {
       return;
     }
     clear();

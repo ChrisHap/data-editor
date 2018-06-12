@@ -1,7 +1,6 @@
 package de.hhu.stups.plues.dataeditor.ui;
 
 import de.hhu.stups.plues.dataeditor.ui.controller.DataEditor;
-import de.hhu.stups.plues.dataeditor.ui.entities.repositories.CourseRepository;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Scene;
@@ -40,11 +39,6 @@ public class Main extends Application {
     stage.setOnCloseRequest(e -> Platform.exit());
 
     stage.show();
-    CourseRepository cr = springContext.getBean(CourseRepository.class);
-    cr.findAll().forEach(e->{
-      System.out.println(e.toString());
-      e.getLevels().size();
-    });
   }
 
   @Override

@@ -43,6 +43,7 @@ public class SideBar extends VBox implements Initializable {
   @Override
   public void initialize(final URL location, final ResourceBundle resources) {
     this.resources = resources;
+    dataListView.maxHeightProperty().bind(dataTreeView.heightProperty());
     getChildren().remove(dataListView);
     initializeComboBox();
     dataTreeView.prefWidthProperty().bind(widthProperty());

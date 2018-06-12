@@ -14,11 +14,14 @@ import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.SplitPane;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
+import org.controlsfx.control.StatusBar;
 import org.fxmisc.easybind.EasyBind;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -33,6 +36,7 @@ public class DataEditor extends VBox implements Initializable {
   private double lastDividerPosition;
 
   private SplitPane.Divider splitPaneDivider;
+
 
   @FXML
   @SuppressWarnings("unused")
@@ -50,6 +54,10 @@ public class DataEditor extends VBox implements Initializable {
   @SuppressWarnings("unused")
   private Button btToggleDivider;
 
+  @FXML
+  @SuppressWarnings("unused")
+  private StatusBar statusBar;
+
   @Autowired
   public DataEditor(final Inflater inflater,
                     final DbService dbService) {
@@ -63,7 +71,11 @@ public class DataEditor extends VBox implements Initializable {
     initializeSplitPane();
     dataEditView.prefWidthProperty().bind(contentAnchorPane.widthProperty()
         .subtract(btToggleDivider.widthProperty()));
-    dataEditView.prefHeightProperty().bind(heightProperty());
+    //TODO fix this
+    dataEditView.prefHeightProperty().bind(heightProperty().subtract(statusBar.heightProperty().add(100)));
+    statusBar.setProgress(.8);
+    statusBar.setText("HALLO");
+    statusBar.setVisible(true);
   }
 
   private void initializeSplitPane() {

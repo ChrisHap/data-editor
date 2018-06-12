@@ -14,6 +14,7 @@ import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
 import org.controlsfx.control.textfield.CustomTextField;
@@ -24,7 +25,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 @Component
-public class DataListView extends GridPane implements Initializable {
+public class DataListView extends VBox implements Initializable {
 
   private final DataService dataService;
   private final DataContextMenu dataContextMenu;
@@ -61,6 +62,8 @@ public class DataListView extends GridPane implements Initializable {
     txtQuery.setLeft(FontAwesomeIconFactory.get().createIcon(FontAwesomeIcon.SEARCH, "12"));
     txtQuery.prefWidthProperty().bind(widthProperty());
     listView.prefWidthProperty().bind(widthProperty());
+    listView.prefHeightProperty().bind(heightProperty().subtract(
+          cbEntityType.heightProperty()).subtract(txtQuery.heightProperty()));
     dataService.dataChangeEventSource().subscribe(dataChangeEvent -> {
       if (dataChangeEvent.getDataChangeType().reloadDb()) {
         loadData(cbEntityType.getSelectionModel().getSelectedItem());

@@ -12,7 +12,6 @@ import javax.persistence.*;
 @SuppressWarnings("unused")
 @Entity
 @Table(name = "courses")
-@Immutable
 public class Course extends ModelEntity implements Serializable {
   private static final long serialVersionUID = 935565328177496460L;
 
