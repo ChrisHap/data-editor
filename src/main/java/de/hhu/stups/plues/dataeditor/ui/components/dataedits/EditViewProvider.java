@@ -1,19 +1,19 @@
 package de.hhu.stups.plues.dataeditor.ui.components.dataedits;
 
-import de.hhu.stups.plues.dataeditor.ui.entities.AbstractUnit;
-import de.hhu.stups.plues.dataeditor.ui.entities.Course;
-import de.hhu.stups.plues.dataeditor.ui.entities.Group;
-import de.hhu.stups.plues.dataeditor.ui.entities.Level;
-import de.hhu.stups.plues.dataeditor.ui.entities.Module;
-import de.hhu.stups.plues.dataeditor.ui.entities.Session;
-import de.hhu.stups.plues.dataeditor.ui.entities.Unit;
 import de.hhu.stups.plues.dataeditor.ui.database.DataService;
+import de.hhu.stups.plues.dataeditor.ui.entities.AbstractUnit;
 import de.hhu.stups.plues.dataeditor.ui.entities.AbstractUnitWrapper;
+import de.hhu.stups.plues.dataeditor.ui.entities.Course;
 import de.hhu.stups.plues.dataeditor.ui.entities.CourseWrapper;
+import de.hhu.stups.plues.dataeditor.ui.entities.Group;
 import de.hhu.stups.plues.dataeditor.ui.entities.GroupWrapper;
+import de.hhu.stups.plues.dataeditor.ui.entities.Level;
 import de.hhu.stups.plues.dataeditor.ui.entities.LevelWrapper;
+import de.hhu.stups.plues.dataeditor.ui.entities.Module;
 import de.hhu.stups.plues.dataeditor.ui.entities.ModuleWrapper;
+import de.hhu.stups.plues.dataeditor.ui.entities.Session;
 import de.hhu.stups.plues.dataeditor.ui.entities.SessionWrapper;
+import de.hhu.stups.plues.dataeditor.ui.entities.Unit;
 import de.hhu.stups.plues.dataeditor.ui.entities.UnitWrapper;
 import de.hhu.stups.plues.dataeditor.ui.layout.Inflater;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,20 +1,13 @@
 package de.hhu.stups.plues.dataeditor.ui.components.datavisualization;
 
-import de.hhu.stups.plues.dataeditor.ui.entities.AbstractUnit;
-import de.hhu.stups.plues.dataeditor.ui.entities.Course;
-import de.hhu.stups.plues.dataeditor.ui.entities.Level;
-import de.hhu.stups.plues.dataeditor.ui.entities.Module;
-import de.hhu.stups.plues.dataeditor.ui.entities.Unit;
 import de.hhu.stups.plues.dataeditor.ui.database.DataService;
 import de.hhu.stups.plues.dataeditor.ui.database.DbService;
 import de.hhu.stups.plues.dataeditor.ui.database.events.DataChangeEvent;
-import de.hhu.stups.plues.dataeditor.ui.entities.CourseWrapper;
-import de.hhu.stups.plues.dataeditor.ui.entities.EntityWrapper;
-import de.hhu.stups.plues.dataeditor.ui.entities.LevelWrapper;
-import de.hhu.stups.plues.dataeditor.ui.entities.SubRootWrapper;
+import de.hhu.stups.plues.dataeditor.ui.entities.*;
 import de.hhu.stups.plues.dataeditor.ui.layout.Inflater;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.utils.FontAwesomeIconFactory;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -24,6 +17,7 @@ import javafx.scene.control.TreeTableView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.VBox;
 import org.controlsfx.control.textfield.CustomTextField;
+import org.fxmisc.easybind.EasyBind;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -90,10 +84,170 @@ public class DataTreeView extends VBox implements Initializable {
         dataContextMenu.show(this, event.getScreenX(), event.getScreenY());
       }
     });
+    EasyBind.subscribe(txtQuery.textProperty(),this::filterDataTree);
+  }
+
+  private void filterDataTree(String filter) {
+    if (filter == null || filter.length() == 0) {
+      treeTableView.setRoot(treeTableRoot);
+      return;
+    }
+    TreeItem<EntityWrapper> newTreeTableRoot = new TreeItem<>();
+    treeTableRoot.getChildren().forEach(treeItem ->
+        addFilteredCourse(filter, (CourseWrapper)treeItem.getValue(), newTreeTableRoot, treeItem));
+    treeTableView.setRoot(newTreeTableRoot);
+  }
+
+  private boolean addFilteredCourse(String filter, CourseWrapper courseWrapper,
+                                    TreeItem parentNode, TreeItem<EntityWrapper> currentNode) {
+    SimpleBooleanProperty childAdded = new SimpleBooleanProperty(false);
+    TreeItem<EntityWrapper> currentParentNode = new TreeItem<>(courseWrapper);
+    currentNode.getChildren().forEach(child -> {
+      if (courseWrapper.getKzfa().equals(CourseKzfa.MAJOR)) {
+        if (child.getValue().getEntityType() == null) {
+          TreeItem<EntityWrapper> minorsSubRoot = new TreeItem<>(
+                new SubRootWrapper(resources.getString("minors")));
+          child.getChildren().forEach(minor ->
+              childAdded.set(addFilteredCourse(filter,
+                      ((CourseWrapper)minor.getValue()), minorsSubRoot, minor)
+                  || childAdded.get()));
+          if (childAdded.get()) {
+            currentParentNode.getChildren().add(minorsSubRoot);
+          }
+        } else {
+          childAdded.set(addFilteredLevel(filter,
+                    ((LevelWrapper)child.getValue()),currentParentNode, child)
+              || childAdded.get());
+        }
+      }
+    });
+    if (childAdded.get()) {
+      parentNode.getChildren().add(currentParentNode);
+      return true;
+    }
+    if (courseWrapper.getLongName().contains(filter)
+          || courseWrapper.getShortName().contains(filter)
+          || courseWrapper.getKey().contains(filter)) {
+      parentNode.getChildren().add(currentParentNode);
+      return true;
+    }
+    return false;
+  }
+
+  private boolean addFilteredLevel(String filter, LevelWrapper levelWrapper,
+                                   TreeItem parentNode, TreeItem<EntityWrapper> currentNode) {
+    SimpleBooleanProperty childAdded = new SimpleBooleanProperty(false);
+    TreeItem<EntityWrapper> currentParentNode = new TreeItem<>(levelWrapper);
+    currentNode.getChildren().forEach(child -> {
+      if (child.getValue().getEntityType() == EntityType.LEVEL) {
+        childAdded.set(addFilteredLevel(filter,
+              ((LevelWrapper) child.getValue()), currentParentNode, child)
+              || childAdded.get());
+      } else {
+        childAdded.set(addFilteredModule(filter,
+              ((ModuleWrapper) child.getValue()), currentParentNode, child)
+              || childAdded.get());
+      }
+    });
+    if (childAdded.get()) {
+      parentNode.getChildren().add(currentParentNode);
+      return true;
+    }
+    if (levelWrapper.getName().contains(filter)) {
+      parentNode.getChildren().add(currentParentNode);
+      return true;
+    }
+    return false;
+  }
+
+  private boolean addFilteredModule(String filter, ModuleWrapper moduleWrapper,
+                                    TreeItem parentNode, TreeItem<EntityWrapper> currentNode) {
+    SimpleBooleanProperty childAdded = new SimpleBooleanProperty(false);
+    TreeItem<EntityWrapper> currentParentNode = new TreeItem<>(moduleWrapper);
+    currentNode.getChildren().forEach(child -> childAdded.set(addFilteredAbstractUnit(filter,
+              ((AbstractUnitWrapper) child.getValue()), currentParentNode, child)
+              || childAdded.get()));
+    if (childAdded.get()) {
+      parentNode.getChildren().add(currentParentNode);
+      return true;
+    }
+    if (moduleWrapper.getKey().contains(filter)
+          || moduleWrapper.getTitle().contains(filter)) {
+      parentNode.getChildren().add(currentParentNode);
+      return true;
+    }
+    return false;
+  }
+
+  private boolean addFilteredAbstractUnit(String filter, AbstractUnitWrapper abstractUnitWrapper,
+                                         TreeItem parentNode, TreeItem<EntityWrapper> currentNode) {
+    SimpleBooleanProperty childAdded = new SimpleBooleanProperty(false);
+    TreeItem<EntityWrapper> currentParentNode = new TreeItem<>(abstractUnitWrapper);
+    currentNode.getChildren().forEach(child -> childAdded.set(addFilteredUnit(filter,
+          ((UnitWrapper) child.getValue()), currentParentNode, child)
+          || childAdded.get()));
+    if (childAdded.get()) {
+      parentNode.getChildren().add(currentParentNode);
+      return true;
+    }
+    if (abstractUnitWrapper.getKey().contains(filter)
+          || abstractUnitWrapper.getTitle().contains(filter)) {
+      parentNode.getChildren().add(currentParentNode);
+      return true;
+    }
+    return false;
+  }
+
+  private boolean addFilteredUnit(String filter, UnitWrapper unitWrapper,
+                                 TreeItem parentNode, TreeItem<EntityWrapper> currentNode) {
+    SimpleBooleanProperty childAdded = new SimpleBooleanProperty(false);
+    TreeItem<EntityWrapper> currentParentNode = new TreeItem<>(unitWrapper);
+    currentNode.getChildren().forEach(child -> childAdded.set(addFilteredGroup(filter,
+          ((GroupWrapper) child.getValue()), currentParentNode, child)
+          || childAdded.get()));
+    if (childAdded.get()) {
+      parentNode.getChildren().add(currentParentNode);
+      return true;
+    }
+    if (unitWrapper.getKey().contains(filter)
+          || unitWrapper.getTitle().contains(filter)) {
+      parentNode.getChildren().add(currentParentNode);
+      return true;
+    }
+    return false;
+  }
+
+  private boolean addFilteredGroup(String filter, GroupWrapper groupWrapper,
+                                   TreeItem parentNode, TreeItem<EntityWrapper> currentNode) {
+    SimpleBooleanProperty childAdded = new SimpleBooleanProperty(false);
+    TreeItem<EntityWrapper> currentParentNode = new TreeItem<>(groupWrapper);
+    currentNode.getChildren().forEach(child -> childAdded.set(addFilteredSession(filter,
+          ((SessionWrapper) child.getValue()), currentParentNode)
+          || childAdded.get()));
+    if (childAdded.get()) {
+      parentNode.getChildren().add(currentParentNode);
+      return true;
+    }
+    if (String.valueOf(groupWrapper.getId()).equals(filter)) {
+      parentNode.getChildren().add(currentParentNode);
+      return true;
+    }
+    return false;
+  }
+
+  private boolean addFilteredSession(String filter, SessionWrapper sessionWrapper,
+                                   TreeItem parentNode) {
+    TreeItem<EntityWrapper> currentParentNode = new TreeItem<>(sessionWrapper);
+
+    if (String.valueOf(sessionWrapper.getId()).equals(filter)) {
+      parentNode.getChildren().add(currentParentNode);
+      return true;
+    }
+    return false;
   }
 
   /**
-   * Load the data in {@link #treeTableView} when {@link DbService#storeProperty} has changed.
+   * Load the data in {@link #treeTableView} when {@link DbService#dataSourceProperty} has changed.
    */
   private void updateDataTree(final DataChangeEvent dataChangeEvent) {
     switch (dataChangeEvent.getDataChangeType()) {

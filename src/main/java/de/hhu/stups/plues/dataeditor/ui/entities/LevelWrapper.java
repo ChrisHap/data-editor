@@ -60,6 +60,10 @@ public class LevelWrapper implements EntityWrapper {
     return nameProperty;
   }
 
+  public String getName() {
+    return nameProperty.get();
+  }
+
   public int getMinCreditsProperty() {
     return minCreditsProperty.get();
   }

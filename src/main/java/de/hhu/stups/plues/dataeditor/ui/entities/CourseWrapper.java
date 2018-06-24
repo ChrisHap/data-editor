@@ -15,7 +15,7 @@ import javax.persistence.*;
 
 @Entity
 @Access(AccessType.PROPERTY)
-@Table(name="courses")
+@Table(name = "courses")
 public class CourseWrapper implements EntityWrapper {
 
   private IntegerProperty idProperty;
@@ -30,7 +30,7 @@ public class CourseWrapper implements EntityWrapper {
   private SetProperty<CourseWrapper> minorCourseWrapperProperty;
   private ObjectProperty<Course> courseProperty;
 
-  protected CourseWrapper(){
+  protected CourseWrapper() {
     keyProperty = new SimpleStringProperty();
     poProperty = new SimpleIntegerProperty();
     creditPointsProperty = new SimpleIntegerProperty();
@@ -46,6 +46,7 @@ public class CourseWrapper implements EntityWrapper {
   /**
    * Initialize the property bindings according to the given {@link Course}.
    */
+
   public CourseWrapper(final Course course) {
     keyProperty = new SimpleStringProperty(course.getKey());
     poProperty = new SimpleIntegerProperty(course.getPo());

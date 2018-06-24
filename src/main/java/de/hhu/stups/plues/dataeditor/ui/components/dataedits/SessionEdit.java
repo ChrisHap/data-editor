@@ -1,10 +1,10 @@
 package de.hhu.stups.plues.dataeditor.ui.components.dataedits;
 
-import de.hhu.stups.plues.dataeditor.ui.entities.Group;
 import de.hhu.stups.plues.dataeditor.ui.components.LabeledTextField;
 import de.hhu.stups.plues.dataeditor.ui.database.DataService;
 import de.hhu.stups.plues.dataeditor.ui.database.events.DataChangeEvent;
 import de.hhu.stups.plues.dataeditor.ui.database.events.DataChangeType;
+import de.hhu.stups.plues.dataeditor.ui.entities.Group;
 import de.hhu.stups.plues.dataeditor.ui.entities.GroupWrapper;
 import de.hhu.stups.plues.dataeditor.ui.entities.SessionWrapper;
 import de.hhu.stups.plues.dataeditor.ui.layout.Inflater;

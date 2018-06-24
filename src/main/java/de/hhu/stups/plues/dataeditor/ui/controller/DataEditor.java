@@ -14,11 +14,9 @@ import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.SplitPane;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 import org.controlsfx.control.StatusBar;
@@ -72,7 +70,8 @@ public class DataEditor extends VBox implements Initializable {
     dataEditView.prefWidthProperty().bind(contentAnchorPane.widthProperty()
         .subtract(btToggleDivider.widthProperty()));
     //TODO fix this
-    dataEditView.prefHeightProperty().bind(heightProperty().subtract(statusBar.heightProperty().add(100)));
+    dataEditView.prefHeightProperty().bind(heightProperty().subtract(
+          statusBar.heightProperty().add(50)));
     statusBar.setProgress(.8);
     statusBar.setText("HALLO");
     statusBar.setVisible(true);

@@ -178,8 +178,9 @@ public class CourseEdit extends GridPane implements Initializable {
     courseWrapper.getCourse().setLongName(txtFullName.textProperty().getValue());
     courseWrapper.getCourse().setShortName(txtShortName.textProperty().getValue());
     courseWrapper.getCourse().setPo(Integer.parseInt(txtPVersion.textProperty().get()));
-    courseWrapper.getCourse().setCreditPoints(Integer.parseInt(txtCreditPoints.textProperty().getValue()));
-    if(rbMajorCourse.isSelected()){
+    courseWrapper.getCourse().setCreditPoints(Integer.parseInt(
+          txtCreditPoints.textProperty().getValue()));
+    if (rbMajorCourse.isSelected()) {
       courseWrapper.getCourse().setKzfa("H");
     } else {
       courseWrapper.getCourse().setKzfa("N");

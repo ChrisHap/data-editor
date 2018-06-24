@@ -3,7 +3,6 @@ package de.hhu.stups.plues.dataeditor.injector;
 import de.hhu.stups.plues.dataeditor.ui.database.DbService;
 import javafx.fxml.FXMLLoader;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,7 +23,7 @@ public class DataEditorModule {
   @Autowired
   public DataEditorModule(ConfigurableApplicationContext context, DbService dbService) {
     this.context = context;
-    this.dbService=dbService;
+    this.dbService = dbService;
   }
 
 
@@ -61,13 +60,4 @@ public class DataEditorModule {
   public DataSource dataSource() {
     return dbService.getDataSource();
   }
-
-//  @Bean
-//  public DataSource getDataSource(){
-//    DataSourceBuilder dataSourceBuilder = DataSourceBuilder.create();
-//    dataSourceBuilder.type(org.sqlite.SQLiteDataSource.class);
-//    dataSourceBuilder.driverClassName("org.sqlite.JDBC");
-//    dataSourceBuilder.url("jdbc:sqlite:cs.sqlite3");
-//    return dataSourceBuilder.build();
-//  }
 }

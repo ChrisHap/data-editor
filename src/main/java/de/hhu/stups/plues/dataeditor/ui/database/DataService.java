@@ -17,8 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
 
-import javax.sql.DataSource;
 import java.util.stream.Collectors;
+import javax.sql.DataSource;
 
 /**
  * A simple data service providing several map properties to manage the database entity wrapper.
@@ -51,8 +51,6 @@ public class DataService {
   @Autowired
   private SessionRepository sessionRepository;
 
-  private ConfigurableApplicationContext context;
-
   /**
    * Initialize the map properties to store and manage the database entity wrapper and subscribe to
    * {@link DbService}.
@@ -70,18 +68,36 @@ public class DataService {
     sessionWrappersProperty = new SimpleMapProperty<>(FXCollections.observableHashMap());
     groupWrappersProperty = new SimpleMapProperty<>(FXCollections.observableHashMap());
     dataChangeEventSource = new EventSource<>();
-    this.context=context;
 
     EasyBind.subscribe(dbService.dataSourceProperty(), this::loadData);
     dataChangeEventSource.subscribe(this::persistData);
   }
 
-  private void persistData(DataChangeEvent dataChangeEvent){
-    if(!dataChangeEvent.getDataChangeType().storeEntity()){
+  private void persistData(DataChangeEvent dataChangeEvent) {
+    if (!dataChangeEvent.getDataChangeType().storeEntity()) {
       return;
     }
-    if(dataChangeEvent.getChangedEntity().getEntityType()==EntityType.COURSE){
+    if (dataChangeEvent.getChangedEntity().getEntityType() == EntityType.COURSE) {
       courseRepository.save(((CourseWrapper)dataChangeEvent.getChangedEntity()).getCourse());
+    }
+    if (dataChangeEvent.getChangedEntity().getEntityType() == EntityType.LEVEL) {
+      levelRepository.save(((LevelWrapper)dataChangeEvent.getChangedEntity()).getLevel());
+    }
+    if (dataChangeEvent.getChangedEntity().getEntityType() == EntityType.ABSTRACT_UNIT) {
+      abstractUnitRepository.save(
+            ((AbstractUnitWrapper)dataChangeEvent.getChangedEntity()).getAbstractUnit());
+    }
+    if (dataChangeEvent.getChangedEntity().getEntityType() == EntityType.UNIT) {
+      unitRepository.save(((UnitWrapper)dataChangeEvent.getChangedEntity()).getUnit());
+    }
+    if (dataChangeEvent.getChangedEntity().getEntityType() == EntityType.GROUP) {
+      groupRepository.save(((GroupWrapper)dataChangeEvent.getChangedEntity()).getGroup());
+    }
+    if (dataChangeEvent.getChangedEntity().getEntityType() == EntityType.MODULE) {
+      moduleRepository.save(((ModuleWrapper)dataChangeEvent.getChangedEntity()).getModule());
+    }
+    if (dataChangeEvent.getChangedEntity().getEntityType() == EntityType.SESSION) {
+      sessionRepository.save(((SessionWrapper)dataChangeEvent.getChangedEntity()).getSession());
     }
   }
 
