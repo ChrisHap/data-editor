@@ -127,7 +127,7 @@ public class SessionWrapper implements EntityWrapper {
     return sessionProperty;
   }
 
-  public Session getSession(){
+  public Session getSession() {
     return sessionProperty().get();
   }
 

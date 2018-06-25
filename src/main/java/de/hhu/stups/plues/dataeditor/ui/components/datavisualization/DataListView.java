@@ -7,6 +7,7 @@ import de.hhu.stups.plues.dataeditor.ui.layout.Inflater;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.utils.FontAwesomeIconFactory;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ComboBox;
@@ -17,11 +18,13 @@ import javafx.scene.layout.VBox;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
 import org.controlsfx.control.textfield.CustomTextField;
+import org.fxmisc.easybind.EasyBind;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 @Component
 public class DataListView extends VBox implements Initializable {
@@ -76,6 +79,7 @@ public class DataListView extends VBox implements Initializable {
         dataContextMenu.show(this, event.getScreenX(), event.getScreenY());
       }
     });
+    EasyBind.subscribe(txtQuery.textProperty(),this::loadFilteredData);
   }
 
   private void initializeComboBox() {
@@ -123,6 +127,56 @@ public class DataListView extends VBox implements Initializable {
         break;
     }
   }
+
+  private void loadFilteredData(String filter) {
+    listView.getItems().clear();
+    switch (cbEntityType.getSelectionModel().getSelectedItem()) {
+      case COURSE:
+        listView.setItems((dataService.getCourseWrappers().values().stream().filter(
+            courseWrapper -> courseWrapper.getLongName().contains(filter)
+                    || courseWrapper.getShortName().contains(filter)
+                    || courseWrapper.getKey().contains(filter))).collect(
+                          Collectors.toCollection(FXCollections::observableArrayList)));
+        break;
+      case LEVEL:
+        listView.setItems((dataService.getLevelWrappers().values().stream().filter(
+            levelWrapper -> levelWrapper.getName().contains(filter))).collect(
+            Collectors.toCollection(FXCollections::observableArrayList)));
+        break;
+      case MODULE:
+        listView.setItems((dataService.getModuleWrappers().values().stream().filter(
+            moduleWrapper -> moduleWrapper.getKey().contains(filter)
+                  || moduleWrapper.getTitle().contains(filter))).collect(
+            Collectors.toCollection(FXCollections::observableArrayList)));
+        break;
+      case ABSTRACT_UNIT:
+        listView.setItems((dataService.getAbstractUnitWrappers().values().stream().filter(
+            abstractUnitWrapper -> abstractUnitWrapper.getKey().contains(filter)
+                  || abstractUnitWrapper.getTitle().contains(filter))).collect(
+            Collectors.toCollection(FXCollections::observableArrayList)));
+        break;
+      case UNIT:
+        listView.setItems((dataService.getUnitWrappers().values().stream().filter(
+            unitWrapper -> unitWrapper.getKey().contains(filter)
+                  || unitWrapper.getTitle().contains(filter))).collect(
+            Collectors.toCollection(FXCollections::observableArrayList)));
+        break;
+      case GROUP:
+        listView.setItems((dataService.getGroupWrappers().values().stream().filter(
+            groupWrapper -> String.valueOf(groupWrapper.getId()).equals(filter))).collect(
+            Collectors.toCollection(FXCollections::observableArrayList)));
+        break;
+      case SESSION:
+        listView.setItems((dataService.getSessionWrappers().values().stream().filter(
+            sessionWrapper -> String.valueOf(sessionWrapper.getId()).equals(filter))).collect(
+            Collectors.toCollection(FXCollections::observableArrayList)));
+        break;
+      default:
+        break;
+    }
+  }
+
+
 
   private Callback<ListView<EntityWrapper>, ListCell<EntityWrapper>> getListCellCallback() {
     return new Callback<ListView<EntityWrapper>, ListCell<EntityWrapper>>() {
