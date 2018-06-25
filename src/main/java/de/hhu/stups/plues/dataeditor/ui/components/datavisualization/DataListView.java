@@ -60,7 +60,6 @@ public class DataListView extends VBox implements Initializable {
   public void initialize(final URL location, final ResourceBundle resources) {
     this.resources = resources;
     initializeComboBox();
-    listView.setCellFactory(getListCellCallback());
     txtQuery.setLeft(FontAwesomeIconFactory.get().createIcon(FontAwesomeIcon.SEARCH, "12"));
     txtQuery.prefWidthProperty().bind(widthProperty());
     listView.prefWidthProperty().bind(widthProperty());
@@ -174,26 +173,5 @@ public class DataListView extends VBox implements Initializable {
       default:
         break;
     }
-  }
-
-
-
-  private Callback<ListView<EntityWrapper>, ListCell<EntityWrapper>> getListCellCallback() {
-    return new Callback<ListView<EntityWrapper>, ListCell<EntityWrapper>>() {
-      @Override
-      public ListCell<EntityWrapper> call(ListView<EntityWrapper> listView) {
-        return new ListCell<EntityWrapper>() {
-          @Override
-          protected void updateItem(final EntityWrapper entityWrapper,
-                                    final boolean bool) {
-            super.updateItem(entityWrapper, bool);
-            if (entityWrapper != null) {
-              setText(entityWrapper.toString());
-            }
-          }
-
-        };
-      }
-    };
   }
 }
