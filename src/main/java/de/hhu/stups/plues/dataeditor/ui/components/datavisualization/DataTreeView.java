@@ -22,10 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.net.URL;
-import java.util.Map;
 import java.util.ResourceBundle;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Component
 public class DataTreeView extends VBox implements Initializable {
@@ -273,16 +270,10 @@ public class DataTreeView extends VBox implements Initializable {
   }
 
   private void reloadData() {
-    final Map<String, Set<CourseWrapper>> majorMinorCourses =
-        dataService.courseWrappersProperty().values().stream().collect(Collectors
-            .groupingBy(courseWrapper -> courseWrapper.getCourse().getKzfa(), Collectors.toSet()));
-    majorMinorCourses.get("H").forEach(this::addCourseToTreeView);
-    majorMinorCourses.get("N").forEach(this::addCourseToTreeView);
-
-    /*dataService.courseWrappersProperty().values().stream()
-        .filter(courseWrapper -> courseWrapper.getCourse().isMajor()).forEach(this::addCourseToTreeView);
-    dataService.courseWrappersProperty().values().stream()
-        .filter(courseWrapper -> courseWrapper.getCourse().isMinor()).forEach(this::addCourseToTreeView);*/
+    dataService.courseWrappersProperty().values().stream().filter(
+      courseWrapper -> courseWrapper.getCourse().isMajor()).forEach(this::addCourseToTreeView);
+    dataService.courseWrappersProperty().values().stream().filter(
+      courseWrapper -> courseWrapper.getCourse().isMinor()).forEach(this::addCourseToTreeView);
   }
 
   private void updateSingleEntity(final EntityWrapper changedEntity) {

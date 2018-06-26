@@ -66,6 +66,7 @@ public class LabeledTextField extends VBox implements Initializable {
     return textField.disableProperty();
   }
 
+  @SuppressWarnings("unused")
   public void clear() {
     textField.clear();
   }

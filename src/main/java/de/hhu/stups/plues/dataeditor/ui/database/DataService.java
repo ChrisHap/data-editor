@@ -50,7 +50,12 @@ public class DataService {
    */
 
   @Autowired
-  public DataService(final DbService dbService, ConfigurableApplicationContext context, CourseRepository courseRepository, LevelRepository levelRepository, ModuleRepository moduleRepository, AbstractUnitRepository abstractUnitRepository, UnitRepository unitRepository, GroupRepository groupRepository, SessionRepository sessionRepository) {
+  public DataService(final DbService dbService, ConfigurableApplicationContext context,
+                     CourseRepository courseRepository, LevelRepository levelRepository,
+                     ModuleRepository moduleRepository,
+                     AbstractUnitRepository abstractUnitRepository,
+                     UnitRepository unitRepository, GroupRepository groupRepository,
+                     SessionRepository sessionRepository) {
     courseWrappersProperty = new SimpleMapProperty<>(FXCollections.observableHashMap());
     majorCourseWrappersProperty = new SimpleListProperty<>(FXCollections.observableArrayList());
     minorCourseWrappersProperty = new SimpleListProperty<>(FXCollections.observableArrayList());
@@ -115,7 +120,7 @@ public class DataService {
   /**
    * Initialize all map properties on the first level.
    */
-  public void initializeEntitiesFlat() {
+  private void initializeEntitiesFlat() {
     courseRepository.findAll().forEach(course -> {
       final CourseWrapper courseWrapper = new CourseWrapper(course);
       courseWrappersProperty.put(course.getKey(), courseWrapper);
@@ -145,7 +150,7 @@ public class DataService {
    * calling {@link #initializeEntitiesFlat()} since we need to use the wrapper defined
    * there.
    */
-  public void initializeEntitiesNested() {
+  private void initializeEntitiesNested() {
     abstractUnitWrappersProperty.values().forEach(abstractUnitWrapper -> {
       abstractUnitWrapper.modulesProperty().addAll(
           abstractUnitWrapper.getAbstractUnit().getModules().stream()

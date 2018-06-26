@@ -3,7 +3,6 @@ package de.hhu.stups.plues.dataeditor.ui.database;
 import de.hhu.stups.plues.dataeditor.ui.database.events.DbEvent;
 import de.hhu.stups.plues.dataeditor.ui.database.events.LoadDbEvent;
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.concurrent.Task;
 import org.reactfx.EventSource;
@@ -74,7 +73,6 @@ public class DbService {
             //TODO DataSource ändern vielleich abstract routing datasource
             dataSourceProperty.set(newDataSource);
             dbFileProperty.set(dbFile);
-
             return null;
           }
         };

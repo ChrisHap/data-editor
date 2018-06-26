@@ -91,8 +91,6 @@ public class CourseEdit extends GridPane implements Initializable {
    * Update data if the wrapper has changed.
    */
   private void setDataListener() {
-    //TODO Bindings Klasse anschauen
-    //Um z.B. Nullpointer abzufangen
     EasyBind.subscribe(courseWrapper.longNameProperty(), s -> setFullName());
     EasyBind.subscribe(courseWrapper.shortNameProperty(), s -> setShortName());
     EasyBind.subscribe(courseWrapper.creditPointsProperty(), number -> setCreditPoints());
@@ -211,9 +209,5 @@ public class CourseEdit extends GridPane implements Initializable {
       }
     });
     cbCourseDegree.getSelectionModel().selectFirst();
-  }
-
-  public CourseWrapper getCourseWrapper() {
-    return courseWrapper;
   }
 }

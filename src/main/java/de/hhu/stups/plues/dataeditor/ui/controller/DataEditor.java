@@ -69,12 +69,9 @@ public class DataEditor extends VBox implements Initializable {
     initializeSplitPane();
     dataEditView.prefWidthProperty().bind(contentAnchorPane.widthProperty()
         .subtract(btToggleDivider.widthProperty()));
-    //TODO fix this
     dataEditView.prefHeightProperty().bind(heightProperty().subtract(
           statusBar.heightProperty().add(50)));
-    statusBar.setProgress(.8);
-    statusBar.setText("HALLO");
-    statusBar.setVisible(true);
+    //TODO statusBar Progress an dbService.dbTaskProperty binden
   }
 
   private void initializeSplitPane() {
