@@ -1,6 +1,5 @@
 package de.hhu.stups.plues.dataeditor.ui.database;
 
-import de.hhu.stups.plues.data.SqliteStore;
 import de.hhu.stups.plues.dataeditor.ui.database.events.DataChangeEvent;
 import de.hhu.stups.plues.dataeditor.ui.database.events.DataChangeType;
 import de.hhu.stups.plues.dataeditor.ui.entities.*;
