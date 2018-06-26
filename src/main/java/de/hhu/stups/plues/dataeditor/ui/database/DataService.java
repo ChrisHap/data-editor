@@ -36,20 +36,13 @@ public class DataService {
   private final MapProperty<String, SessionWrapper> sessionWrappersProperty;
   private final MapProperty<String, GroupWrapper> groupWrappersProperty;
 
-  @Autowired
-  private CourseRepository courseRepository;
-  @Autowired
-  private LevelRepository levelRepository;
-  @Autowired
-  private ModuleRepository moduleRepository;
-  @Autowired
-  private AbstractUnitRepository abstractUnitRepository;
-  @Autowired
-  private UnitRepository unitRepository;
-  @Autowired
-  private GroupRepository groupRepository;
-  @Autowired
-  private SessionRepository sessionRepository;
+  private final CourseRepository courseRepository;
+  private final LevelRepository levelRepository;
+  private final ModuleRepository moduleRepository;
+  private final AbstractUnitRepository abstractUnitRepository;
+  private final UnitRepository unitRepository;
+  private final GroupRepository groupRepository;
+  private final SessionRepository sessionRepository;
 
   /**
    * Initialize the map properties to store and manage the database entity wrapper and subscribe to
@@ -57,7 +50,7 @@ public class DataService {
    */
 
   @Autowired
-  public DataService(final DbService dbService, ConfigurableApplicationContext context) {
+  public DataService(final DbService dbService, ConfigurableApplicationContext context, CourseRepository courseRepository, LevelRepository levelRepository, ModuleRepository moduleRepository, AbstractUnitRepository abstractUnitRepository, UnitRepository unitRepository, GroupRepository groupRepository, SessionRepository sessionRepository) {
     courseWrappersProperty = new SimpleMapProperty<>(FXCollections.observableHashMap());
     majorCourseWrappersProperty = new SimpleListProperty<>(FXCollections.observableArrayList());
     minorCourseWrappersProperty = new SimpleListProperty<>(FXCollections.observableArrayList());
@@ -68,6 +61,14 @@ public class DataService {
     sessionWrappersProperty = new SimpleMapProperty<>(FXCollections.observableHashMap());
     groupWrappersProperty = new SimpleMapProperty<>(FXCollections.observableHashMap());
     dataChangeEventSource = new EventSource<>();
+
+    this.courseRepository = courseRepository;
+    this.levelRepository = levelRepository;
+    this.moduleRepository = moduleRepository;
+    this.abstractUnitRepository = abstractUnitRepository;
+    this.unitRepository = unitRepository;
+    this.groupRepository = groupRepository;
+    this.sessionRepository = sessionRepository;
 
     EasyBind.subscribe(dbService.dataSourceProperty(), this::loadData);
     dataChangeEventSource.subscribe(this::persistData);
@@ -114,7 +115,7 @@ public class DataService {
   /**
    * Initialize all map properties on the first level.
    */
-  private void initializeEntitiesFlat() {
+  public void initializeEntitiesFlat() {
     courseRepository.findAll().forEach(course -> {
       final CourseWrapper courseWrapper = new CourseWrapper(course);
       courseWrappersProperty.put(course.getKey(), courseWrapper);
