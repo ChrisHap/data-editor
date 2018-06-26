@@ -13,6 +13,9 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 import javax.sql.DataSource;
 
+/**
+ * The DataEditorModule provides the necessary beans fór dependency injection with spring.
+ */
 @Configuration
 public class DataEditorModule {
   private final ConfigurableApplicationContext context;
@@ -20,18 +23,28 @@ public class DataEditorModule {
   private final ResourceBundle bundle = ResourceBundle.getBundle("lang.main", locale);
   private final DbService dbService;
 
+  /**
+   * Autowired constructor.
+   * @param context the application context provided by Main and used to create instances of beans.
+   * @param dbService the dbService is injected to provide the DataSource.
+   */
   @Autowired
   public DataEditorModule(ConfigurableApplicationContext context, DbService dbService) {
     this.context = context;
     this.dbService = dbService;
   }
 
-
+  /**
+   * Provides the Locale for choosing the language.
+   */
   @Bean
   public Locale getLocale() {
     return locale;
   }
 
+  /**
+   * Provides the resource bundle where the necessary text is stored.
+   */
   @Bean
   public ResourceBundle getResourceBundle() {
     return bundle;
@@ -58,6 +71,6 @@ public class DataEditorModule {
   @Bean
   @Lazy
   public DataSource dataSource() {
-    return dbService.getDataSource();
+    return dbService.dataSourceProperty().get();
   }
 }

@@ -9,13 +9,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.DataSourceBuilder;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
 import javax.sql.DataSource;
 
+/**
+ * The DbService establishes and manages the connection to the database.
+ */
 @Component
 public class DbService {
 
@@ -23,8 +24,6 @@ public class DbService {
   private final EventSource<DbEvent> dbEventSource;
   private final ObjectProperty<DataSource> dataSourceProperty;
   private final ObjectProperty<File> dbFileProperty;
-  private DataSource dataSource;
-  private AbstractRoutingDataSource abstractRoutingDataSource;
 
   /**
    * The database service to load and modify a .sqlite3 database.
@@ -39,15 +38,13 @@ public class DbService {
     dataSourceBuilder.type(org.sqlite.SQLiteDataSource.class);
     dataSourceBuilder.driverClassName("org.sqlite.JDBC");
     dataSourceBuilder.url("jdbc:sqlite:cs.sqlite3");
-    dataSource = dataSourceBuilder.build();
-    abstractRoutingDataSource = new AbstractRoutingDataSource() {
-      @Override
-      protected Object determineCurrentLookupKey() {
-        return null;
-      }
-    };
+    dataSourceProperty.set(dataSourceBuilder.build());
   }
 
+  /**
+   * This message reacts to user input from the MainMenu.
+   * @param dbEvent the specific event thrown by the MainMenu.
+   */
   private void handleDbEvent(final DbEvent dbEvent) {
     switch (dbEvent.getEventType()) {
       case LOAD_DB:
@@ -66,6 +63,11 @@ public class DbService {
     }
   }
 
+  /**
+   * This method opens the database and closes the old one if necessary.
+   * @param dbFile the file where the database is stored.
+   * @return a Thread which opens the database.
+   */
   private Runnable getLoadDbRunnable(final File dbFile) {
     return () -> {
       // close old store if another database has been loaded
@@ -74,30 +76,33 @@ public class DbService {
       dataSourceBuilder.driverClassName("org.sqlite.JDBC");
       dataSourceBuilder.url("jdbc:sqlite:" + dbFile.getAbsolutePath());
       DataSource newDataSource = dataSourceBuilder.build();
-      setDataSource(newDataSource);
-      //TODO DataSource ändern vielleich abstract routing datasource
       dataSourceProperty.set(newDataSource);
       dbFileProperty.set(dbFile);
+      //TODO DataSource ändern vielleich abstract routing datasource
     };
   }
 
+  /**
+   * Getter for the database event source.
+   * @return the event source for communicating opening, closing, updating and saving the database.
+   */
   public EventSource<DbEvent> dbEventSource() {
     return dbEventSource;
   }
 
+  /**
+   * Getter for the database file.
+   * @return the file where the current database is stored.
+   */
   public File getDbFile() {
     return dbFileProperty.get();
   }
 
+  /**
+   * Getter for the dataSourceProperty.
+   * @return property for handling the datasource. Used to reload data if changed.
+   */
   public ObjectProperty<DataSource> dataSourceProperty() {
     return dataSourceProperty;
-  }
-
-  public DataSource getDataSource() {
-    return dataSource;
-  }
-
-  private void setDataSource(DataSource dataSource) {
-    this.dataSource = dataSource;
   }
 }

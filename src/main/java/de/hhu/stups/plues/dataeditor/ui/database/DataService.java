@@ -1,6 +1,5 @@
 package de.hhu.stups.plues.dataeditor.ui.database;
 
-import de.hhu.stups.plues.data.SqliteStore;
 import de.hhu.stups.plues.dataeditor.ui.database.events.DataChangeEvent;
 import de.hhu.stups.plues.dataeditor.ui.database.events.DataChangeType;
 import de.hhu.stups.plues.dataeditor.ui.entities.*;
@@ -36,6 +35,7 @@ public class DataService {
   private final MapProperty<String, UnitWrapper> unitWrappersProperty;
   private final MapProperty<String, SessionWrapper> sessionWrappersProperty;
   private final MapProperty<String, GroupWrapper> groupWrappersProperty;
+
   @Autowired
   private CourseRepository courseRepository;
   @Autowired

@@ -10,6 +10,10 @@ import org.springframework.stereotype.Component;
 
 
 // copied from https://github.com/bendisposto/prob2-ui
+
+/**
+ * Used to inject instances while inflating an fxml file.
+ */
 @Component
 public class SpringBuilderFactory implements BuilderFactory {
 
@@ -21,6 +25,11 @@ public class SpringBuilderFactory implements BuilderFactory {
     this.context = context;
   }
 
+  /**
+   * Returns a builder for building an instance from a class.
+   * @param type the desired class of the instance.
+   * @return the instance of the given class.
+   */
   @Override
   public Builder<?> getBuilder(final Class<?> type) {
     final Object instance;
