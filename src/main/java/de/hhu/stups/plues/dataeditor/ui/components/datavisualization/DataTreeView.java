@@ -84,7 +84,7 @@ public class DataTreeView extends VBox implements Initializable {
         dataContextMenu.show(this, event.getScreenX(), event.getScreenY());
       }
     });
-    EasyBind.subscribe(txtQuery.textProperty(),this::filterDataTree);
+    EasyBind.subscribe(txtQuery.textProperty(), this::filterDataTree);
   }
 
   private void filterDataTree(String filter) {
@@ -94,136 +94,142 @@ public class DataTreeView extends VBox implements Initializable {
     }
     TreeItem<EntityWrapper> newTreeTableRoot = new TreeItem<>();
     treeTableRoot.getChildren().forEach(treeItem ->
-        addFilteredCourse(filter, (CourseWrapper)treeItem.getValue(), newTreeTableRoot, treeItem));
+        addFilteredCourse(filter.toLowerCase(), (CourseWrapper) treeItem.getValue(),
+            newTreeTableRoot, treeItem));
     treeTableView.setRoot(newTreeTableRoot);
   }
 
-  private boolean addFilteredCourse(String filter, CourseWrapper courseWrapper,
-                                    TreeItem parentNode, TreeItem<EntityWrapper> currentNode) {
-    SimpleBooleanProperty childAdded = new SimpleBooleanProperty(false);
-    TreeItem<EntityWrapper> currentParentNode = new TreeItem<>(courseWrapper);
+  private boolean addFilteredCourse(final String filter, CourseWrapper courseWrapper,
+                                    final TreeItem<EntityWrapper> parentNode,
+                                    final TreeItem<EntityWrapper> currentNode) {
+    final SimpleBooleanProperty childAdded = new SimpleBooleanProperty(false);
+    final TreeItem<EntityWrapper> currentParentNode = new TreeItem<>(courseWrapper);
     currentNode.getChildren().forEach(child -> {
-      if (courseWrapper.getKzfa().equals(CourseKzfa.MAJOR)) {
-        if (child.getValue().getEntityType() == null) {
-          TreeItem<EntityWrapper> minorsSubRoot = new TreeItem<>(
-                new SubRootWrapper(resources.getString("minors")));
-          child.getChildren().forEach(minor ->
-              childAdded.set(addFilteredCourse(filter,
-                      ((CourseWrapper)minor.getValue()), minorsSubRoot, minor)
-                  || childAdded.get()));
-          if (childAdded.get()) {
-            currentParentNode.getChildren().add(minorsSubRoot);
-          }
-        } else {
-          childAdded.set(addFilteredLevel(filter,
-                    ((LevelWrapper)child.getValue()),currentParentNode, child)
-              || childAdded.get());
+      if (child.getValue().getEntityType() == null) {
+        TreeItem<EntityWrapper> minorsSubRoot = new TreeItem<>(
+            new SubRootWrapper(resources.getString("minors")));
+        child.getChildren().forEach(minor ->
+            childAdded.set(addFilteredCourse(filter,
+                ((CourseWrapper) minor.getValue()), minorsSubRoot, minor)
+                || childAdded.get()));
+        if (childAdded.get()) {
+          currentParentNode.getChildren().add(minorsSubRoot);
         }
+      } else {
+        childAdded.set(addFilteredLevel(filter,
+            ((LevelWrapper) child.getValue()), currentParentNode, child)
+            || childAdded.get());
       }
     });
     if (childAdded.get()) {
       parentNode.getChildren().add(currentParentNode);
       return true;
     }
-    if (courseWrapper.getLongName().contains(filter)
-          || courseWrapper.getShortName().contains(filter)
-          || courseWrapper.getKey().contains(filter)) {
+    if (courseWrapper.getLongName().toLowerCase().contains(filter)
+        || courseWrapper.getShortName().toLowerCase().contains(filter)
+        || courseWrapper.getKey().toLowerCase().contains(filter)) {
       parentNode.getChildren().add(currentParentNode);
       return true;
     }
     return false;
   }
 
-  private boolean addFilteredLevel(String filter, LevelWrapper levelWrapper,
-                                   TreeItem parentNode, TreeItem<EntityWrapper> currentNode) {
-    SimpleBooleanProperty childAdded = new SimpleBooleanProperty(false);
-    TreeItem<EntityWrapper> currentParentNode = new TreeItem<>(levelWrapper);
+  private boolean addFilteredLevel(final String filter, LevelWrapper levelWrapper,
+                                   final TreeItem<EntityWrapper> parentNode,
+                                   final TreeItem<EntityWrapper> currentNode) {
+    final SimpleBooleanProperty childAdded = new SimpleBooleanProperty(false);
+    final TreeItem<EntityWrapper> currentParentNode = new TreeItem<>(levelWrapper);
     currentNode.getChildren().forEach(child -> {
       if (child.getValue().getEntityType() == EntityType.LEVEL) {
         childAdded.set(addFilteredLevel(filter,
-              ((LevelWrapper) child.getValue()), currentParentNode, child)
-              || childAdded.get());
+            ((LevelWrapper) child.getValue()), currentParentNode, child)
+            || childAdded.get());
       } else {
         childAdded.set(addFilteredModule(filter,
-              ((ModuleWrapper) child.getValue()), currentParentNode, child)
-              || childAdded.get());
+            ((ModuleWrapper) child.getValue()), currentParentNode, child)
+            || childAdded.get());
       }
     });
     if (childAdded.get()) {
       parentNode.getChildren().add(currentParentNode);
       return true;
     }
-    if (levelWrapper.getName().contains(filter)) {
+    if (levelWrapper.getName().toLowerCase().contains(filter)) {
       parentNode.getChildren().add(currentParentNode);
       return true;
     }
     return false;
   }
 
-  private boolean addFilteredModule(String filter, ModuleWrapper moduleWrapper,
-                                    TreeItem parentNode, TreeItem<EntityWrapper> currentNode) {
-    SimpleBooleanProperty childAdded = new SimpleBooleanProperty(false);
-    TreeItem<EntityWrapper> currentParentNode = new TreeItem<>(moduleWrapper);
+  private boolean addFilteredModule(final String filter, ModuleWrapper moduleWrapper,
+                                    final TreeItem<EntityWrapper> parentNode,
+                                    final TreeItem<EntityWrapper> currentNode) {
+    final SimpleBooleanProperty childAdded = new SimpleBooleanProperty(false);
+    final TreeItem<EntityWrapper> currentParentNode = new TreeItem<>(moduleWrapper);
     currentNode.getChildren().forEach(child -> childAdded.set(addFilteredAbstractUnit(filter,
-              ((AbstractUnitWrapper) child.getValue()), currentParentNode, child)
-              || childAdded.get()));
+        ((AbstractUnitWrapper) child.getValue()), currentParentNode, child)
+        || childAdded.get()));
     if (childAdded.get()) {
       parentNode.getChildren().add(currentParentNode);
       return true;
     }
-    if (moduleWrapper.getKey().contains(filter)
-          || moduleWrapper.getTitle().contains(filter)) {
+    if (moduleWrapper.getKey().toLowerCase().contains(filter)
+        || moduleWrapper.getTitle().toLowerCase().contains(filter)) {
       parentNode.getChildren().add(currentParentNode);
       return true;
     }
     return false;
   }
 
-  private boolean addFilteredAbstractUnit(String filter, AbstractUnitWrapper abstractUnitWrapper,
-                                         TreeItem parentNode, TreeItem<EntityWrapper> currentNode) {
-    SimpleBooleanProperty childAdded = new SimpleBooleanProperty(false);
-    TreeItem<EntityWrapper> currentParentNode = new TreeItem<>(abstractUnitWrapper);
+  private boolean addFilteredAbstractUnit(final String filter,
+                                          final AbstractUnitWrapper abstractUnitWrapper,
+                                          final TreeItem<EntityWrapper> parentNode,
+                                          final TreeItem<EntityWrapper> currentNode) {
+    final SimpleBooleanProperty childAdded = new SimpleBooleanProperty(false);
+    final TreeItem<EntityWrapper> currentParentNode = new TreeItem<>(abstractUnitWrapper);
     currentNode.getChildren().forEach(child -> childAdded.set(addFilteredUnit(filter,
-          ((UnitWrapper) child.getValue()), currentParentNode, child)
-          || childAdded.get()));
+        ((UnitWrapper) child.getValue()), currentParentNode, child)
+        || childAdded.get()));
     if (childAdded.get()) {
       parentNode.getChildren().add(currentParentNode);
       return true;
     }
-    if (abstractUnitWrapper.getKey().contains(filter)
-          || abstractUnitWrapper.getTitle().contains(filter)) {
+    if (abstractUnitWrapper.getKey().toLowerCase().contains(filter)
+        || abstractUnitWrapper.getTitle().toLowerCase().contains(filter)) {
       parentNode.getChildren().add(currentParentNode);
       return true;
     }
     return false;
   }
 
-  private boolean addFilteredUnit(String filter, UnitWrapper unitWrapper,
-                                 TreeItem parentNode, TreeItem<EntityWrapper> currentNode) {
-    SimpleBooleanProperty childAdded = new SimpleBooleanProperty(false);
-    TreeItem<EntityWrapper> currentParentNode = new TreeItem<>(unitWrapper);
+  private boolean addFilteredUnit(final String filter, UnitWrapper unitWrapper,
+                                  final TreeItem<EntityWrapper> parentNode,
+                                  final TreeItem<EntityWrapper> currentNode) {
+    final SimpleBooleanProperty childAdded = new SimpleBooleanProperty(false);
+    final TreeItem<EntityWrapper> currentParentNode = new TreeItem<>(unitWrapper);
     currentNode.getChildren().forEach(child -> childAdded.set(addFilteredGroup(filter,
-          ((GroupWrapper) child.getValue()), currentParentNode, child)
-          || childAdded.get()));
+        ((GroupWrapper) child.getValue()), currentParentNode, child)
+        || childAdded.get()));
     if (childAdded.get()) {
       parentNode.getChildren().add(currentParentNode);
       return true;
     }
-    if (unitWrapper.getKey().contains(filter)
-          || unitWrapper.getTitle().contains(filter)) {
+    if (unitWrapper.getKey().toLowerCase().contains(filter)
+        || unitWrapper.getTitle().toLowerCase().contains(filter)) {
       parentNode.getChildren().add(currentParentNode);
       return true;
     }
     return false;
   }
 
-  private boolean addFilteredGroup(String filter, GroupWrapper groupWrapper,
-                                   TreeItem parentNode, TreeItem<EntityWrapper> currentNode) {
-    SimpleBooleanProperty childAdded = new SimpleBooleanProperty(false);
-    TreeItem<EntityWrapper> currentParentNode = new TreeItem<>(groupWrapper);
+  private boolean addFilteredGroup(final String filter, GroupWrapper groupWrapper,
+                                   final TreeItem<EntityWrapper> parentNode,
+                                   final TreeItem<EntityWrapper> currentNode) {
+    final SimpleBooleanProperty childAdded = new SimpleBooleanProperty(false);
+    final TreeItem<EntityWrapper> currentParentNode = new TreeItem<>(groupWrapper);
     currentNode.getChildren().forEach(child -> childAdded.set(addFilteredSession(filter,
-          ((SessionWrapper) child.getValue()), currentParentNode)
-          || childAdded.get()));
+        ((SessionWrapper) child.getValue()), currentParentNode)
+        || childAdded.get()));
     if (childAdded.get()) {
       parentNode.getChildren().add(currentParentNode);
       return true;
@@ -235,9 +241,9 @@ public class DataTreeView extends VBox implements Initializable {
     return false;
   }
 
-  private boolean addFilteredSession(String filter, SessionWrapper sessionWrapper,
-                                   TreeItem parentNode) {
-    TreeItem<EntityWrapper> currentParentNode = new TreeItem<>(sessionWrapper);
+  private boolean addFilteredSession(final String filter, final SessionWrapper sessionWrapper,
+                                     final TreeItem<EntityWrapper> parentNode) {
+    final TreeItem<EntityWrapper> currentParentNode = new TreeItem<>(sessionWrapper);
 
     if (String.valueOf(sessionWrapper.getId()).equals(filter)) {
       parentNode.getChildren().add(currentParentNode);
@@ -272,6 +278,11 @@ public class DataTreeView extends VBox implements Initializable {
             .groupingBy(courseWrapper -> courseWrapper.getCourse().getKzfa(), Collectors.toSet()));
     majorMinorCourses.get("H").forEach(this::addCourseToTreeView);
     majorMinorCourses.get("N").forEach(this::addCourseToTreeView);
+
+    /*dataService.courseWrappersProperty().values().stream()
+        .filter(courseWrapper -> courseWrapper.getCourse().isMajor()).forEach(this::addCourseToTreeView);
+    dataService.courseWrappersProperty().values().stream()
+        .filter(courseWrapper -> courseWrapper.getCourse().isMinor()).forEach(this::addCourseToTreeView);*/
   }
 
   private void updateSingleEntity(final EntityWrapper changedEntity) {
