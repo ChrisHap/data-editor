@@ -15,7 +15,6 @@ import javafx.scene.control.ListView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
-import org.controlsfx.control.StatusBar;
 import org.controlsfx.control.textfield.CustomTextField;
 import org.fxmisc.easybind.EasyBind;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,7 +76,7 @@ public class DataListView extends VBox implements Initializable {
         dataContextMenu.show(this, event.getScreenX(), event.getScreenY());
       }
     });
-    EasyBind.subscribe(txtQuery.textProperty(),this::loadFilteredData);
+    EasyBind.subscribe(txtQuery.textProperty(),filter -> loadFilteredData(filter.toLowerCase()));
   }
 
   private void initializeComboBox() {
@@ -131,32 +130,32 @@ public class DataListView extends VBox implements Initializable {
     switch (cbEntityType.getSelectionModel().getSelectedItem()) {
       case COURSE:
         listView.setItems((dataService.getCourseWrappers().values().stream().filter(
-            courseWrapper -> courseWrapper.getLongName().contains(filter)
-                    || courseWrapper.getShortName().contains(filter)
-                    || courseWrapper.getKey().contains(filter))).collect(
+            courseWrapper -> courseWrapper.getLongName().toLowerCase().contains(filter)
+                    || courseWrapper.getShortName().toLowerCase().contains(filter)
+                    || courseWrapper.getKey().toLowerCase().contains(filter))).collect(
                           Collectors.toCollection(FXCollections::observableArrayList)));
         break;
       case LEVEL:
         listView.setItems((dataService.getLevelWrappers().values().stream().filter(
-            levelWrapper -> levelWrapper.getName().contains(filter))).collect(
+            levelWrapper -> levelWrapper.getName().toLowerCase().contains(filter))).collect(
             Collectors.toCollection(FXCollections::observableArrayList)));
         break;
       case MODULE:
         listView.setItems((dataService.getModuleWrappers().values().stream().filter(
-            moduleWrapper -> moduleWrapper.getKey().contains(filter)
-                  || moduleWrapper.getTitle().contains(filter))).collect(
+            moduleWrapper -> moduleWrapper.getKey().toLowerCase().contains(filter)
+                  || moduleWrapper.getTitle().toLowerCase().contains(filter))).collect(
             Collectors.toCollection(FXCollections::observableArrayList)));
         break;
       case ABSTRACT_UNIT:
         listView.setItems((dataService.getAbstractUnitWrappers().values().stream().filter(
-            abstractUnitWrapper -> abstractUnitWrapper.getKey().contains(filter)
-                  || abstractUnitWrapper.getTitle().contains(filter))).collect(
+            abstractUnitWrapper -> abstractUnitWrapper.getKey().toLowerCase().contains(filter)
+                  || abstractUnitWrapper.getTitle().toLowerCase().contains(filter))).collect(
             Collectors.toCollection(FXCollections::observableArrayList)));
         break;
       case UNIT:
         listView.setItems((dataService.getUnitWrappers().values().stream().filter(
-            unitWrapper -> unitWrapper.getKey().contains(filter)
-                  || unitWrapper.getTitle().contains(filter))).collect(
+            unitWrapper -> unitWrapper.getKey().toLowerCase().contains(filter)
+                  || unitWrapper.getTitle().toLowerCase().contains(filter))).collect(
             Collectors.toCollection(FXCollections::observableArrayList)));
         break;
       case GROUP:
