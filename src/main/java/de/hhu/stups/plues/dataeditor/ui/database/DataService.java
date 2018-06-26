@@ -35,6 +35,7 @@ public class DataService {
   private final MapProperty<String, UnitWrapper> unitWrappersProperty;
   private final MapProperty<String, SessionWrapper> sessionWrappersProperty;
   private final MapProperty<String, GroupWrapper> groupWrappersProperty;
+
   @Autowired
   private CourseRepository courseRepository;
   @Autowired

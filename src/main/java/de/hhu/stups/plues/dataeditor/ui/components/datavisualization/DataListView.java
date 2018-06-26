@@ -15,6 +15,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
+import org.controlsfx.control.StatusBar;
 import org.controlsfx.control.textfield.CustomTextField;
 import org.fxmisc.easybind.EasyBind;
 import org.springframework.beans.factory.annotation.Autowired;

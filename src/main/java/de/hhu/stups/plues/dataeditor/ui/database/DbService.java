@@ -17,6 +17,9 @@ import org.springframework.stereotype.Component;
 import java.io.File;
 import javax.sql.DataSource;
 
+/**
+ * The DbService establishes and manages the connection to the database.
+ */
 @Component
 public class DbService {
 
@@ -25,7 +28,6 @@ public class DbService {
   private final ObjectProperty<DataSource> dataSourceProperty;
   private final ObjectProperty<File> dbFileProperty;
   private final ObjectProperty<Task<Void>> dbTaskProperty;
-  private DataSource dataSource;
   private AbstractRoutingDataSource abstractRoutingDataSource;
 
   /**
@@ -41,7 +43,6 @@ public class DbService {
     dataSourceBuilder.type(org.sqlite.SQLiteDataSource.class);
     dataSourceBuilder.driverClassName("org.sqlite.JDBC");
     dataSourceBuilder.url("jdbc:sqlite:cs.sqlite3");
-    dataSource = dataSourceBuilder.build();
     abstractRoutingDataSource = new AbstractRoutingDataSource() {
       @Override
       protected Object determineCurrentLookupKey() {
@@ -49,8 +50,14 @@ public class DbService {
       }
     };
     dbTaskProperty = new SimpleObjectProperty<>();
+    dataSourceProperty.set(dataSourceBuilder.build());
   }
 
+  /**
+   * This message reacts to user input from the MainMenu.
+   *
+   * @param dbEvent the specific event thrown by the MainMenu.
+   */
   private void handleDbEvent(final DbEvent dbEvent) {
     switch (dbEvent.getEventType()) {
       case LOAD_DB:
@@ -64,7 +71,6 @@ public class DbService {
             dataSourceBuilder.driverClassName("org.sqlite.JDBC");
             dataSourceBuilder.url("jdbc:sqlite:" + dbFile.getAbsolutePath());
             DataSource newDataSource = dataSourceBuilder.build();
-            setDataSource(newDataSource);
             //TODO DataSource ändern vielleich abstract routing datasource
             dataSourceProperty.set(newDataSource);
             dbFileProperty.set(dbFile);
@@ -85,24 +91,31 @@ public class DbService {
     }
   }
 
+  /**
+   * Getter for the database event source.
+   *
+   * @return the event source for communicating opening, closing, updating and saving the database.
+   */
   public EventSource<DbEvent> dbEventSource() {
     return dbEventSource;
   }
 
+  /**
+   * Getter for the database file.
+   *
+   * @return the file where the current database is stored.
+   */
   public File getDbFile() {
     return dbFileProperty.get();
   }
 
+  /**
+   * Getter for the dataSourceProperty.
+   *
+   * @return property for handling the datasource. Used to reload data if changed.
+   */
   public ObjectProperty<DataSource> dataSourceProperty() {
     return dataSourceProperty;
-  }
-
-  public DataSource getDataSource() {
-    return dataSource;
-  }
-
-  private void setDataSource(DataSource dataSource) {
-    this.dataSource = dataSource;
   }
 
   public ObjectProperty<Task<Void>> dbTaskProperty() {
