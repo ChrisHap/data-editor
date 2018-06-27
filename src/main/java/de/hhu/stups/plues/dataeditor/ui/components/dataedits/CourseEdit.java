@@ -12,11 +12,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.RadioButton;
+import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.util.StringConverter;
 import org.fxmisc.easybind.EasyBind;
@@ -172,12 +168,27 @@ public class CourseEdit extends GridPane implements Initializable {
   @FXML
   @SuppressWarnings("unused")
   public void persistChanges() {
+    if (cbCourseDegree.getValue() == null) {
+      Alert alert = new Alert(Alert.AlertType.ERROR, "Bitte degree auswählen", ButtonType.OK);
+      alert.showAndWait();
+      return;
+    }
     courseWrapper.getCourse().setDegree(cbCourseDegree.getValue().toString());
     courseWrapper.getCourse().setLongName(txtFullName.textProperty().getValue());
     courseWrapper.getCourse().setShortName(txtShortName.textProperty().getValue());
-    courseWrapper.getCourse().setPo(Integer.parseInt(txtPVersion.textProperty().get()));
-    courseWrapper.getCourse().setCreditPoints(Integer.parseInt(
-          txtCreditPoints.textProperty().getValue()));
+    try {
+      courseWrapper.getCourse().setPo(Integer.parseInt(txtPVersion.textProperty().get()));
+    } catch (NumberFormatException exeption){
+      new Alert(Alert.AlertType.ERROR, "Prüfungsordnung muss Zahl sein", ButtonType.OK).showAndWait();
+      return;
+    }
+    try {
+      courseWrapper.getCourse().setCreditPoints(Integer.parseInt(
+            txtCreditPoints.textProperty().getValue()));
+    } catch (NumberFormatException exeption) {
+      new Alert(Alert.AlertType.ERROR, "Credit Points muss Zahl sein", ButtonType.OK).showAndWait();
+      return;
+    }
     if (rbMajorCourse.isSelected()) {
       courseWrapper.getCourse().setKzfa("H");
     } else {
