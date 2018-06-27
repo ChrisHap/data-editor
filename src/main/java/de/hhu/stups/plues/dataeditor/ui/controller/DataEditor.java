@@ -12,6 +12,7 @@ import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -32,10 +33,7 @@ public class DataEditor extends VBox implements Initializable {
 
   private final DbService dbService;
   private double lastDividerPosition;
-
   private SplitPane.Divider splitPaneDivider;
-
-
   @FXML
   @SuppressWarnings("unused")
   private SideBar sideBar;
@@ -51,7 +49,6 @@ public class DataEditor extends VBox implements Initializable {
   @FXML
   @SuppressWarnings("unused")
   private Button btToggleDivider;
-
   @FXML
   @SuppressWarnings("unused")
   private StatusBar statusBar;
@@ -68,10 +65,22 @@ public class DataEditor extends VBox implements Initializable {
   public void initialize(final URL location, final ResourceBundle resources) {
     initializeSplitPane();
     dataEditView.prefWidthProperty().bind(contentAnchorPane.widthProperty()
-        .subtract(btToggleDivider.widthProperty()));
+          .subtract(btToggleDivider.widthProperty()));
     dataEditView.prefHeightProperty().bind(heightProperty().subtract(
           statusBar.heightProperty().add(50)));
-    //TODO statusBar Progress an dbService.dbTaskProperty binden
+    EasyBind.subscribe(dbService.dbTaskProperty(), this::setStatusBarProgress);
+  }
+
+  private void setStatusBarProgress(Task<Void> task) {
+    Platform.runLater(() -> {
+      if (task == null) {
+        statusBar.setProgress(0);
+        statusBar.textProperty().set("Idle");
+      } else {
+        statusBar.setProgress(-1);
+        statusBar.textProperty().set("Loading Database");
+      }
+    });
   }
 
   private void initializeSplitPane() {
@@ -79,8 +88,8 @@ public class DataEditor extends VBox implements Initializable {
     lastDividerPosition = splitPaneDivider.getPosition();
     mainSplitPane.prefHeightProperty().bind(heightProperty());
     btToggleDivider.graphicProperty().bind(Bindings.when(sideBar.showSideBarProperty())
-        .then(getToggleIconView(FontAwesomeIcon.ARROW_LEFT))
-        .otherwise(getToggleIconView(FontAwesomeIcon.ARROW_RIGHT)));
+          .then(getToggleIconView(FontAwesomeIcon.ARROW_LEFT))
+          .otherwise(getToggleIconView(FontAwesomeIcon.ARROW_RIGHT)));
     EasyBind.subscribe(sideBar.showSideBarProperty(), this::showOrHideSideBar);
     EasyBind.subscribe(mainSplitPane.heightProperty(),
         number -> updateToggleDividerPos(number.doubleValue()));
@@ -98,7 +107,7 @@ public class DataEditor extends VBox implements Initializable {
    */
   private void updateToggleDividerPos(final double height) {
     AnchorPane.setTopAnchor(btToggleDivider, height / 2
-        - btToggleDivider.getHeight() / 2);
+          - btToggleDivider.getHeight() / 2);
   }
 
   private void showOrHideSideBar(final boolean showSideBar) {

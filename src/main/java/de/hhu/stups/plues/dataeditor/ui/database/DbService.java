@@ -2,9 +2,12 @@ package de.hhu.stups.plues.dataeditor.ui.database;
 
 import de.hhu.stups.plues.dataeditor.ui.database.events.DbEvent;
 import de.hhu.stups.plues.dataeditor.ui.database.events.LoadDbEvent;
+import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.concurrent.Service;
 import javafx.concurrent.Task;
+import org.controlsfx.control.StatusBar;
 import org.reactfx.EventSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,18 +41,14 @@ public class DbService {
     dbEventSource.subscribe(this::handleDbEvent);
     dataSourceProperty = new SimpleObjectProperty<>();
     dbFileProperty = new SimpleObjectProperty<>();
+    dbTaskProperty = new SimpleObjectProperty<>();
+
     DataSourceBuilder dataSourceBuilder = DataSourceBuilder.create();
     dataSourceBuilder.type(org.sqlite.SQLiteDataSource.class);
     dataSourceBuilder.driverClassName("org.sqlite.JDBC");
     dataSourceBuilder.url("jdbc:sqlite:cs.sqlite3");
-    abstractRoutingDataSource = new AbstractRoutingDataSource() {
-      @Override
-      protected Object determineCurrentLookupKey() {
-        return null;
-      }
-    };
-    dbTaskProperty = new SimpleObjectProperty<>();
-    dataSourceProperty.set(dataSourceBuilder.build());
+    DataSource newDataSource = dataSourceBuilder.build();
+    dataSourceProperty.set(newDataSource);
   }
 
   /**
@@ -60,19 +59,18 @@ public class DbService {
   private void handleDbEvent(final DbEvent dbEvent) {
     switch (dbEvent.getEventType()) {
       case LOAD_DB:
+        dbFileProperty.set(((LoadDbEvent) dbEvent).getDbFile());
         final Task<Void> loadDbTask = new Task<Void>() {
           @Override
           protected Void call() {
-            final File dbFile = ((LoadDbEvent) dbEvent).getDbFile();
-            // close old store if another database has been loaded
             DataSourceBuilder dataSourceBuilder = DataSourceBuilder.create();
             dataSourceBuilder.type(org.sqlite.SQLiteDataSource.class);
             dataSourceBuilder.driverClassName("org.sqlite.JDBC");
-            dataSourceBuilder.url("jdbc:sqlite:" + dbFile.getAbsolutePath());
+            dataSourceBuilder.url("jdbc:sqlite:" + dbFileProperty.get().getAbsolutePath());
             DataSource newDataSource = dataSourceBuilder.build();
             //TODO DataSource ändern vielleich abstract routing datasource
             dataSourceProperty.set(newDataSource);
-            dbFileProperty.set(dbFile);
+            dbTaskProperty.set(null);
             return null;
           }
         };
@@ -119,4 +117,5 @@ public class DbService {
   public ObjectProperty<Task<Void>> dbTaskProperty() {
     return dbTaskProperty;
   }
+
 }

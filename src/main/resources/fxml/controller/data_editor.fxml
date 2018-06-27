@@ -18,5 +18,5 @@
             <Button fx:id="btToggleDivider" onAction="#toggleDivider" AnchorPane.leftAnchor="0.0"/>
         </AnchorPane>
     </SplitPane>
-    <StatusBar fx:id="statusBar" minHeight="50"/>
+    <StatusBar fx:id="statusBar" minHeight="20"/>
 </fx:root>
