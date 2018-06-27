@@ -1,12 +1,10 @@
 package de.hhu.stups.plues.dataeditor.ui.entities;
 
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.Type;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
-
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 
@@ -15,12 +13,10 @@ import javax.persistence.MappedSuperclass;
 abstract class ModelEntity {
 
   @UpdateTimestamp
-  @Type(type = "org.hibernate.usertype.SqliteDateTimeType")
   @Column(name = "updated_at")
   private LocalDateTime updatedAt;
 
   @CreationTimestamp
-  @Type(type = "org.hibernate.usertype.SqliteDateTimeType")
   @Column(name = "created_at")
   private LocalDateTime createdAt;
 
@@ -57,6 +53,5 @@ abstract class ModelEntity {
   public void setCreatedAt(final LocalDateTime createdAt) {
     this.createdAt = createdAt;
   }
-
 
 }
