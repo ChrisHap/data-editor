@@ -11,9 +11,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ListView;
+import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import org.fxmisc.easybind.EasyBind;
@@ -79,6 +77,14 @@ public class ModuleEdit extends GridPane implements Initializable {
   @FXML
   @SuppressWarnings("unused")
   public void persistChanges() {
+    moduleWrapper.getModule().setTitle(txtModule.textProperty().get());
+    try {
+      moduleWrapper.getModule().setPordnr(Integer.parseInt(txtPordnr.textProperty().get()));
+    } catch (NumberFormatException exception) {
+      new Alert(Alert.AlertType.ERROR,
+            "PordNr muss Zahl Sein", ButtonType.OK).showAndWait();
+      return;
+    }
     dataService.dataChangeEventSource().push(
         new DataChangeEvent(DataChangeType.STORE_ENTITY, moduleWrapper));
     dataChangedProperty.set(false);

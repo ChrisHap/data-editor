@@ -12,13 +12,12 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ComboBox;
+import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import org.fxmisc.easybind.EasyBind;
 
 import java.net.URL;
+import java.util.HashSet;
 import java.util.ResourceBundle;
 
 public class SessionEdit extends GridPane implements Initializable {
@@ -49,6 +48,8 @@ public class SessionEdit extends GridPane implements Initializable {
   @SuppressWarnings("unused")
   private Button btPersistChanges;
 
+  private HashSet<String> validDays;
+
   /**
    * Initialize session edit.
    */
@@ -63,6 +64,12 @@ public class SessionEdit extends GridPane implements Initializable {
 
   @Override
   public void initialize(final URL location, final ResourceBundle resources) {
+    validDays = new HashSet<>();
+    validDays.add("mon");
+    validDays.add("tue");
+    validDays.add("wed");
+    validDays.add("thu");
+    validDays.add("fri");
     btPersistChanges.disableProperty().bind(dataChangedProperty.not());
     txtDay.setLabelText(resources.getString("day"));
     txtTime.setLabelText(resources.getString("time"));
@@ -134,6 +141,18 @@ public class SessionEdit extends GridPane implements Initializable {
   @FXML
   @SuppressWarnings("unused")
   public void persistChanges() {
+    if (!validDays.contains(txtDay.textProperty().get())) {
+      new Alert(Alert.AlertType.ERROR, "Use valid day", ButtonType.OK).showAndWait();
+      return;
+    }
+    sessionWrapper.getSession().setDay(txtDay.textProperty().get());
+    try {
+      sessionWrapper.getSession().setDuration(Integer.parseInt(txtDuration.textProperty().get()));
+      sessionWrapper.getSession().setRhythm(Integer.parseInt(txtRhythm.textProperty().get()));
+      sessionWrapper.getSession().setTime(Integer.parseInt(txtTime.textProperty().get()));
+    } catch (NumberFormatException exception) {
+      new Alert(Alert.AlertType.ERROR, "Duration, Rythm, Time müssen Zahlen sein", ButtonType.OK);
+    }
     dataService.dataChangeEventSource().push(
         new DataChangeEvent(DataChangeType.STORE_ENTITY, sessionWrapper));
     dataChangedProperty.set(false);

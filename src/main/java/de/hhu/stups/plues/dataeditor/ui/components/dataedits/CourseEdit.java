@@ -169,8 +169,8 @@ public class CourseEdit extends GridPane implements Initializable {
   @SuppressWarnings("unused")
   public void persistChanges() {
     if (cbCourseDegree.getValue() == null) {
-      Alert alert = new Alert(Alert.AlertType.ERROR, "Bitte degree auswählen", ButtonType.OK);
-      alert.showAndWait();
+      new Alert(Alert.AlertType.ERROR,
+            "Bitte degree auswählen", ButtonType.OK).showAndWait();
       return;
     }
     courseWrapper.getCourse().setDegree(cbCourseDegree.getValue().toString());
@@ -178,15 +178,17 @@ public class CourseEdit extends GridPane implements Initializable {
     courseWrapper.getCourse().setShortName(txtShortName.textProperty().getValue());
     try {
       courseWrapper.getCourse().setPo(Integer.parseInt(txtPVersion.textProperty().get()));
-    } catch (NumberFormatException exeption){
-      new Alert(Alert.AlertType.ERROR, "Prüfungsordnung muss Zahl sein", ButtonType.OK).showAndWait();
+    } catch (NumberFormatException exeption) {
+      new Alert(Alert.AlertType.ERROR,
+            "Prüfungsordnung muss Zahl sein", ButtonType.OK).showAndWait();
       return;
     }
     try {
       courseWrapper.getCourse().setCreditPoints(Integer.parseInt(
             txtCreditPoints.textProperty().getValue()));
     } catch (NumberFormatException exeption) {
-      new Alert(Alert.AlertType.ERROR, "Credit Points muss Zahl sein", ButtonType.OK).showAndWait();
+      new Alert(Alert.AlertType.ERROR,
+            "Credit Points muss Zahl sein", ButtonType.OK).showAndWait();
       return;
     }
     if (rbMajorCourse.isSelected()) {

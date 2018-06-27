@@ -93,6 +93,7 @@ public class UnitEdit extends GridPane implements Initializable {
   @FXML
   @SuppressWarnings("unused")
   public void persistChanges() {
+    unitWrapper.getUnit().setTitle(txtUnit.textProperty().get());
     dataService.dataChangeEventSource().push(
         new DataChangeEvent(DataChangeType.STORE_ENTITY, unitWrapper));
     dataChangedProperty.set(false);

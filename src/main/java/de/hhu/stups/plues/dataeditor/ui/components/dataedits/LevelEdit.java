@@ -11,9 +11,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.RadioButton;
+import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import org.fxmisc.easybind.EasyBind;
@@ -129,6 +127,13 @@ public class LevelEdit extends GridPane implements Initializable {
   @FXML
   @SuppressWarnings("unused")
   public void persistChanges() {
+    levelWrapper.getLevel().setName(txtLevel.textProperty().get());
+    try {
+      levelWrapper.setMaxCredits(Integer.parseInt(txtMaxCp.textProperty().get()));
+      levelWrapper.setMinCredits(Integer.parseInt(txtMinCp.textProperty().get()));
+    } catch (NumberFormatException exception) {
+      new Alert(Alert.AlertType.ERROR, "Credit Points muss Zahl sein", ButtonType.OK);
+    }
     dataService.dataChangeEventSource().push(
         new DataChangeEvent(DataChangeType.STORE_ENTITY, levelWrapper));
     dataChangedProperty.set(false);
