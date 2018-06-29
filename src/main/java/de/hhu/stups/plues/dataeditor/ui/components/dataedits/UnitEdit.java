@@ -5,6 +5,7 @@ import de.hhu.stups.plues.dataeditor.ui.database.DataService;
 import de.hhu.stups.plues.dataeditor.ui.database.events.DataChangeEvent;
 import de.hhu.stups.plues.dataeditor.ui.database.events.DataChangeType;
 import de.hhu.stups.plues.dataeditor.ui.entities.AbstractUnitWrapper;
+import de.hhu.stups.plues.dataeditor.ui.entities.EntityWrapper;
 import de.hhu.stups.plues.dataeditor.ui.entities.GroupWrapper;
 import de.hhu.stups.plues.dataeditor.ui.entities.UnitWrapper;
 import de.hhu.stups.plues.dataeditor.ui.layout.Inflater;
@@ -46,6 +47,8 @@ public class UnitEdit extends GridPane implements Initializable {
   @FXML
   @SuppressWarnings("unused")
   private Button btPersistChanges;
+
+  private EntityWrapper parent;
 
   /**
    * Initialize unit edit.
@@ -94,6 +97,13 @@ public class UnitEdit extends GridPane implements Initializable {
   @SuppressWarnings("unused")
   public void persistChanges() {
     unitWrapper.getUnit().setTitle(txtUnit.textProperty().get());
+    if (parent != null) {
+      unitWrapper.getUnit().getAbstractUnits().add(
+            ((AbstractUnitWrapper) parent).getAbstractUnit());
+      ((AbstractUnitWrapper) parent).getAbstractUnit().getUnits().add(unitWrapper.getUnit());
+      dataService.dataChangeEventSource().push(
+            new DataChangeEvent(DataChangeType.STORE_ENTITY, parent));
+    }
     dataService.dataChangeEventSource().push(
         new DataChangeEvent(DataChangeType.STORE_ENTITY, unitWrapper));
     dataChangedProperty.set(false);
@@ -140,5 +150,9 @@ public class UnitEdit extends GridPane implements Initializable {
 
   private void setUnit() {
     txtUnit.setText(unitWrapper.getTitle());
+  }
+
+  public void setParentEntityWrapper(EntityWrapper parent) {
+    this.parent = parent;
   }
 }

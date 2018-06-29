@@ -149,4 +149,16 @@ public class ModuleWrapper implements EntityWrapper {
   public EntityType getEntityType() {
     return EntityType.MODULE;
   }
+
+  /**
+   * Creates an empty ModuleWrapper.
+   * @return the empty ModuleWrapper.
+   */
+  public static ModuleWrapper createEmptyModuleWrapper() {
+    Module module = new Module();
+    module.setPordnr(0);
+    module.setBundled(false);
+    module.setElectiveUnits(0);
+    return new ModuleWrapper(module);
+  }
 }

@@ -4,8 +4,10 @@ import de.hhu.stups.plues.dataeditor.ui.components.LabeledTextField;
 import de.hhu.stups.plues.dataeditor.ui.database.DataService;
 import de.hhu.stups.plues.dataeditor.ui.database.events.DataChangeEvent;
 import de.hhu.stups.plues.dataeditor.ui.database.events.DataChangeType;
+import de.hhu.stups.plues.dataeditor.ui.entities.EntityWrapper;
 import de.hhu.stups.plues.dataeditor.ui.entities.GroupWrapper;
 import de.hhu.stups.plues.dataeditor.ui.entities.SessionWrapper;
+import de.hhu.stups.plues.dataeditor.ui.entities.UnitWrapper;
 import de.hhu.stups.plues.dataeditor.ui.layout.Inflater;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -44,6 +46,8 @@ public class GroupEdit extends GridPane implements Initializable {
   @FXML
   @SuppressWarnings("unused")
   private Button btPersistChanges;
+
+  private EntityWrapper parent;
 
   /**
    * Initialize group edit.
@@ -116,8 +120,18 @@ public class GroupEdit extends GridPane implements Initializable {
   @FXML
   @SuppressWarnings("unused")
   public void persistChanges() {
+    if (parent != null) {
+      groupWrapper.getGroup().setUnit(((UnitWrapper) parent).getUnit());
+      ((UnitWrapper) parent).getUnit().getGroups().add(groupWrapper.getGroup());
+      dataService.dataChangeEventSource().push(
+            new DataChangeEvent(DataChangeType.STORE_ENTITY, parent));
+    }
     dataService.dataChangeEventSource().push(
         new DataChangeEvent(DataChangeType.STORE_ENTITY, groupWrapper));
     dataChangedProperty.set(false);
+  }
+
+  public void setParentEntityWrapper(EntityWrapper parent) {
+    this.parent = parent;
   }
 }

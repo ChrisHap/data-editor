@@ -1,24 +1,12 @@
 package de.hhu.stups.plues.dataeditor.ui.components;
 
-import de.hhu.stups.plues.dataeditor.ui.components.dataedits.AbstractUnitEdit;
-import de.hhu.stups.plues.dataeditor.ui.components.dataedits.CourseEdit;
-import de.hhu.stups.plues.dataeditor.ui.components.dataedits.EditViewProvider;
-import de.hhu.stups.plues.dataeditor.ui.components.dataedits.LevelEdit;
-import de.hhu.stups.plues.dataeditor.ui.components.dataedits.ModuleEdit;
-import de.hhu.stups.plues.dataeditor.ui.components.dataedits.UnitEdit;
+import de.hhu.stups.plues.dataeditor.ui.components.dataedits.*;
 import de.hhu.stups.plues.dataeditor.ui.database.DataService;
 import de.hhu.stups.plues.dataeditor.ui.database.DbService;
 import de.hhu.stups.plues.dataeditor.ui.database.events.DataChangeEvent;
 import de.hhu.stups.plues.dataeditor.ui.database.events.DbEvent;
 import de.hhu.stups.plues.dataeditor.ui.database.events.DbEventType;
-import de.hhu.stups.plues.dataeditor.ui.entities.AbstractUnitWrapper;
-import de.hhu.stups.plues.dataeditor.ui.entities.CourseWrapper;
-import de.hhu.stups.plues.dataeditor.ui.entities.EntityWrapper;
-import de.hhu.stups.plues.dataeditor.ui.entities.GroupWrapper;
-import de.hhu.stups.plues.dataeditor.ui.entities.LevelWrapper;
-import de.hhu.stups.plues.dataeditor.ui.entities.ModuleWrapper;
-import de.hhu.stups.plues.dataeditor.ui.entities.SessionWrapper;
-import de.hhu.stups.plues.dataeditor.ui.entities.UnitWrapper;
+import de.hhu.stups.plues.dataeditor.ui.entities.*;
 import de.hhu.stups.plues.dataeditor.ui.layout.Inflater;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Tab;
@@ -69,40 +57,50 @@ public class DataEditView extends TabPane implements Initializable {
     if (dataChangeEvent.getDataChangeType().changeEntity()) {
       addEntityTab(dataChangeEvent.getChangedEntity());
     } else if (dataChangeEvent.getDataChangeType().addEntity()) {
-      addEmptyEntityTab(dataChangeEvent.getChangedEntity());
+      addEmptyEntityTab(dataChangeEvent.getChangedEntity(),dataChangeEvent.getChangedType());
     }
   }
 
-  private void addEmptyEntityTab(final EntityWrapper entityWrapper) {
+  private void addEmptyEntityTab(final EntityWrapper parent,
+                                 EntityType newEntityType) {
     final Tab tab = new Tab();
-    switch (entityWrapper.getEntityType()) {
+    switch (newEntityType) {
       case COURSE:
         tab.setText(resources.getString("course"));
         tab.setContent(editViewProvider.getCourseEditView(null));
         break;
       case LEVEL:
         tab.setText(resources.getString("level"));
-        tab.setContent(editViewProvider.getLevelEditView(null));
+        LevelEdit levelEdit = editViewProvider.getLevelEditView(null);
+        levelEdit.setParentEntityWrapper(parent);
+        tab.setContent(levelEdit);
         break;
       case MODULE:
         tab.setText(resources.getString("module"));
-        tab.setContent(editViewProvider.getModuleEditView(null));
+        ModuleEdit moduleEdit = editViewProvider.getModuleEditView(null);
+        moduleEdit.setParentEntityWrapper(parent);
+        tab.setContent(moduleEdit);
         break;
       case ABSTRACT_UNIT:
         tab.setText(resources.getString("abstract_unit"));
-        tab.setContent(editViewProvider.getAbstractUnitEditView(null));
+        AbstractUnitEdit abstractUnitEdit = editViewProvider.getAbstractUnitEditView(null);
+        abstractUnitEdit.setParentEntityWrapper(parent);
+        tab.setContent(abstractUnitEdit);
         break;
       case UNIT:
-        tab.setText(resources.getString("unit"));
-        tab.setContent(editViewProvider.getUnitEditView(null));
+        UnitEdit unitEdit = editViewProvider.getUnitEditView(null);
+        unitEdit.setParentEntityWrapper(parent);
+        tab.setContent(unitEdit);
         break;
       case GROUP:
-        tab.setText(resources.getString("group"));
-        tab.setContent(editViewProvider.getGroupEditView(null));
+        GroupEdit groupEdit = editViewProvider.getGroupEditView(null);
+        groupEdit.setParentEntityWrapper(parent);
+        tab.setContent(groupEdit);
         break;
       case SESSION:
-        tab.setText(resources.getString("session"));
-        tab.setContent(editViewProvider.getSessionEditView(null));
+        SessionEdit sessionEdit = editViewProvider.getSessionEditView(null);
+        sessionEdit.setParentEntityWrapper(parent);
+        tab.setContent(sessionEdit);
         break;
       default:
         break;

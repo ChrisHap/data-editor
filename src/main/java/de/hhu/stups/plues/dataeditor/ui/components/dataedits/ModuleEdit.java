@@ -4,8 +4,7 @@ import de.hhu.stups.plues.dataeditor.ui.components.LabeledTextField;
 import de.hhu.stups.plues.dataeditor.ui.database.DataService;
 import de.hhu.stups.plues.dataeditor.ui.database.events.DataChangeEvent;
 import de.hhu.stups.plues.dataeditor.ui.database.events.DataChangeType;
-import de.hhu.stups.plues.dataeditor.ui.entities.AbstractUnitWrapper;
-import de.hhu.stups.plues.dataeditor.ui.entities.ModuleWrapper;
+import de.hhu.stups.plues.dataeditor.ui.entities.*;
 import de.hhu.stups.plues.dataeditor.ui.layout.Inflater;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -24,6 +23,7 @@ public class ModuleEdit extends GridPane implements Initializable {
   private final ModuleWrapper moduleWrapper;
   private final BooleanProperty dataChangedProperty;
   private final DataService dataService;
+  private EntityWrapper parent;
 
   private ResourceBundle resources;
 
@@ -85,8 +85,20 @@ public class ModuleEdit extends GridPane implements Initializable {
             "PordNr muss Zahl Sein", ButtonType.OK).showAndWait();
       return;
     }
+        if (parent != null) {
+          ModuleLevel parentModuleLevel = new ModuleLevel();
+          parentModuleLevel.setModule(moduleWrapper.getModule());
+          parentModuleLevel.setLevel(((LevelWrapper) parent).getLevel());
+          moduleWrapper.getModule().getModuleLevels().add(parentModuleLevel);
+          ((LevelWrapper) parent).getLevel().getModules().add(moduleWrapper.getModule());
+          dataService.dataChangeEventSource().push(
+                new DataChangeEvent(DataChangeType.STORE_ENTITY, moduleWrapper));
+          dataService.dataChangeEventSource().push(
+                new DataChangeEvent(DataChangeType.STORE_ENTITY, parent));
+    }
     dataService.dataChangeEventSource().push(
-        new DataChangeEvent(DataChangeType.STORE_ENTITY, moduleWrapper));
+          new DataChangeEvent(DataChangeType.STORE_ENTITY, moduleWrapper));
+
     dataChangedProperty.set(false);
   }
 
@@ -143,5 +155,9 @@ public class ModuleEdit extends GridPane implements Initializable {
 
   private void setModule() {
     txtModule.setText(moduleWrapper.getTitle());
+  }
+
+  public void setParentEntityWrapper(EntityWrapper parent) {
+    this.parent = parent;
   }
 }

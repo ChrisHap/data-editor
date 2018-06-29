@@ -124,7 +124,8 @@ public class CourseEdit extends GridPane implements Initializable {
     EasyBind.subscribe(listViewMajorsOrMinors.itemsProperty(), s -> dataChangedProperty.set(true));
     EasyBind.subscribe(rbMajorCourse.selectedProperty(), s -> dataChangedProperty.set(true));
     EasyBind.subscribe(rbMinorCourse.selectedProperty(), s -> dataChangedProperty.set(true));
-    EasyBind.subscribe(cbCourseDegree.selectionModelProperty(), s -> dataChangedProperty.set(true));
+    EasyBind.subscribe(cbCourseDegree.getSelectionModel().selectedIndexProperty(),
+          s -> dataChangedProperty.set(true));
   }
 
   private void loadCourseData() {
@@ -173,7 +174,7 @@ public class CourseEdit extends GridPane implements Initializable {
             "Bitte degree auswählen", ButtonType.OK).showAndWait();
       return;
     }
-    courseWrapper.getCourse().setDegree(cbCourseDegree.getValue().toString());
+    courseWrapper.getCourse().setDegree(cbCourseDegree.getValue().toString().toLowerCase());
     courseWrapper.getCourse().setLongName(txtFullName.textProperty().getValue());
     courseWrapper.getCourse().setShortName(txtShortName.textProperty().getValue());
     try {

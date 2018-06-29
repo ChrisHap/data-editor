@@ -11,6 +11,8 @@ import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableSet;
 
+import java.util.HashSet;
+
 public class AbstractUnitWrapper implements EntityWrapper {
 
   private final IntegerProperty idProperty;
@@ -112,5 +114,18 @@ public class AbstractUnitWrapper implements EntityWrapper {
   @Override
   public EntityType getEntityType() {
     return EntityType.ABSTRACT_UNIT;
+  }
+
+  /**
+   * Creates an empty AbstractUnitWrapper.
+   * @return
+   */
+  public static AbstractUnitWrapper createEmptyAbstractUnitWrapper() {
+    AbstractUnit abstractUnit = new AbstractUnit();
+    abstractUnit.setTitle("");
+    abstractUnit.setId(0);
+    abstractUnit.setModules(new HashSet<>());
+    abstractUnit.setUnits(new HashSet<>());
+    return new AbstractUnitWrapper(abstractUnit);
   }
 }

@@ -4,6 +4,7 @@ import de.hhu.stups.plues.dataeditor.ui.components.LabeledTextField;
 import de.hhu.stups.plues.dataeditor.ui.database.DataService;
 import de.hhu.stups.plues.dataeditor.ui.database.events.DataChangeEvent;
 import de.hhu.stups.plues.dataeditor.ui.database.events.DataChangeType;
+import de.hhu.stups.plues.dataeditor.ui.entities.EntityWrapper;
 import de.hhu.stups.plues.dataeditor.ui.entities.Group;
 import de.hhu.stups.plues.dataeditor.ui.entities.GroupWrapper;
 import de.hhu.stups.plues.dataeditor.ui.entities.SessionWrapper;
@@ -12,7 +13,11 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.ComboBox;
 import javafx.scene.layout.GridPane;
 import org.fxmisc.easybind.EasyBind;
 
@@ -49,6 +54,8 @@ public class SessionEdit extends GridPane implements Initializable {
   private Button btPersistChanges;
 
   private HashSet<String> validDays;
+
+  private EntityWrapper parent;
 
   /**
    * Initialize session edit.
@@ -153,8 +160,18 @@ public class SessionEdit extends GridPane implements Initializable {
     } catch (NumberFormatException exception) {
       new Alert(Alert.AlertType.ERROR, "Duration, Rythm, Time müssen Zahlen sein", ButtonType.OK);
     }
+    if (parent != null) {
+      sessionWrapper.getSession().setGroup(((GroupWrapper) parent).getGroup());
+      ((GroupWrapper) parent).getGroup().getSessions().add(sessionWrapper.getSession());
+      dataService.dataChangeEventSource().push(
+            new DataChangeEvent(DataChangeType.STORE_ENTITY, parent));
+    }
     dataService.dataChangeEventSource().push(
         new DataChangeEvent(DataChangeType.STORE_ENTITY, sessionWrapper));
     dataChangedProperty.set(false);
+  }
+
+  public void setParentEntityWrapper(EntityWrapper parent) {
+    this.parent = parent;
   }
 }

@@ -111,4 +111,8 @@ public class ModuleLevel extends ModelEntity implements Serializable {
   public void setModule(final Module module) {
     this.module = module;
   }
+
+  public void setLevel(final Level level) {
+    this.level = level;
+  }
 }

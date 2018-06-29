@@ -9,6 +9,8 @@ import javafx.beans.property.SimpleSetProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableSet;
 
+import java.util.HashSet;
+
 public class GroupWrapper implements EntityWrapper {
 
   private final IntegerProperty idProperty;
@@ -96,5 +98,22 @@ public class GroupWrapper implements EntityWrapper {
   @Override
   public EntityType getEntityType() {
     return EntityType.GROUP;
+  }
+
+  /**
+   * Creates an empty GroupWrapper.
+   * @return the empty GroupWrapper.
+   */
+  public static GroupWrapper createEmptyGroupWrapper() {
+    Group group = new Group();
+    group.setHalfSemester(0);
+    Unit unit = new Unit();
+    unit.setTitle("");
+    unit.setSemesters(new HashSet<>());
+    group.setUnit(unit);
+    group.setSessions(new HashSet<>());
+    GroupWrapper groupWrapper = new GroupWrapper(group);
+    groupWrapper.setUnit(new UnitWrapper(unit));
+    return groupWrapper;
   }
 }

@@ -11,6 +11,8 @@ import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableSet;
 
+import java.util.HashSet;
+
 public class UnitWrapper implements EntityWrapper {
 
   private final IntegerProperty idProperty;
@@ -126,5 +128,15 @@ public class UnitWrapper implements EntityWrapper {
   @Override
   public EntityType getEntityType() {
     return EntityType.UNIT;
+  }
+
+  /**
+   * Creates an empty UnitWrapper.
+   * @return the empty UnitWrapper.
+   */
+  public static UnitWrapper createEmptyUnitWrapper() {
+    Unit unit = new Unit();
+    unit.setSemesters(new HashSet<>());
+    return new UnitWrapper(unit);
   }
 }

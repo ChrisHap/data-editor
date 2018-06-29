@@ -1,26 +1,11 @@
 package de.hhu.stups.plues.dataeditor.ui.components.dataedits;
 
 import de.hhu.stups.plues.dataeditor.ui.database.DataService;
-import de.hhu.stups.plues.dataeditor.ui.entities.AbstractUnit;
-import de.hhu.stups.plues.dataeditor.ui.entities.AbstractUnitWrapper;
-import de.hhu.stups.plues.dataeditor.ui.entities.Course;
-import de.hhu.stups.plues.dataeditor.ui.entities.CourseWrapper;
-import de.hhu.stups.plues.dataeditor.ui.entities.Group;
-import de.hhu.stups.plues.dataeditor.ui.entities.GroupWrapper;
-import de.hhu.stups.plues.dataeditor.ui.entities.Level;
-import de.hhu.stups.plues.dataeditor.ui.entities.LevelWrapper;
-import de.hhu.stups.plues.dataeditor.ui.entities.Module;
-import de.hhu.stups.plues.dataeditor.ui.entities.ModuleWrapper;
-import de.hhu.stups.plues.dataeditor.ui.entities.Session;
-import de.hhu.stups.plues.dataeditor.ui.entities.SessionWrapper;
-import de.hhu.stups.plues.dataeditor.ui.entities.Unit;
-import de.hhu.stups.plues.dataeditor.ui.entities.UnitWrapper;
+import de.hhu.stups.plues.dataeditor.ui.entities.*;
 import de.hhu.stups.plues.dataeditor.ui.layout.Inflater;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
-
-import java.util.HashSet;
 
 @Component
 public class EditViewProvider {
@@ -43,11 +28,7 @@ public class EditViewProvider {
    */
   public CourseEdit getCourseEditView(CourseWrapper courseWrapper) {
     if (courseWrapper == null) {
-      Course course = new Course();
-      course.setCreditPoints(5);
-      course.setDegree("bk");
-      course.setPo(2016);
-      courseWrapper = new CourseWrapper(course);
+      courseWrapper = CourseWrapper.createEmptyCourseWrapper();
     }
     return new CourseEdit(springContext.getBean(Inflater.class),dataService,courseWrapper);
   }
@@ -57,12 +38,7 @@ public class EditViewProvider {
    */
   public AbstractUnitEdit getAbstractUnitEditView(AbstractUnitWrapper abstractUnitWrapper) {
     if (abstractUnitWrapper == null) {
-      AbstractUnit abstractUnit = new AbstractUnit();
-      abstractUnit.setTitle("");
-      abstractUnit.setId(0);
-      abstractUnit.setModules(new HashSet<>());
-      abstractUnit.setUnits(new HashSet<>());
-      abstractUnitWrapper = new AbstractUnitWrapper(abstractUnit);
+      abstractUnitWrapper = AbstractUnitWrapper.createEmptyAbstractUnitWrapper();
     }
     return new AbstractUnitEdit(springContext.getBean(Inflater.class),
             dataService, abstractUnitWrapper);
@@ -73,9 +49,7 @@ public class EditViewProvider {
    */
   public UnitEdit getUnitEditView(UnitWrapper unitWrapper) {
     if (unitWrapper == null) {
-      Unit unit = new Unit();
-      unit.setSemesters(new HashSet<>());
-      unitWrapper = new UnitWrapper(unit);
+      unitWrapper = UnitWrapper.createEmptyUnitWrapper();
     }
     return new UnitEdit(springContext.getBean(Inflater.class),dataService,unitWrapper);
   }
@@ -100,11 +74,7 @@ public class EditViewProvider {
    */
   public ModuleEdit getModuleEditView(ModuleWrapper moduleWrapper) {
     if (moduleWrapper == null) {
-      Module module = new Module();
-      module.setPordnr(0);
-      module.setBundled(false);
-      module.setElectiveUnits(0);
-      moduleWrapper = new ModuleWrapper(module);
+      moduleWrapper = ModuleWrapper.createEmptyModuleWrapper();
     }
     return new ModuleEdit(springContext.getBean(Inflater.class),dataService,moduleWrapper);
   }
@@ -114,9 +84,7 @@ public class EditViewProvider {
    */
   public LevelEdit getLevelEditView(LevelWrapper levelWrapper) {
     if (levelWrapper == null) {
-      Level level = new Level();
-      level.setId(0);
-      levelWrapper = new LevelWrapper(level);
+      levelWrapper = LevelWrapper.createEmptyLevelWrapper();
     }
     return new LevelEdit(springContext.getBean(Inflater.class),dataService,levelWrapper);
   }
@@ -126,15 +94,7 @@ public class EditViewProvider {
    */
   public GroupEdit getGroupEditView(GroupWrapper groupWrapper) {
     if (groupWrapper == null) {
-      Group group = new Group();
-      group.setHalfSemester(0);
-      Unit unit = new Unit();
-      unit.setTitle("");
-      unit.setSemesters(new HashSet<>());
-      group.setUnit(unit);
-      group.setSessions(new HashSet<>());
-      groupWrapper = new GroupWrapper(group);
-      groupWrapper.setUnit(new UnitWrapper(unit));
+      groupWrapper = GroupWrapper.createEmptyGroupWrapper();
     }
     return new GroupEdit(springContext.getBean(Inflater.class),dataService,groupWrapper);
   }

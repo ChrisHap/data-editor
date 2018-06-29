@@ -209,7 +209,15 @@ public class CourseWrapper implements EntityWrapper {
     return minorCourseWrapperProperty.get();
   }
 
-  public void setEntityType(){
-
+  /**
+   * Create an empty CourseWrapper.
+   * @return the created CourseWrapper.
+   */
+  public static CourseWrapper createEmptyCourseWrapper(){
+    Course course = new Course();
+    course.setCreditPoints(5);
+    course.setDegree("bk");
+    course.setPo(2016);
+    return new CourseWrapper(course);
   }
 }
