@@ -224,7 +224,6 @@ public class Course extends ModelEntity implements Serializable {
   }
 
   public Set<Module> getModules() {
-    modules.size();
     return modules;
   }
 

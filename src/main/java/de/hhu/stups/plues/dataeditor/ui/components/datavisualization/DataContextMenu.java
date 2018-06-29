@@ -3,7 +3,6 @@ package de.hhu.stups.plues.dataeditor.ui.components.datavisualization;
 import de.hhu.stups.plues.dataeditor.ui.database.DataService;
 import de.hhu.stups.plues.dataeditor.ui.database.events.DataChangeEvent;
 import de.hhu.stups.plues.dataeditor.ui.database.events.DataChangeType;
-import de.hhu.stups.plues.dataeditor.ui.entities.CourseWrapper;
 import de.hhu.stups.plues.dataeditor.ui.entities.EntityType;
 import de.hhu.stups.plues.dataeditor.ui.entities.EntityWrapper;
 import javafx.beans.property.ObjectProperty;
@@ -21,8 +20,6 @@ public class DataContextMenu extends ContextMenu {
   private final ObjectProperty<EntityWrapper> entityWrapperProperty;
   private final ResourceBundle resources;
   private DataService dataService;
-
-  private MenuItem menuItemAddEntity;
 
   /**
    * Initialize the menu items and {@link #entityWrapperProperty}.

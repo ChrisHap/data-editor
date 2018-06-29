@@ -118,7 +118,7 @@ public class AbstractUnitWrapper implements EntityWrapper {
 
   /**
    * Creates an empty AbstractUnitWrapper.
-   * @return
+   * @return the empty AbstractUnitWrapper.
    */
   public static AbstractUnitWrapper createEmptyAbstractUnitWrapper() {
     AbstractUnit abstractUnit = new AbstractUnit();

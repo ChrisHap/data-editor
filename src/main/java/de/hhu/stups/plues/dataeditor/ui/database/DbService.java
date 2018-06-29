@@ -2,12 +2,9 @@ package de.hhu.stups.plues.dataeditor.ui.database;
 
 import de.hhu.stups.plues.dataeditor.ui.database.events.DbEvent;
 import de.hhu.stups.plues.dataeditor.ui.database.events.LoadDbEvent;
-import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.concurrent.Service;
 import javafx.concurrent.Task;
-import org.controlsfx.control.StatusBar;
 import org.reactfx.EventSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.File;
 import javax.sql.DataSource;
+
 
 /**
  * The DbService establishes and manages the connection to the database.

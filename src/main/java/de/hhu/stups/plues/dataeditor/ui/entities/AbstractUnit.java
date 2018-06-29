@@ -102,7 +102,6 @@ public class AbstractUnit extends ModelEntity implements Serializable {
   }
 
   public Set<Unit> getUnits() {
-    units.size();
     return units;
   }
 
@@ -111,7 +110,6 @@ public class AbstractUnit extends ModelEntity implements Serializable {
   }
 
   public Set<ModuleAbstractUnitSemester> getModuleAbstractUnitSemesters() {
-    moduleAbstractUnitSemesters.size();
     return moduleAbstractUnitSemesters;
   }
 
@@ -121,7 +119,6 @@ public class AbstractUnit extends ModelEntity implements Serializable {
   }
 
   public Set<ModuleAbstractUnitType> getModuleAbstractUnitTypes() {
-    moduleAbstractUnitTypes.size();
     return moduleAbstractUnitTypes;
   }
 
@@ -137,5 +134,4 @@ public class AbstractUnit extends ModelEntity implements Serializable {
   public void setModules(final Set<Module> modules) {
     this.modules = modules;
   }
-
 }

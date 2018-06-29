@@ -34,9 +34,9 @@ public class Level extends ModelEntity implements Serializable {
 
   private String tm;
 
-  private Integer max;
+  private Integer max = new Integer(0);
 
-  private Integer min;
+  private Integer min = new Integer(0);
 
   @Column(name = "min_credit_points")
   private Integer minCreditPoints;
@@ -164,7 +164,6 @@ public class Level extends ModelEntity implements Serializable {
   }
 
   public Set<Level> getChildren() {
-    children.size();
     return children;
   }
 

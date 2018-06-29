@@ -77,7 +77,6 @@ public class Unit extends ModelEntity implements Serializable {
   }
 
   public Set<Integer> getSemesters() {
-    semesters.size();
     return semesters;
   }
 
@@ -86,7 +85,6 @@ public class Unit extends ModelEntity implements Serializable {
   }
 
   public Set<AbstractUnit> getAbstractUnits() {
-    abstractUnits.size();
     return abstractUnits;
   }
 
@@ -95,7 +93,6 @@ public class Unit extends ModelEntity implements Serializable {
   }
 
   public Set<Group> getGroups() {
-    groups.size();
     return groups;
   }
 

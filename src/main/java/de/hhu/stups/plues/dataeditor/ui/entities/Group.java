@@ -61,7 +61,6 @@ public class Group extends ModelEntity implements Serializable {
   }
 
   public Set<Session> getSessions() {
-    sessions.size();
     return sessions;
   }
 
