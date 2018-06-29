@@ -11,7 +11,15 @@ import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableSet;
 
-import javax.persistence.*;
+import javax.persistence.Access;
+import javax.persistence.AccessType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 @Entity
 @Access(AccessType.PROPERTY)
@@ -213,7 +221,7 @@ public class CourseWrapper implements EntityWrapper {
    * Create an empty CourseWrapper.
    * @return the created CourseWrapper.
    */
-  public static CourseWrapper createEmptyCourseWrapper(){
+  public static CourseWrapper createEmptyCourseWrapper() {
     Course course = new Course();
     course.setCreditPoints(5);
     course.setDegree("bk");
