@@ -140,7 +140,7 @@ public class LevelEdit extends GridPane implements Initializable {
       levelWrapper.setMaxCredits(Integer.parseInt(txtMaxCp.textProperty().get()));
       levelWrapper.setMinCredits(Integer.parseInt(txtMinCp.textProperty().get()));
     } catch (NumberFormatException exception) {
-      new Alert(Alert.AlertType.ERROR, "Credit Points muss Zahl sein", ButtonType.OK);
+      new Alert(Alert.AlertType.ERROR, resources.getString("creditsError"), ButtonType.OK);
     }
     if (rbParentCourse.isSelected()) {
       levelWrapper.getLevel().setCourse(((CourseWrapper)cbParentCourse.getValue()).getCourse());

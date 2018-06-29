@@ -31,6 +31,8 @@ public class SessionEdit extends GridPane implements Initializable {
   private final DataService dataService;
   private final BooleanProperty dataChangedProperty;
 
+  private ResourceBundle resources;
+
   @FXML
   @SuppressWarnings("unused")
   private LabeledTextField txtDay;
@@ -71,6 +73,7 @@ public class SessionEdit extends GridPane implements Initializable {
 
   @Override
   public void initialize(final URL location, final ResourceBundle resources) {
+    this.resources = resources;
     validDays = new HashSet<>();
     validDays.add("mon");
     validDays.add("tue");
@@ -149,7 +152,8 @@ public class SessionEdit extends GridPane implements Initializable {
   @SuppressWarnings("unused")
   public void persistChanges() {
     if (!validDays.contains(txtDay.textProperty().get())) {
-      new Alert(Alert.AlertType.ERROR, "Use valid day", ButtonType.OK).showAndWait();
+      new Alert(Alert.AlertType.ERROR, resources.getString("dayError"),
+            ButtonType.OK).showAndWait();
       return;
     }
     sessionWrapper.getSession().setDay(txtDay.textProperty().get());
@@ -158,7 +162,7 @@ public class SessionEdit extends GridPane implements Initializable {
       sessionWrapper.getSession().setRhythm(Integer.parseInt(txtRhythm.textProperty().get()));
       sessionWrapper.getSession().setTime(Integer.parseInt(txtTime.textProperty().get()));
     } catch (NumberFormatException exception) {
-      new Alert(Alert.AlertType.ERROR, "Duration, Rythm, Time müssen Zahlen sein", ButtonType.OK);
+      new Alert(Alert.AlertType.ERROR, resources.getString("numberFormatError"), ButtonType.OK);
     }
     if (parent != null) {
       sessionWrapper.getSession().setGroup(((GroupWrapper) parent).getGroup());

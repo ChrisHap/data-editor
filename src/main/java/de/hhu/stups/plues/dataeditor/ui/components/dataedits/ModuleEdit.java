@@ -4,13 +4,21 @@ import de.hhu.stups.plues.dataeditor.ui.components.LabeledTextField;
 import de.hhu.stups.plues.dataeditor.ui.database.DataService;
 import de.hhu.stups.plues.dataeditor.ui.database.events.DataChangeEvent;
 import de.hhu.stups.plues.dataeditor.ui.database.events.DataChangeType;
-import de.hhu.stups.plues.dataeditor.ui.entities.*;
+import de.hhu.stups.plues.dataeditor.ui.entities.AbstractUnitWrapper;
+import de.hhu.stups.plues.dataeditor.ui.entities.EntityWrapper;
+import de.hhu.stups.plues.dataeditor.ui.entities.LevelWrapper;
+import de.hhu.stups.plues.dataeditor.ui.entities.ModuleLevel;
+import de.hhu.stups.plues.dataeditor.ui.entities.ModuleWrapper;
 import de.hhu.stups.plues.dataeditor.ui.layout.Inflater;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.ListView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import org.fxmisc.easybind.EasyBind;
@@ -82,19 +90,19 @@ public class ModuleEdit extends GridPane implements Initializable {
       moduleWrapper.getModule().setPordnr(Integer.parseInt(txtPordnr.textProperty().get()));
     } catch (NumberFormatException exception) {
       new Alert(Alert.AlertType.ERROR,
-            "PordNr muss Zahl Sein", ButtonType.OK).showAndWait();
+            resources.getString("pordnrError"), ButtonType.OK).showAndWait();
       return;
     }
-        if (parent != null) {
-          ModuleLevel parentModuleLevel = new ModuleLevel();
-          parentModuleLevel.setModule(moduleWrapper.getModule());
-          parentModuleLevel.setLevel(((LevelWrapper) parent).getLevel());
-          moduleWrapper.getModule().getModuleLevels().add(parentModuleLevel);
-          ((LevelWrapper) parent).getLevel().getModules().add(moduleWrapper.getModule());
-          dataService.dataChangeEventSource().push(
-                new DataChangeEvent(DataChangeType.STORE_ENTITY, moduleWrapper));
-          dataService.dataChangeEventSource().push(
-                new DataChangeEvent(DataChangeType.STORE_ENTITY, parent));
+    if (parent != null) {
+      ModuleLevel parentModuleLevel = new ModuleLevel();
+      parentModuleLevel.setModule(moduleWrapper.getModule());
+      parentModuleLevel.setLevel(((LevelWrapper) parent).getLevel());
+      moduleWrapper.getModule().getModuleLevels().add(parentModuleLevel);
+      ((LevelWrapper) parent).getLevel().getModules().add(moduleWrapper.getModule());
+      dataService.dataChangeEventSource().push(
+          new DataChangeEvent(DataChangeType.STORE_ENTITY, moduleWrapper));
+      dataService.dataChangeEventSource().push(
+          new DataChangeEvent(DataChangeType.STORE_ENTITY, parent));
     }
     dataService.dataChangeEventSource().push(
           new DataChangeEvent(DataChangeType.STORE_ENTITY, moduleWrapper));

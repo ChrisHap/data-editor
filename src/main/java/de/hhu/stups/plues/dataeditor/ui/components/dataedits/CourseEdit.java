@@ -12,7 +12,13 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
+import javafx.scene.control.RadioButton;
 import javafx.scene.layout.GridPane;
 import javafx.util.StringConverter;
 import org.fxmisc.easybind.EasyBind;
@@ -125,7 +131,7 @@ public class CourseEdit extends GridPane implements Initializable {
     EasyBind.subscribe(rbMajorCourse.selectedProperty(), s -> dataChangedProperty.set(true));
     EasyBind.subscribe(rbMinorCourse.selectedProperty(), s -> dataChangedProperty.set(true));
     EasyBind.subscribe(cbCourseDegree.getSelectionModel().selectedIndexProperty(),
-          s -> dataChangedProperty.set(true));
+        s -> dataChangedProperty.set(true));
   }
 
   private void loadCourseData() {
@@ -171,7 +177,7 @@ public class CourseEdit extends GridPane implements Initializable {
   public void persistChanges() {
     if (cbCourseDegree.getValue() == null) {
       new Alert(Alert.AlertType.ERROR,
-            "Bitte degree auswählen", ButtonType.OK).showAndWait();
+            resources.getString("degreeError"), ButtonType.OK).showAndWait();
       return;
     }
     courseWrapper.getCourse().setDegree(cbCourseDegree.getValue().toString().toLowerCase());
@@ -181,7 +187,7 @@ public class CourseEdit extends GridPane implements Initializable {
       courseWrapper.getCourse().setPo(Integer.parseInt(txtPVersion.textProperty().get()));
     } catch (NumberFormatException exeption) {
       new Alert(Alert.AlertType.ERROR,
-            "Prüfungsordnung muss Zahl sein", ButtonType.OK).showAndWait();
+            resources.getString("poError"), ButtonType.OK).showAndWait();
       return;
     }
     try {
@@ -189,7 +195,7 @@ public class CourseEdit extends GridPane implements Initializable {
             txtCreditPoints.textProperty().getValue()));
     } catch (NumberFormatException exeption) {
       new Alert(Alert.AlertType.ERROR,
-            "Credit Points muss Zahl sein", ButtonType.OK).showAndWait();
+            resources.getString("creditsError"), ButtonType.OK).showAndWait();
       return;
     }
     if (rbMajorCourse.isSelected()) {
