@@ -98,6 +98,11 @@ public class DataContextMenu extends ContextMenu {
         break;
       default:
     }
+    MenuItem deleteItem = new MenuItem(resources.getString("delete"));
+    deleteItem.setOnAction(event -> dataService.dataChangeEventSource().push(
+          new DataChangeEvent(DataChangeType.DELETE_ENTITY, entityWrapper,
+                entityWrapper.getEntityType())));
+    getItems().add(deleteItem);
   }
 
   void setEntityWrapper(final EntityWrapper entityWrapper) {

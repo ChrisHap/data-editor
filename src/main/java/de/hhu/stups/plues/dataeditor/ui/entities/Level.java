@@ -10,6 +10,8 @@ import java.util.stream.Collectors;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
@@ -26,6 +28,7 @@ public class Level extends ModelEntity implements Serializable {
   private static final long serialVersionUID = -2571508967373463723L;
 
   @Id
+  @GeneratedValue(strategy = GenerationType.TABLE)
   private Integer id;
 
   private String art;
@@ -34,9 +37,9 @@ public class Level extends ModelEntity implements Serializable {
 
   private String tm;
 
-  private Integer max = new Integer(0);
+  private Integer max = 0;
 
-  private Integer min = new Integer(0);
+  private Integer min = 0;
 
   @Column(name = "min_credit_points")
   private Integer minCreditPoints;

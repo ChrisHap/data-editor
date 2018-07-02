@@ -23,12 +23,15 @@ import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleMapProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import org.fxmisc.easybind.EasyBind;
 import org.reactfx.EventSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.sql.DataSource;
 
@@ -93,9 +96,14 @@ public class DataService {
   }
 
   private void persistData(DataChangeEvent dataChangeEvent) {
-    if (!dataChangeEvent.getDataChangeType().storeEntity()) {
-      return;
+    if (dataChangeEvent.getDataChangeType().storeEntity()) {
+      saveEntity(dataChangeEvent);
+    } else if (dataChangeEvent.getDataChangeType().deleteEntity()) {
+      deleteEntity(dataChangeEvent);
     }
+  }
+
+  private void saveEntity(DataChangeEvent dataChangeEvent) {
     if (dataChangeEvent.getChangedEntity().getEntityType() == EntityType.COURSE) {
       courseRepository.save(((CourseWrapper)dataChangeEvent.getChangedEntity()).getCourse());
     }
@@ -118,6 +126,42 @@ public class DataService {
     if (dataChangeEvent.getChangedEntity().getEntityType() == EntityType.SESSION) {
       sessionRepository.save(((SessionWrapper)dataChangeEvent.getChangedEntity()).getSession());
     }
+  }
+
+  private void deleteEntity(DataChangeEvent dataChangeEvent) {
+    Alert alert = new Alert(Alert.AlertType.CONFIRMATION,
+          "Wirklich " + dataChangeEvent.getChangedEntity().toString() + "löschen?",
+          ButtonType.OK, ButtonType.CANCEL);
+    Optional<ButtonType> result = alert.showAndWait();
+    if (!result.isPresent() || result.get() == ButtonType.CANCEL) {
+      return;
+    }
+    switch (dataChangeEvent.getChangedType()) {
+      case COURSE:
+        courseRepository.delete(((CourseWrapper)dataChangeEvent.getChangedEntity()).getCourse());
+        break;
+      case LEVEL:
+        levelRepository.delete(((LevelWrapper)dataChangeEvent.getChangedEntity()).getLevel());
+        break;
+      case MODULE:
+        moduleRepository.delete(((ModuleWrapper)dataChangeEvent.getChangedEntity()).getModule());
+        break;
+      case ABSTRACT_UNIT:
+        abstractUnitRepository.delete(
+              ((AbstractUnitWrapper)dataChangeEvent.getChangedEntity()).getAbstractUnit());
+        break;
+      case UNIT:
+        unitRepository.delete(((UnitWrapper)dataChangeEvent.getChangedEntity()).getUnit());
+        break;
+      case GROUP:
+        groupRepository.delete(((GroupWrapper)dataChangeEvent.getChangedEntity()).getGroup());
+        break;
+      case SESSION:
+        sessionRepository.delete(((SessionWrapper)dataChangeEvent.getChangedEntity()).getSession());
+        break;
+      default:
+    }
+
   }
 
   private void loadData(final DataSource dataSource) {
