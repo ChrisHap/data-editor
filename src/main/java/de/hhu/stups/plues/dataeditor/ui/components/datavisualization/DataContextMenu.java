@@ -3,8 +3,15 @@ package de.hhu.stups.plues.dataeditor.ui.components.datavisualization;
 import de.hhu.stups.plues.dataeditor.ui.database.DataService;
 import de.hhu.stups.plues.dataeditor.ui.database.events.DataChangeEvent;
 import de.hhu.stups.plues.dataeditor.ui.database.events.DataChangeType;
+import de.hhu.stups.plues.dataeditor.ui.entities.AbstractUnitWrapper;
+import de.hhu.stups.plues.dataeditor.ui.entities.CourseWrapper;
 import de.hhu.stups.plues.dataeditor.ui.entities.EntityType;
 import de.hhu.stups.plues.dataeditor.ui.entities.EntityWrapper;
+import de.hhu.stups.plues.dataeditor.ui.entities.GroupWrapper;
+import de.hhu.stups.plues.dataeditor.ui.entities.LevelWrapper;
+import de.hhu.stups.plues.dataeditor.ui.entities.ModuleWrapper;
+import de.hhu.stups.plues.dataeditor.ui.entities.SessionWrapper;
+import de.hhu.stups.plues.dataeditor.ui.entities.UnitWrapper;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.control.Alert;
@@ -46,52 +53,60 @@ public class DataContextMenu extends ContextMenu {
       case COURSE:
         MenuItem menuItemAddCourse = new MenuItem(resources.getString("addCourse"));
         menuItemAddCourse.setOnAction(event -> dataService.dataChangeEventSource().push(
-              new DataChangeEvent(DataChangeType.NEW_ENTITY, null, EntityType.COURSE)
+              new DataChangeEvent(DataChangeType.NEW_ENTITY,
+                    CourseWrapper.createEmptyCourseWrapper(), EntityType.COURSE)
         ));
         getItems().add(menuItemAddCourse);
         MenuItem menuItemAddLevel = new MenuItem(resources.getString("addLevel"));
         menuItemAddLevel.setOnAction(event -> dataService.dataChangeEventSource().push(
-              new DataChangeEvent(DataChangeType.NEW_ENTITY, entityWrapper, EntityType.LEVEL)
+              new DataChangeEvent(DataChangeType.NEW_ENTITY,
+                    LevelWrapper.createEmptyLevelWrapper(), EntityType.LEVEL, entityWrapper)
         ));
         getItems().add(menuItemAddLevel);
         break;
       case LEVEL:
         MenuItem menuItemAddLevelToLevel = new MenuItem(resources.getString("addLevel"));
         menuItemAddLevelToLevel.setOnAction(event -> dataService.dataChangeEventSource().push(
-              new DataChangeEvent(DataChangeType.NEW_ENTITY, entityWrapper, EntityType.LEVEL)
+              new DataChangeEvent(DataChangeType.NEW_ENTITY,
+                    LevelWrapper.createEmptyLevelWrapper(), EntityType.LEVEL, entityWrapper)
         ));
         getItems().add(menuItemAddLevelToLevel);
         MenuItem menuItemAddModule = new MenuItem(resources.getString("addModule"));
         menuItemAddModule.setOnAction(event -> dataService.dataChangeEventSource().push(
-              new DataChangeEvent(DataChangeType.NEW_ENTITY, entityWrapper, EntityType.MODULE)
+              new DataChangeEvent(DataChangeType.NEW_ENTITY,
+                    ModuleWrapper.createEmptyModuleWrapper(), EntityType.MODULE, entityWrapper)
         ));
         getItems().add(menuItemAddModule);
         break;
       case MODULE:
         MenuItem menuItemAddAbstractUnit = new MenuItem(resources.getString("addAbstractUnit"));
         menuItemAddAbstractUnit.setOnAction(event -> dataService.dataChangeEventSource().push(
-              new DataChangeEvent(DataChangeType.NEW_ENTITY, entityWrapper,
-                    EntityType.ABSTRACT_UNIT)));
+            new DataChangeEvent(DataChangeType.NEW_ENTITY,
+                  AbstractUnitWrapper.createEmptyAbstractUnitWrapper(),
+                  EntityType.ABSTRACT_UNIT, entityWrapper)));
         getItems().add(menuItemAddAbstractUnit);
         break;
       case ABSTRACT_UNIT:
         MenuItem menuItemAddUnit = new MenuItem(resources.getString("addUnit"));
         menuItemAddUnit.setOnAction(event -> dataService.dataChangeEventSource().push(
-              new DataChangeEvent(DataChangeType.NEW_ENTITY, entityWrapper, EntityType.UNIT)
+              new DataChangeEvent(DataChangeType.NEW_ENTITY,
+                    UnitWrapper.createEmptyUnitWrapper(), EntityType.UNIT, entityWrapper)
         ));
         getItems().add(menuItemAddUnit);
         break;
       case UNIT:
         MenuItem menuItemAddGroup = new MenuItem(resources.getString("addGroup"));
         menuItemAddGroup.setOnAction(event -> dataService.dataChangeEventSource().push(
-              new DataChangeEvent(DataChangeType.NEW_ENTITY, entityWrapper, EntityType.GROUP)
+              new DataChangeEvent(DataChangeType.NEW_ENTITY,
+                    GroupWrapper.createEmptyGroupWrapper(), EntityType.GROUP, entityWrapper)
         ));
         getItems().add(menuItemAddGroup);
         break;
       case GROUP:
         MenuItem menuItemAddSession = new MenuItem(resources.getString("addSession"));
         menuItemAddSession.setOnAction(event -> dataService.dataChangeEventSource().push(
-              new DataChangeEvent(DataChangeType.NEW_ENTITY, entityWrapper, EntityType.SESSION)
+            new DataChangeEvent(DataChangeType.NEW_ENTITY,
+                  SessionWrapper.createEmptySessionWrapper(), EntityType.SESSION, entityWrapper)
         ));
         getItems().add(menuItemAddSession);
         break;

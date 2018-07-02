@@ -34,9 +34,6 @@ public class EditViewProvider {
    * Provides a CourseEdit view.
    */
   public CourseEdit getCourseEditView(CourseWrapper courseWrapper) {
-    if (courseWrapper == null) {
-      courseWrapper = CourseWrapper.createEmptyCourseWrapper();
-    }
     return new CourseEdit(springContext.getBean(Inflater.class),dataService,courseWrapper);
   }
 
@@ -44,9 +41,6 @@ public class EditViewProvider {
    * Provides a AbstractUnitEdit view.
    */
   public AbstractUnitEdit getAbstractUnitEditView(AbstractUnitWrapper abstractUnitWrapper) {
-    if (abstractUnitWrapper == null) {
-      abstractUnitWrapper = AbstractUnitWrapper.createEmptyAbstractUnitWrapper();
-    }
     return new AbstractUnitEdit(springContext.getBean(Inflater.class),
             dataService, abstractUnitWrapper);
   }
@@ -55,9 +49,6 @@ public class EditViewProvider {
    * Provides a UnitEdit view.
    */
   public UnitEdit getUnitEditView(UnitWrapper unitWrapper) {
-    if (unitWrapper == null) {
-      unitWrapper = UnitWrapper.createEmptyUnitWrapper();
-    }
     return new UnitEdit(springContext.getBean(Inflater.class),dataService,unitWrapper);
   }
 
@@ -65,14 +56,6 @@ public class EditViewProvider {
    * Provides a SessionEdit view.
    */
   public SessionEdit getSessionEditView(SessionWrapper sessionWrapper) {
-    if (sessionWrapper == null) {
-      Session session = new Session();
-      session.setDay("");
-      session.setDuration(0);
-      session.setTime(0);
-      session.setRhythm(0);
-      sessionWrapper = new SessionWrapper(session);
-    }
     return new SessionEdit(springContext.getBean(Inflater.class),dataService,sessionWrapper);
   }
 
@@ -80,9 +63,6 @@ public class EditViewProvider {
    * Provides a ModuleEdit view.
    */
   public ModuleEdit getModuleEditView(ModuleWrapper moduleWrapper) {
-    if (moduleWrapper == null) {
-      moduleWrapper = ModuleWrapper.createEmptyModuleWrapper();
-    }
     return new ModuleEdit(springContext.getBean(Inflater.class),dataService,moduleWrapper);
   }
 
@@ -90,9 +70,6 @@ public class EditViewProvider {
    * Provides a LevelEdit view.
    */
   public LevelEdit getLevelEditView(LevelWrapper levelWrapper) {
-    if (levelWrapper == null) {
-      levelWrapper = LevelWrapper.createEmptyLevelWrapper();
-    }
     return new LevelEdit(springContext.getBean(Inflater.class),dataService,levelWrapper);
   }
 
@@ -100,9 +77,6 @@ public class EditViewProvider {
    * Provides a GroupEdit view.
    */
   public GroupEdit getGroupEditView(GroupWrapper groupWrapper) {
-    if (groupWrapper == null) {
-      groupWrapper = GroupWrapper.createEmptyGroupWrapper();
-    }
     return new GroupEdit(springContext.getBean(Inflater.class),dataService,groupWrapper);
   }
 }

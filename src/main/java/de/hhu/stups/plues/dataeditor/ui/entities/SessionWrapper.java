@@ -139,6 +139,19 @@ public class SessionWrapper implements EntityWrapper {
     return sessionProperty.get().toString();
   }
 
+  /**
+   * Creates an empty SessionWrapper.
+   * @return the empty SessionWrapper.
+   */
+  public static SessionWrapper createEmptySessionWrapper(){
+    Session session = new Session();
+    session.setDay("");
+    session.setDuration(0);
+    session.setTime(0);
+    session.setRhythm(0);
+    return new SessionWrapper(session);
+  }
+
   @Override
   public EntityType getEntityType() {
     return EntityType.SESSION;

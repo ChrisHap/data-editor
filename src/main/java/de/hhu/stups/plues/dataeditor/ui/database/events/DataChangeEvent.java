@@ -8,6 +8,7 @@ public class DataChangeEvent {
   private final DataChangeType dataChangeType;
   private final EntityWrapper changedEntity;
   private final EntityType changedType;
+  private final EntityWrapper parent;
 
   /**
    * Create an event referring to the whole database state like {@link DataChangeType#RELOAD_DB}.
@@ -16,6 +17,7 @@ public class DataChangeEvent {
     this.dataChangeType = dataChangeType;
     changedEntity = null;
     changedType = null;
+    parent = null;
   }
 
   /**
@@ -27,11 +29,11 @@ public class DataChangeEvent {
     this.dataChangeType = dataChangeType;
     this.changedEntity = changedEntity;
     changedType = null;
+    parent = null;
   }
 
   /**
-   * Create an event to change a specific database entity for a given {@link EntityWrapper}
-   * with a given parent.
+   * Create an event to change a specific database entity for a given {@link EntityWrapper}.
    */
   public DataChangeEvent(final DataChangeType dataChangeType,
                          final EntityWrapper changedEntity,
@@ -40,6 +42,22 @@ public class DataChangeEvent {
     this.dataChangeType = dataChangeType;
     this.changedEntity = changedEntity;
     this.changedType = changedType;
+    parent = null;
+  }
+
+  /**
+   * Create an event to change a specific database entity for a given {@link EntityWrapper}
+   * with a given parent.
+   */
+  public DataChangeEvent(final DataChangeType dataChangeType,
+                         final EntityWrapper changedEntity,
+                         final EntityType changedType,
+                         final EntityWrapper parent) {
+    assert dataChangeType.changeEntity();
+    this.dataChangeType = dataChangeType;
+    this.changedEntity = changedEntity;
+    this.changedType = changedType;
+    this.parent = parent;
   }
 
   public DataChangeType getDataChangeType() {
@@ -48,6 +66,10 @@ public class DataChangeEvent {
 
   public EntityWrapper getChangedEntity() {
     return changedEntity;
+  }
+
+  public EntityWrapper getParent() {
+    return parent;
   }
 
   public EntityType getChangedType() {
