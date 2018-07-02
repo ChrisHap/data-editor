@@ -5,6 +5,7 @@ import de.hhu.stups.plues.dataeditor.ui.database.events.DataChangeType;
 import de.hhu.stups.plues.dataeditor.ui.entities.AbstractUnitWrapper;
 import de.hhu.stups.plues.dataeditor.ui.entities.CourseWrapper;
 import de.hhu.stups.plues.dataeditor.ui.entities.EntityType;
+import de.hhu.stups.plues.dataeditor.ui.entities.EntityWrapper;
 import de.hhu.stups.plues.dataeditor.ui.entities.GroupWrapper;
 import de.hhu.stups.plues.dataeditor.ui.entities.LevelWrapper;
 import de.hhu.stups.plues.dataeditor.ui.entities.ModuleWrapper;
@@ -23,17 +24,15 @@ import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleMapProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
 import org.fxmisc.easybind.EasyBind;
 import org.reactfx.EventSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
 
-import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.sql.DataSource;
+
 
 /**
  * A simple data service providing several map properties to manage the database entity wrapper.
@@ -97,60 +96,61 @@ public class DataService {
 
   private void persistData(DataChangeEvent dataChangeEvent) {
     if (dataChangeEvent.getDataChangeType().storeEntity()) {
-      saveEntity(dataChangeEvent);
+      saveEntity(dataChangeEvent.getChangedType(), dataChangeEvent.getChangedEntity());
     } else if (dataChangeEvent.getDataChangeType().deleteEntity()) {
-      deleteEntity(dataChangeEvent);
+      deleteEntity(dataChangeEvent.getChangedType(), dataChangeEvent.getChangedEntity());
     }
   }
 
-  private void saveEntity(DataChangeEvent dataChangeEvent) {
-    if (dataChangeEvent.getChangedEntity().getEntityType() == EntityType.COURSE) {
-      courseRepository.save(((CourseWrapper)dataChangeEvent.getChangedEntity()).getCourse());
-    }
-    if (dataChangeEvent.getChangedEntity().getEntityType() == EntityType.LEVEL) {
-      levelRepository.save(((LevelWrapper)dataChangeEvent.getChangedEntity()).getLevel());
-    }
-    if (dataChangeEvent.getChangedEntity().getEntityType() == EntityType.ABSTRACT_UNIT) {
-      abstractUnitRepository.save(
-            ((AbstractUnitWrapper)dataChangeEvent.getChangedEntity()).getAbstractUnit());
-    }
-    if (dataChangeEvent.getChangedEntity().getEntityType() == EntityType.UNIT) {
-      unitRepository.save(((UnitWrapper)dataChangeEvent.getChangedEntity()).getUnit());
-    }
-    if (dataChangeEvent.getChangedEntity().getEntityType() == EntityType.GROUP) {
-      groupRepository.save(((GroupWrapper)dataChangeEvent.getChangedEntity()).getGroup());
-    }
-    if (dataChangeEvent.getChangedEntity().getEntityType() == EntityType.MODULE) {
-      moduleRepository.save(((ModuleWrapper)dataChangeEvent.getChangedEntity()).getModule());
-    }
-    if (dataChangeEvent.getChangedEntity().getEntityType() == EntityType.SESSION) {
-      sessionRepository.save(((SessionWrapper)dataChangeEvent.getChangedEntity()).getSession());
-    }
-  }
-
-  private void deleteEntity(DataChangeEvent dataChangeEvent) {
-    switch (dataChangeEvent.getChangedType()) {
+  private void saveEntity(EntityType changedType, EntityWrapper changedEntity) {
+    switch (changedType) {
       case COURSE:
-        courseRepository.delete(((CourseWrapper)dataChangeEvent.getChangedEntity()).getCourse());
+        courseRepository.save(((CourseWrapper) changedEntity).getCourse());
         break;
       case LEVEL:
-        levelRepository.delete(((LevelWrapper)dataChangeEvent.getChangedEntity()).getLevel());
-        break;
-      case MODULE:
-        moduleRepository.delete(((ModuleWrapper)dataChangeEvent.getChangedEntity()).getModule());
+        levelRepository.save(((LevelWrapper) changedEntity).getLevel());
         break;
       case ABSTRACT_UNIT:
-        abstractUnitRepository.delete(
-              ((AbstractUnitWrapper)dataChangeEvent.getChangedEntity()).getAbstractUnit());
+        abstractUnitRepository.save(((AbstractUnitWrapper) changedEntity).getAbstractUnit());
         break;
       case UNIT:
-        unitRepository.delete(((UnitWrapper)dataChangeEvent.getChangedEntity()).getUnit());
+        unitRepository.save(((UnitWrapper) changedEntity).getUnit());
         break;
       case GROUP:
-        groupRepository.delete(((GroupWrapper)dataChangeEvent.getChangedEntity()).getGroup());
+        groupRepository.save(((GroupWrapper) changedEntity).getGroup());
+        break;
+      case MODULE:
+        moduleRepository.save(((ModuleWrapper) changedEntity).getModule());
         break;
       case SESSION:
-        sessionRepository.delete(((SessionWrapper)dataChangeEvent.getChangedEntity()).getSession());
+        sessionRepository.save(((SessionWrapper) changedEntity).getSession());
+        break;
+      default:
+    }
+  }
+
+  private void deleteEntity(EntityType changedType, EntityWrapper changedEntity) {
+    switch (changedType) {
+      case COURSE:
+        courseRepository.delete(((CourseWrapper)changedEntity).getCourse());
+        break;
+      case LEVEL:
+        levelRepository.delete(((LevelWrapper)changedEntity).getLevel());
+        break;
+      case MODULE:
+        moduleRepository.delete(((ModuleWrapper)changedEntity).getModule());
+        break;
+      case ABSTRACT_UNIT:
+        abstractUnitRepository.delete(((AbstractUnitWrapper)changedEntity).getAbstractUnit());
+        break;
+      case UNIT:
+        unitRepository.delete(((UnitWrapper)changedEntity).getUnit());
+        break;
+      case GROUP:
+        groupRepository.delete(((GroupWrapper)changedEntity).getGroup());
+        break;
+      case SESSION:
+        sessionRepository.delete(((SessionWrapper)changedEntity).getSession());
         break;
       default:
     }
