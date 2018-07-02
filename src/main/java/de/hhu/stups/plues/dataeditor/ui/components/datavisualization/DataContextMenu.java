@@ -7,11 +7,14 @@ import de.hhu.stups.plues.dataeditor.ui.entities.EntityType;
 import de.hhu.stups.plues.dataeditor.ui.entities.EntityWrapper;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 @Component
@@ -99,9 +102,18 @@ public class DataContextMenu extends ContextMenu {
       default:
     }
     MenuItem deleteItem = new MenuItem(resources.getString("delete"));
-    deleteItem.setOnAction(event -> dataService.dataChangeEventSource().push(
-          new DataChangeEvent(DataChangeType.DELETE_ENTITY, entityWrapper,
-                entityWrapper.getEntityType())));
+    deleteItem.setOnAction(event -> {
+      Alert alert = new Alert(Alert.AlertType.CONFIRMATION,
+            resources.getString("deleteConfirmation") + " " + entityWrapper.toString(),
+            ButtonType.OK, ButtonType.CANCEL);
+      Optional<ButtonType> result = alert.showAndWait();
+      if (!result.isPresent() || result.get() == ButtonType.CANCEL) {
+        return;
+      }
+      dataService.dataChangeEventSource().push(
+            new DataChangeEvent(DataChangeType.DELETE_ENTITY, entityWrapper,
+                  entityWrapper.getEntityType()));
+    });
     getItems().add(deleteItem);
   }
 

@@ -129,13 +129,6 @@ public class DataService {
   }
 
   private void deleteEntity(DataChangeEvent dataChangeEvent) {
-    Alert alert = new Alert(Alert.AlertType.CONFIRMATION,
-          "Wirklich " + dataChangeEvent.getChangedEntity().toString() + "löschen?",
-          ButtonType.OK, ButtonType.CANCEL);
-    Optional<ButtonType> result = alert.showAndWait();
-    if (!result.isPresent() || result.get() == ButtonType.CANCEL) {
-      return;
-    }
     switch (dataChangeEvent.getChangedType()) {
       case COURSE:
         courseRepository.delete(((CourseWrapper)dataChangeEvent.getChangedEntity()).getCourse());
