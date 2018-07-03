@@ -36,6 +36,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
 @Component
@@ -276,11 +277,40 @@ public class DataTreeView extends VBox implements Initializable {
         updateSingleEntity(dataChangeEvent.getChangedEntity());
         break;
       case NEW_ENTITY:
-        // TODO:
+        insertNewEntity(dataChangeEvent.getChangedEntity(), dataChangeEvent.getParent());
         break;
       default:
         break;
     }
+  }
+
+  private void insertNewEntity(EntityWrapper newEntity, EntityWrapper parent) {
+    if (parent == null) {
+      TreeItem<EntityWrapper> newCourse = new TreeItem<>(newEntity);
+      treeTableRoot.getChildren().add(newCourse);
+    } else {
+      TreeItem<EntityWrapper> parentTreeItem =
+            getTreeItemForEntityWrapperRecursive(parent,treeTableRoot.getChildren());
+      parentTreeItem.getChildren().add(new TreeItem<>(newEntity));
+    }
+  }
+
+  private TreeItem<EntityWrapper> getTreeItemForEntityWrapperRecursive(
+        EntityWrapper entityWrapper, List<TreeItem<EntityWrapper>> nodes) {
+    TreeItem<EntityWrapper> found = null;
+    for (TreeItem<EntityWrapper> node : nodes) {
+      if (node.getValue().equals(entityWrapper)) {
+        found = node;
+        break;
+      }
+      TreeItem<EntityWrapper> rec =
+            getTreeItemForEntityWrapperRecursive(entityWrapper, node.getChildren());
+      if (rec != null)  {
+        found = rec;
+        break;
+      }
+    }
+    return found;
   }
 
   private void reloadData() {
