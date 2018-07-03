@@ -96,9 +96,9 @@ public class DataService {
 
   private void persistData(DataChangeEvent dataChangeEvent) {
     if (dataChangeEvent.getDataChangeType().storeEntity()) {
-      saveEntity(dataChangeEvent.getChangedType(), dataChangeEvent.getChangedEntity());
+      saveEntity(dataChangeEvent.getChangedEntity().getEntityType(), dataChangeEvent.getChangedEntity());
     } else if (dataChangeEvent.getDataChangeType().deleteEntity()) {
-      deleteEntity(dataChangeEvent.getChangedType(), dataChangeEvent.getChangedEntity());
+      deleteEntity(dataChangeEvent.getChangedEntity().getEntityType(), dataChangeEvent.getChangedEntity());
     }
   }
 

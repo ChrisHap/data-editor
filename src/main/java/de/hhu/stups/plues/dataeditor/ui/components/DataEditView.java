@@ -72,7 +72,8 @@ public class DataEditView extends TabPane implements Initializable {
     if (dataChangeEvent.getDataChangeType().changeEntity()) {
       addEntityTab(dataChangeEvent.getChangedEntity());
     } else if (dataChangeEvent.getDataChangeType().addEntity()) {
-      addEmptyEntityTab(dataChangeEvent.getParent(),dataChangeEvent.getChangedType(),
+      addEmptyEntityTab(dataChangeEvent.getParent(),
+            dataChangeEvent.getChangedEntity().getEntityType(),
             dataChangeEvent.getChangedEntity());
     }
   }
