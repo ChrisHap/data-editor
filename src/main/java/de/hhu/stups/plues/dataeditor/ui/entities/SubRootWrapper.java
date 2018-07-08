@@ -22,4 +22,8 @@ public class SubRootWrapper implements EntityWrapper {
   public EntityType getEntityType() {
     return null;
   }
+
+  public int getId() {
+    return 0;
+  }
 }

@@ -104,6 +104,10 @@ public class ModuleEdit extends GridPane implements Initializable {
       dataService.dataChangeEventSource().push(
           new DataChangeEvent(DataChangeType.STORE_ENTITY, parent));
     }
+
+    moduleWrapper.setKeyProperty("P-DUMMY-M-DUMMY");
+    moduleWrapper.getModule().setKey("P-DUMMY-M-DUMMY");
+
     dataService.dataChangeEventSource().push(
           new DataChangeEvent(DataChangeType.STORE_ENTITY, moduleWrapper));
 
@@ -163,9 +167,5 @@ public class ModuleEdit extends GridPane implements Initializable {
 
   private void setModule() {
     txtModule.setText(moduleWrapper.getTitle());
-  }
-
-  public void setParentEntityWrapper(EntityWrapper parent) {
-    this.parent = parent;
   }
 }

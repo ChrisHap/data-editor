@@ -168,8 +168,4 @@ public class AbstractUnitEdit extends GridPane implements Initializable {
   private void setTitle() {
     txtAbstractUnit.setText(abstractUnitWrapper.getTitle());
   }
-
-  public void setParentEntityWrapper(EntityWrapper parent) {
-    this.parent = parent;
-  }
 }

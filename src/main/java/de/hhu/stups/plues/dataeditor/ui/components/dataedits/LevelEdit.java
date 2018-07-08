@@ -5,7 +5,6 @@ import de.hhu.stups.plues.dataeditor.ui.database.DataService;
 import de.hhu.stups.plues.dataeditor.ui.database.events.DataChangeEvent;
 import de.hhu.stups.plues.dataeditor.ui.database.events.DataChangeType;
 import de.hhu.stups.plues.dataeditor.ui.entities.CourseWrapper;
-import de.hhu.stups.plues.dataeditor.ui.entities.EntityType;
 import de.hhu.stups.plues.dataeditor.ui.entities.EntityWrapper;
 import de.hhu.stups.plues.dataeditor.ui.entities.LevelWrapper;
 import de.hhu.stups.plues.dataeditor.ui.layout.Inflater;
@@ -60,8 +59,6 @@ public class LevelEdit extends GridPane implements Initializable {
   @FXML
   @SuppressWarnings("unused")
   private Button btPersistChanges;
-
-  private EntityWrapper parent;
 
   /**
    * Initialize level edit.
@@ -136,31 +133,35 @@ public class LevelEdit extends GridPane implements Initializable {
   @SuppressWarnings("unused")
   public void persistChanges() {
     levelWrapper.getLevel().setName(txtLevel.textProperty().get());
+    levelWrapper.setNameProperty(txtLevel.textProperty().get());
     try {
       levelWrapper.setMaxCredits(Integer.parseInt(txtMaxCp.textProperty().get()));
+      levelWrapper.getLevel().setMaxCreditPoints(Integer.parseInt(txtMaxCp.textProperty().get()));
       levelWrapper.setMinCredits(Integer.parseInt(txtMinCp.textProperty().get()));
+      levelWrapper.getLevel().setMinCreditPoints(Integer.parseInt(txtMinCp.textProperty().get()));
     } catch (NumberFormatException exception) {
       new Alert(Alert.AlertType.ERROR, resources.getString("creditsError"), ButtonType.OK);
     }
     if (rbParentCourse.isSelected()) {
       levelWrapper.getLevel().setCourse(((CourseWrapper)cbParentCourse.getValue()).getCourse());
+      levelWrapper.setCourseProperty((CourseWrapper)cbParentCourse.getValue());
     } else {
-      levelWrapper.setParent((LevelWrapper)cbParentCourse.getValue());
+      levelWrapper.getLevel().setParent(((LevelWrapper)cbParentLevel.getValue()).getLevel());
+      levelWrapper.setParent((LevelWrapper)cbParentLevel.getValue());
+      levelWrapper.getLevel().setCourse(
+            ((LevelWrapper) cbParentLevel.getValue()).getCourseWrapper().getCourse());
+      levelWrapper.setCourseProperty(((LevelWrapper) cbParentLevel.getValue()).getCourseWrapper());
     }
 
-    if (parent != null) {
-      if (parent.getEntityType().equals(EntityType.LEVEL)) {
-        ((LevelWrapper) parent).getLevel().getChildren().add(levelWrapper.getLevel());
-        levelWrapper.setParent((LevelWrapper) parent);
-      } else {
-        ((CourseWrapper) parent).getCourse().getLevels().add(levelWrapper.getLevel());
-        levelWrapper.courseProperty().set((CourseWrapper) parent);
-      }
-      dataService.dataChangeEventSource().push(
-            new DataChangeEvent(DataChangeType.STORE_ENTITY, parent));
-    }
+    boolean isNew = levelWrapper.getId() == 0;
+    //Insert Level in Database.
     dataService.dataChangeEventSource().push(
           new DataChangeEvent(DataChangeType.STORE_ENTITY, levelWrapper));
+    //Insert Level in DataTreeView and DataListView.
+    if (isNew) {
+      dataService.dataChangeEventSource().push(
+            new DataChangeEvent(DataChangeType.INSERT_NEW_ENTITY, levelWrapper));
+    }
     dataChangedProperty.set(false);
   }
 
@@ -211,9 +212,4 @@ public class LevelEdit extends GridPane implements Initializable {
   private void setLevel() {
     txtLevel.setText(levelWrapper.getNameProperty());
   }
-
-  public void setParentEntityWrapper(EntityWrapper parent) {
-    this.parent = parent;
-  }
-
 }

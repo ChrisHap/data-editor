@@ -22,8 +22,9 @@ import javax.persistence.Table;
 public class Group extends ModelEntity implements Serializable {
 
   private static final long serialVersionUID = 4765838728047788944L;
+
   @Id
-  @GeneratedValue
+  @Column(name = "id")
   private int id;
 
   @Column(name = "half_semester")

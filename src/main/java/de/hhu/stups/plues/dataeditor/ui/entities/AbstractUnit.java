@@ -6,9 +6,9 @@ import org.hibernate.annotations.NaturalId;
 import java.io.Serializable;
 import java.util.Objects;
 import java.util.Set;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
@@ -25,7 +25,7 @@ public class AbstractUnit extends ModelEntity implements Serializable {
   private static final long serialVersionUID = 289898052527025134L;
 
   @Id
-  @GeneratedValue
+  @Column(name = "id")
   private Integer id;
 
   @NaturalId

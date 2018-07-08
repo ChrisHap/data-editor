@@ -20,7 +20,7 @@ public class Module extends ModelEntity implements Serializable {
   private static final long serialVersionUID = 7922130660874935173L;
 
   @Id
-  @GeneratedValue
+  @Column(name = "id")
   private int id;
 
   @NaturalId
@@ -139,6 +139,10 @@ public class Module extends ModelEntity implements Serializable {
 
   public String getKey() {
     return key;
+  }
+
+  public void setKey(String key) {
+    this.key = key;
   }
 
   @Override

@@ -151,8 +151,4 @@ public class UnitEdit extends GridPane implements Initializable {
   private void setUnit() {
     txtUnit.setText(unitWrapper.getTitle());
   }
-
-  public void setParentEntityWrapper(EntityWrapper parent) {
-    this.parent = parent;
-  }
 }

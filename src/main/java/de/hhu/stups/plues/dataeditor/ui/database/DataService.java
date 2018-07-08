@@ -96,9 +96,16 @@ public class DataService {
 
   private void persistData(DataChangeEvent dataChangeEvent) {
     if (dataChangeEvent.getDataChangeType().storeEntity()) {
-      saveEntity(dataChangeEvent.getChangedEntity().getEntityType(), dataChangeEvent.getChangedEntity());
+      if (dataChangeEvent.getChangedEntity().getId() == 0) {
+        saveNewEntity(dataChangeEvent.getChangedEntity().getEntityType(),
+              dataChangeEvent.getChangedEntity());
+      } else {
+        saveEntity(dataChangeEvent.getChangedEntity().getEntityType(),
+              dataChangeEvent.getChangedEntity());
+      }
     } else if (dataChangeEvent.getDataChangeType().deleteEntity()) {
-      deleteEntity(dataChangeEvent.getChangedEntity().getEntityType(), dataChangeEvent.getChangedEntity());
+      deleteEntity(dataChangeEvent.getChangedEntity().getEntityType(),
+            dataChangeEvent.getChangedEntity());
     }
   }
 
@@ -127,6 +134,44 @@ public class DataService {
         break;
       default:
     }
+  }
+
+  private void saveNewEntity(EntityType changedType, EntityWrapper changedEntity) {
+    int maxId;
+    switch (changedType) {
+      case COURSE:
+        maxId = courseRepository.getMaxId();
+        ((CourseWrapper) changedEntity).getCourse().setId(maxId + 1);
+        ((CourseWrapper)changedEntity).setId(maxId + 1);
+        break;
+      case LEVEL:
+        maxId = levelRepository.getMaxId();
+        ((LevelWrapper) changedEntity).getLevel().setId(maxId + 1);
+        ((LevelWrapper)changedEntity).setId(maxId + 1);
+        break;
+      case ABSTRACT_UNIT:
+        ((AbstractUnitWrapper) changedEntity).getAbstractUnit().setId(
+              abstractUnitRepository.getMaxId() + 1);
+        break;
+      case UNIT:
+        ((UnitWrapper) changedEntity).getUnit().setId(
+              unitRepository.getMaxId() + 1);
+        break;
+      case GROUP:
+        ((GroupWrapper) changedEntity).getGroup().setId(
+              groupRepository.getMaxId() + 1);
+        break;
+      case MODULE:
+        ((ModuleWrapper) changedEntity).getModule().setId(
+              moduleRepository.getMaxId() + 1);
+        break;
+      case SESSION:
+        ((SessionWrapper) changedEntity).getSession().setId(
+              sessionRepository.getMaxId() + 1);
+        break;
+      default:
+    }
+    saveEntity(changedType, changedEntity);
   }
 
   private void deleteEntity(EntityType changedType, EntityWrapper changedEntity) {

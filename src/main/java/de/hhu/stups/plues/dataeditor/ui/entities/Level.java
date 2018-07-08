@@ -10,8 +10,6 @@ import java.util.stream.Collectors;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
@@ -28,7 +26,7 @@ public class Level extends ModelEntity implements Serializable {
   private static final long serialVersionUID = -2571508967373463723L;
 
   @Id
-  @GeneratedValue(strategy = GenerationType.TABLE)
+  @Column(name = "id")
   private Integer id;
 
   private String art;
@@ -106,6 +104,10 @@ public class Level extends ModelEntity implements Serializable {
     return this.maxCreditPoints;
   }
 
+  public void setMaxCreditPoints(int max) {
+    this.maxCreditPoints = max;
+  }
+
   /**
    * Get the minimum number of credit points required for level. Returns -1 if the level
    * is not credit point based.
@@ -116,6 +118,10 @@ public class Level extends ModelEntity implements Serializable {
       return -1;
     }
     return this.minCreditPoints;
+  }
+
+  public void setMinCreditPoints(int min) {
+    this.minCreditPoints = min;
   }
 
   public Integer getId() {

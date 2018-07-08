@@ -1,6 +1,8 @@
 package de.hhu.stups.plues.dataeditor.ui.components.datavisualization;
 
 import de.hhu.stups.plues.dataeditor.ui.database.DataService;
+import de.hhu.stups.plues.dataeditor.ui.database.events.DataChangeEvent;
+import de.hhu.stups.plues.dataeditor.ui.database.events.DataChangeType;
 import de.hhu.stups.plues.dataeditor.ui.entities.EntityType;
 import de.hhu.stups.plues.dataeditor.ui.entities.EntityWrapper;
 import de.hhu.stups.plues.dataeditor.ui.layout.Inflater;
@@ -63,11 +65,7 @@ public class DataListView extends VBox implements Initializable {
     listView.prefWidthProperty().bind(widthProperty());
     listView.prefHeightProperty().bind(heightProperty().subtract(
           cbEntityType.heightProperty()).subtract(txtQuery.heightProperty()));
-    dataService.dataChangeEventSource().subscribe(dataChangeEvent -> {
-      if (dataChangeEvent.getDataChangeType().reloadDb()) {
-        loadData(cbEntityType.getSelectionModel().getSelectedItem());
-      }
-    });
+    dataService.dataChangeEventSource().subscribe(this::updateDataList);
     listView.setOnMouseClicked(event -> {
       dataContextMenu.hide();
       final EntityWrapper selectedEntityWrapper = listView.getSelectionModel().getSelectedItem();
@@ -77,6 +75,15 @@ public class DataListView extends VBox implements Initializable {
       }
     });
     EasyBind.subscribe(txtQuery.textProperty(),filter -> loadFilteredData(filter.toLowerCase()));
+  }
+
+  private void updateDataList(DataChangeEvent dataChangeEvent) {
+    if (dataChangeEvent.getDataChangeType().reloadDb()) {
+      loadData(cbEntityType.getSelectionModel().getSelectedItem());
+    } else if (dataChangeEvent.getDataChangeType() == DataChangeType.INSERT_NEW_ENTITY
+          && cbEntityType.getValue() == dataChangeEvent.getChangedEntity().getEntityType()) {
+      listView.getItems().add(dataChangeEvent.getChangedEntity());
+    }
   }
 
   private void initializeComboBox() {

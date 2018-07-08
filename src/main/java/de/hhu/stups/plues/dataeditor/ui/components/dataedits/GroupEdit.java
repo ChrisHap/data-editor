@@ -130,8 +130,4 @@ public class GroupEdit extends GridPane implements Initializable {
         new DataChangeEvent(DataChangeType.STORE_ENTITY, groupWrapper));
     dataChangedProperty.set(false);
   }
-
-  public void setParentEntityWrapper(EntityWrapper parent) {
-    this.parent = parent;
-  }
 }

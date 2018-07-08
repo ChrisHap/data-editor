@@ -5,6 +5,7 @@ import de.hhu.stups.plues.dataeditor.ui.database.DataService;
 import de.hhu.stups.plues.dataeditor.ui.database.events.DataChangeEvent;
 import de.hhu.stups.plues.dataeditor.ui.database.events.DataChangeType;
 import de.hhu.stups.plues.dataeditor.ui.entities.CourseDegree;
+import de.hhu.stups.plues.dataeditor.ui.entities.CourseKzfa;
 import de.hhu.stups.plues.dataeditor.ui.entities.CourseWrapper;
 import de.hhu.stups.plues.dataeditor.ui.layout.Inflater;
 import javafx.beans.binding.Bindings;
@@ -181,8 +182,11 @@ public class CourseEdit extends GridPane implements Initializable {
       return;
     }
     courseWrapper.getCourse().setDegree(cbCourseDegree.getValue().toString().toLowerCase());
+    courseWrapper.setDegree(cbCourseDegree.getValue());
     courseWrapper.getCourse().setLongName(txtFullName.textProperty().getValue());
+    courseWrapper.setLongName(txtFullName.textProperty().getValue());
     courseWrapper.getCourse().setShortName(txtShortName.textProperty().getValue());
+    courseWrapper.setShortName(txtShortName.textProperty().getValue());
     try {
       courseWrapper.getCourse().setPo(Integer.parseInt(txtPVersion.textProperty().get()));
     } catch (NumberFormatException exeption) {
@@ -200,12 +204,26 @@ public class CourseEdit extends GridPane implements Initializable {
     }
     if (rbMajorCourse.isSelected()) {
       courseWrapper.getCourse().setKzfa("H");
+      courseWrapper.setKzfa(CourseKzfa.getKzfaFromString("H"));
     } else {
       courseWrapper.getCourse().setKzfa("N");
+      courseWrapper.setKzfa(CourseKzfa.getKzfaFromString("N"));
     }
 
+    courseWrapper.setKey(courseWrapper.getDegree().toString() + "-"
+          + "DUMMY-" + CourseKzfa.toString(courseWrapper.getKzfa()) + "-"
+          + courseWrapper.getPo());
+    courseWrapper.getCourse().setKey(courseWrapper.getDegree().toString() + "-"
+          + "DUMMY-" + CourseKzfa.toString(courseWrapper.getKzfa()) + "-"
+          + courseWrapper.getPo());
+
+    boolean isNew = courseWrapper.getId() == 0;
     dataService.dataChangeEventSource().push(
         new DataChangeEvent(DataChangeType.STORE_ENTITY, courseWrapper));
+    if (isNew) {
+      dataService.dataChangeEventSource().push(
+            new DataChangeEvent(DataChangeType.INSERT_NEW_ENTITY, courseWrapper));
+    }
     dataChangedProperty.set(false);
   }
 

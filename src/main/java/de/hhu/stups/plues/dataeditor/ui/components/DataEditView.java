@@ -72,13 +72,12 @@ public class DataEditView extends TabPane implements Initializable {
     if (dataChangeEvent.getDataChangeType().changeEntity()) {
       addEntityTab(dataChangeEvent.getChangedEntity());
     } else if (dataChangeEvent.getDataChangeType().addEntity()) {
-      addEmptyEntityTab(dataChangeEvent.getParent(),
-            dataChangeEvent.getChangedEntity().getEntityType(),
+      addEmptyEntityTab(dataChangeEvent.getChangedEntity().getEntityType(),
             dataChangeEvent.getChangedEntity());
     }
   }
 
-  private void addEmptyEntityTab(final EntityWrapper parent, EntityType newEntityType,
+  private void addEmptyEntityTab(EntityType newEntityType,
                                  EntityWrapper newEntity) {
     final Tab tab = new Tab();
     switch (newEntityType) {
@@ -89,35 +88,29 @@ public class DataEditView extends TabPane implements Initializable {
       case LEVEL:
         tab.setText(resources.getString("level"));
         LevelEdit levelEdit = editViewProvider.getLevelEditView((LevelWrapper)newEntity);
-        levelEdit.setParentEntityWrapper(parent);
         tab.setContent(levelEdit);
         break;
       case MODULE:
         tab.setText(resources.getString("module"));
         ModuleEdit moduleEdit = editViewProvider.getModuleEditView((ModuleWrapper) newEntity);
-        moduleEdit.setParentEntityWrapper(parent);
         tab.setContent(moduleEdit);
         break;
       case ABSTRACT_UNIT:
         tab.setText(resources.getString("abstract_unit"));
         AbstractUnitEdit abstractUnitEdit = editViewProvider.getAbstractUnitEditView(
               (AbstractUnitWrapper) newEntity);
-        abstractUnitEdit.setParentEntityWrapper(parent);
         tab.setContent(abstractUnitEdit);
         break;
       case UNIT:
         UnitEdit unitEdit = editViewProvider.getUnitEditView((UnitWrapper) newEntity);
-        unitEdit.setParentEntityWrapper(parent);
         tab.setContent(unitEdit);
         break;
       case GROUP:
         GroupEdit groupEdit = editViewProvider.getGroupEditView((GroupWrapper) newEntity);
-        groupEdit.setParentEntityWrapper(parent);
         tab.setContent(groupEdit);
         break;
       case SESSION:
         SessionEdit sessionEdit = editViewProvider.getSessionEditView((SessionWrapper) newEntity);
-        sessionEdit.setParentEntityWrapper(parent);
         tab.setContent(sessionEdit);
         break;
       default:

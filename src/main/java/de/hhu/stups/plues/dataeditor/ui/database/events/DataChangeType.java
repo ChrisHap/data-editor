@@ -1,7 +1,7 @@
 package de.hhu.stups.plues.dataeditor.ui.database.events;
 
 public enum DataChangeType {
-  CHANGE_ENTITY, NEW_ENTITY, STORE_ENTITY, DELETE_ENTITY, RELOAD_DB;
+  CHANGE_ENTITY, NEW_ENTITY, STORE_ENTITY, DELETE_ENTITY, RELOAD_DB, INSERT_NEW_ENTITY;
 
   public boolean reloadDb() {
     return this.equals(RELOAD_DB);

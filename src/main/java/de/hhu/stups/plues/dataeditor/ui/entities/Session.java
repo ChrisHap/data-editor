@@ -6,9 +6,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
@@ -27,7 +27,7 @@ public class Session extends ModelEntity implements Serializable {
   }
 
   @Id
-  @GeneratedValue
+  @Column(name = "id")
   private int id;
 
   private String day;

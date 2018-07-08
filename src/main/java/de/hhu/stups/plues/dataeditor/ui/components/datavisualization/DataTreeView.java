@@ -276,41 +276,133 @@ public class DataTreeView extends VBox implements Initializable {
       case CHANGE_ENTITY:
         updateSingleEntity(dataChangeEvent.getChangedEntity());
         break;
-      case NEW_ENTITY:
-        insertNewEntity(dataChangeEvent.getChangedEntity(), dataChangeEvent.getParent());
+      case INSERT_NEW_ENTITY:
+        insertNewEntity(dataChangeEvent.getChangedEntity());
         break;
       default:
         break;
     }
   }
 
-  private void insertNewEntity(EntityWrapper newEntity, EntityWrapper parent) {
-    if (parent == null) {
-      TreeItem<EntityWrapper> newCourse = new TreeItem<>(newEntity);
-      treeTableRoot.getChildren().add(newCourse);
-    } else {
-      TreeItem<EntityWrapper> parentTreeItem =
-            getTreeItemForEntityWrapperRecursive(parent,treeTableRoot.getChildren());
+  private void insertNewEntity(EntityWrapper newEntity) {
+    switch (newEntity.getEntityType()) {
+      case COURSE:
+        insertNewCourse((CourseWrapper) newEntity);
+        break;
+      case LEVEL:
+        insertNewLevel((LevelWrapper)newEntity);
+        break;
+      case MODULE:
+        insertNewModule((ModuleWrapper) newEntity);
+        break;
+      case ABSTRACT_UNIT:
+        insertNewAbstractUnit((AbstractUnitWrapper)newEntity);
+        break;
+      case UNIT:
+        insertNewUnit((UnitWrapper)newEntity);
+        break;
+      case GROUP:
+        insertNewGroup((GroupWrapper)newEntity);
+        break;
+      case SESSION:
+        insertNewSession((SessionWrapper)newEntity);
+        break;
+      default:
+    }
+  }
+
+  private void insertNewCourse(CourseWrapper newEntity) {
+    TreeItem<EntityWrapper> newCourse = new TreeItem<>(newEntity);
+    treeTableRoot.getChildren().add(newCourse);
+    if (newEntity.getCourse().isMinor()) {
+      newEntity.getMajorCourseWrappers().forEach(courseWrapper -> {
+        TreeItem<EntityWrapper> majorCourseTreeItem =
+              getTreeItemForEntityWrapperRecursive(courseWrapper, treeTableRoot.getChildren());
+        if (majorCourseTreeItem != null) {
+          majorCourseTreeItem.getChildren().forEach(item -> {
+            if (item.getValue().getEntityType() == null) {
+              item.getChildren().add(new TreeItem<>(newEntity));
+            }
+          });
+        }
+      });
+    }
+  }
+
+  private void insertNewLevel(LevelWrapper newEntity) {
+    if (newEntity.getParent() == null) {
+      CourseWrapper parentCourseWrapper = newEntity.getCourseWrapper();
+      TreeItem<EntityWrapper> courseTreeItem =
+            getTreeItemForEntityWrapperRecursive(parentCourseWrapper,
+                  treeTableRoot.getChildren());
+      if (courseTreeItem != null) {
+        courseTreeItem.getChildren().add(new TreeItem<>(newEntity));
+      }
+    }
+  }
+
+  private void insertNewModule(ModuleWrapper newEntity) {
+    newEntity.getModule().getModuleLevels().forEach(ml -> {
+      LevelWrapper lv = new LevelWrapper(ml.getLevel());
+      TreeItem<EntityWrapper> levelTreeItem =
+            getTreeItemForEntityWrapperRecursive(lv, treeTableRoot.getChildren());
+      if (levelTreeItem != null) {
+        levelTreeItem.getChildren().add(new TreeItem<>(newEntity));
+      }
+    });
+  }
+
+  private void insertNewAbstractUnit(AbstractUnitWrapper newEntity) {
+    newEntity.getModules().forEach(mw -> {
+      TreeItem<EntityWrapper> mwTreeItem =
+            getTreeItemForEntityWrapperRecursive(mw, treeTableRoot.getChildren());
+      if (mwTreeItem != null) {
+        mwTreeItem.getChildren().add(new TreeItem<>(newEntity));
+      }
+    });
+  }
+
+  private void insertNewUnit(UnitWrapper newEntity) {
+    newEntity.getAbstractUnits().forEach(auw ->  {
+      TreeItem<EntityWrapper> auTreeItem =
+            getTreeItemForEntityWrapperRecursive(auw, treeTableRoot.getChildren());
+      if (auTreeItem != null) {
+        auTreeItem.getChildren().add(new TreeItem<>(newEntity));
+      }
+    });
+  }
+
+  private void insertNewGroup(GroupWrapper newEntity) {
+    UnitWrapper unitWrapper = newEntity.getUnit();
+    TreeItem<EntityWrapper> unitTreeItem =
+          getTreeItemForEntityWrapperRecursive(unitWrapper, treeTableRoot.getChildren());
+    if (unitTreeItem != null) {
+      unitTreeItem.getChildren().add(new TreeItem<>(newEntity));
+    }
+  }
+
+  private void insertNewSession(SessionWrapper newEntity) {
+    GroupWrapper parent = new GroupWrapper(newEntity.getSession().getGroup());
+    TreeItem<EntityWrapper> parentTreeItem =
+          getTreeItemForEntityWrapperRecursive(parent, treeTableRoot.getChildren());
+    if (parentTreeItem != null) {
       parentTreeItem.getChildren().add(new TreeItem<>(newEntity));
     }
   }
 
   private TreeItem<EntityWrapper> getTreeItemForEntityWrapperRecursive(
         EntityWrapper entityWrapper, List<TreeItem<EntityWrapper>> nodes) {
-    TreeItem<EntityWrapper> found = null;
     for (TreeItem<EntityWrapper> node : nodes) {
       if (node.getValue().equals(entityWrapper)) {
-        found = node;
-        break;
+        return node;
       }
       TreeItem<EntityWrapper> rec =
             getTreeItemForEntityWrapperRecursive(entityWrapper, node.getChildren());
       if (rec != null)  {
-        found = rec;
-        break;
+        return rec;
       }
     }
-    return found;
+    return null;
   }
 
   private void reloadData() {

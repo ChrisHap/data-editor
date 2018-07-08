@@ -174,8 +174,4 @@ public class SessionEdit extends GridPane implements Initializable {
         new DataChangeEvent(DataChangeType.STORE_ENTITY, sessionWrapper));
     dataChangedProperty.set(false);
   }
-
-  public void setParentEntityWrapper(EntityWrapper parent) {
-    this.parent = parent;
-  }
 }

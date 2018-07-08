@@ -14,4 +14,15 @@ public enum CourseKzfa {
     }
     return null;
   }
+
+  /**
+   * Return the {@link CourseKzfa} as a String.
+   */
+  public static String toString(CourseKzfa kzfa) {
+    if (kzfa == CourseKzfa.MAJOR) {
+      return "H";
+    } else {
+      return "N";
+    }
+  }
 }

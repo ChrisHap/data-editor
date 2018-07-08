@@ -12,7 +12,6 @@ import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
@@ -26,7 +25,7 @@ public class Unit extends ModelEntity implements Serializable {
   private static final long serialVersionUID = 7811943921513982554L;
 
   @Id
-  @GeneratedValue
+  @Column(name = "id")
   private int id;
 
   @NaturalId

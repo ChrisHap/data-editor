@@ -9,7 +9,6 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
@@ -24,7 +23,7 @@ public class Course extends ModelEntity implements Serializable {
   private static final long serialVersionUID = 935565328177496460L;
 
   @Id
-  @GeneratedValue
+  @Column(name = "id")
   private int id;
 
   @NaturalId
