@@ -9,8 +9,9 @@ import org.reactfx.EventSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.jdbc.DataSourceBuilder;
-import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -28,25 +29,19 @@ public class DbService {
   private final ObjectProperty<DataSource> dataSourceProperty;
   private final ObjectProperty<File> dbFileProperty;
   private final ObjectProperty<Task<Void>> dbTaskProperty;
-  private AbstractRoutingDataSource abstractRoutingDataSource;
+  private ConfigurableApplicationContext context;
 
   /**
    * The database service to load and modify a .sqlite3 database.
    */
   @Autowired
-  public DbService() {
+  public DbService(ConfigurableApplicationContext context) {
     dbEventSource = new EventSource<>();
     dbEventSource.subscribe(this::handleDbEvent);
     dataSourceProperty = new SimpleObjectProperty<>();
     dbFileProperty = new SimpleObjectProperty<>();
     dbTaskProperty = new SimpleObjectProperty<>();
-
-    DataSourceBuilder dataSourceBuilder = DataSourceBuilder.create();
-    dataSourceBuilder.type(org.sqlite.SQLiteDataSource.class);
-    dataSourceBuilder.driverClassName("org.sqlite.JDBC");
-    dataSourceBuilder.url("jdbc:sqlite:cs.sqlite3");
-    DataSource newDataSource = dataSourceBuilder.build();
-    dataSourceProperty.set(newDataSource);
+    this.context = context;
   }
 
   /**
@@ -61,13 +56,11 @@ public class DbService {
         final Task<Void> loadDbTask = new Task<Void>() {
           @Override
           protected Void call() {
-            DataSourceBuilder dataSourceBuilder = DataSourceBuilder.create();
-            dataSourceBuilder.type(org.sqlite.SQLiteDataSource.class);
-            dataSourceBuilder.driverClassName("org.sqlite.JDBC");
-            dataSourceBuilder.url("jdbc:sqlite:" + dbFileProperty.get().getAbsolutePath());
-            DataSource newDataSource = dataSourceBuilder.build();
-            //TODO DataSource ändern vielleich abstract routing datasource
-            dataSourceProperty.set(newDataSource);
+            DriverManagerDataSource rds = new DriverManagerDataSource();
+            rds.setUrl("jdbc:sqlite:" + dbFileProperty.get().getAbsolutePath());
+            rds.setDriverClassName("org.sqlite.JDBC");
+            context.getBean(LocalContainerEntityManagerFactoryBean.class).setDataSource(rds);
+            dataSourceProperty.set(rds);
             dbTaskProperty.set(null);
             return null;
           }

@@ -6,11 +6,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.orm.jpa.JpaVendorAdapter;
+import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
+import org.springframework.transaction.PlatformTransactionManager;
 
 import java.util.Locale;
+import java.util.Properties;
 import java.util.ResourceBundle;
+import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
 /**
@@ -66,11 +73,50 @@ public class DataEditorModule {
   }
 
   /**
-   * Provide the DataSource.
+   * Provide DataSourcce.
    */
   @Bean
-  @Lazy
-  public DataSource dataSource() {
-    return dbService.dataSourceProperty().get();
+  public DataSource runtimeDataSource() {
+    DriverManagerDataSource rds = new DriverManagerDataSource();
+    rds.setUrl("jdbc:sqlite:cs.sqlite3");
+    rds.setDriverClassName("org.sqlite.JDBC");
+    return rds;
+  }
+
+  /**
+   * Returns the EntityManagerFactory.
+   */
+  @Bean
+  public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
+    LocalContainerEntityManagerFactoryBean factoryBean =
+          new LocalContainerEntityManagerFactoryBean();
+    factoryBean.setDataSource(runtimeDataSource());
+    factoryBean.setPackagesToScan("de.hhu.stups.plues.dataeditor.ui");
+    dbService.dataSourceProperty().set(runtimeDataSource());
+    // setup JpaVendorAdapter, jpaProperties,
+
+    JpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
+    factoryBean.setJpaVendorAdapter(vendorAdapter);
+    factoryBean.setJpaProperties(additionalProperties());
+
+    return factoryBean;
+  }
+
+  /**
+   * Returns the PlatformTransactionManager.
+   */
+  @Bean
+  public PlatformTransactionManager transactionManager() {
+    JpaTransactionManager jtm = new JpaTransactionManager();
+    jtm.setEntityManagerFactory(entityManagerFactory().getNativeEntityManagerFactory());
+    return jtm;
+  }
+
+  private Properties additionalProperties() {
+    Properties properties = new Properties();
+    properties.setProperty("hibernate.dialect", "org.hibernate.dialect.SQLiteDialect");
+    properties.setProperty("hibernate.enable_lazy_load_no_trans","true");
+
+    return properties;
   }
 }

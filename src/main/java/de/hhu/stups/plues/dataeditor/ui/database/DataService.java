@@ -27,7 +27,6 @@ import javafx.collections.ObservableMap;
 import org.fxmisc.easybind.EasyBind;
 import org.reactfx.EventSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
 
 import java.util.stream.Collectors;
@@ -65,7 +64,7 @@ public class DataService {
    */
 
   @Autowired
-  public DataService(final DbService dbService, ConfigurableApplicationContext context,
+  public DataService(final DbService dbService,
                      CourseRepository courseRepository, LevelRepository levelRepository,
                      ModuleRepository moduleRepository,
                      AbstractUnitRepository abstractUnitRepository,
