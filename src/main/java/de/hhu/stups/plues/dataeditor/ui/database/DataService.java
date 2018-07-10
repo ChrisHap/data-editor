@@ -11,13 +11,7 @@ import de.hhu.stups.plues.dataeditor.ui.entities.LevelWrapper;
 import de.hhu.stups.plues.dataeditor.ui.entities.ModuleWrapper;
 import de.hhu.stups.plues.dataeditor.ui.entities.SessionWrapper;
 import de.hhu.stups.plues.dataeditor.ui.entities.UnitWrapper;
-import de.hhu.stups.plues.dataeditor.ui.entities.repositories.AbstractUnitRepository;
-import de.hhu.stups.plues.dataeditor.ui.entities.repositories.CourseRepository;
-import de.hhu.stups.plues.dataeditor.ui.entities.repositories.GroupRepository;
-import de.hhu.stups.plues.dataeditor.ui.entities.repositories.LevelRepository;
-import de.hhu.stups.plues.dataeditor.ui.entities.repositories.ModuleRepository;
-import de.hhu.stups.plues.dataeditor.ui.entities.repositories.SessionRepository;
-import de.hhu.stups.plues.dataeditor.ui.entities.repositories.UnitRepository;
+import de.hhu.stups.plues.dataeditor.ui.entities.repositories.RepositoryFactory;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.MapProperty;
 import javafx.beans.property.SimpleListProperty;
@@ -50,13 +44,7 @@ public class DataService {
   private final MapProperty<String, SessionWrapper> sessionWrappersProperty;
   private final MapProperty<String, GroupWrapper> groupWrappersProperty;
 
-  private final CourseRepository courseRepository;
-  private final LevelRepository levelRepository;
-  private final ModuleRepository moduleRepository;
-  private final AbstractUnitRepository abstractUnitRepository;
-  private final UnitRepository unitRepository;
-  private final GroupRepository groupRepository;
-  private final SessionRepository sessionRepository;
+  private final RepositoryFactory repositoryFactory;
 
   /**
    * Initialize the map properties to store and manage the database entity wrapper and subscribe to
@@ -65,11 +53,7 @@ public class DataService {
 
   @Autowired
   public DataService(final DbService dbService,
-                     CourseRepository courseRepository, LevelRepository levelRepository,
-                     ModuleRepository moduleRepository,
-                     AbstractUnitRepository abstractUnitRepository,
-                     UnitRepository unitRepository, GroupRepository groupRepository,
-                     SessionRepository sessionRepository) {
+                     RepositoryFactory repositoryFactory) {
     courseWrappersProperty = new SimpleMapProperty<>(FXCollections.observableHashMap());
     majorCourseWrappersProperty = new SimpleListProperty<>(FXCollections.observableArrayList());
     minorCourseWrappersProperty = new SimpleListProperty<>(FXCollections.observableArrayList());
@@ -81,13 +65,7 @@ public class DataService {
     groupWrappersProperty = new SimpleMapProperty<>(FXCollections.observableHashMap());
     dataChangeEventSource = new EventSource<>();
 
-    this.courseRepository = courseRepository;
-    this.levelRepository = levelRepository;
-    this.moduleRepository = moduleRepository;
-    this.abstractUnitRepository = abstractUnitRepository;
-    this.unitRepository = unitRepository;
-    this.groupRepository = groupRepository;
-    this.sessionRepository = sessionRepository;
+    this.repositoryFactory = repositoryFactory;
 
     EasyBind.subscribe(dbService.dataSourceProperty(), this::loadData);
     dataChangeEventSource.subscribe(this::persistData);
@@ -111,25 +89,26 @@ public class DataService {
   private void saveEntity(EntityType changedType, EntityWrapper changedEntity) {
     switch (changedType) {
       case COURSE:
-        courseRepository.save(((CourseWrapper) changedEntity).getCourse());
+        repositoryFactory.courseRepository().save(((CourseWrapper) changedEntity).getCourse());
         break;
       case LEVEL:
-        levelRepository.save(((LevelWrapper) changedEntity).getLevel());
+        repositoryFactory.levelRepository().save(((LevelWrapper) changedEntity).getLevel());
         break;
       case ABSTRACT_UNIT:
-        abstractUnitRepository.save(((AbstractUnitWrapper) changedEntity).getAbstractUnit());
+        repositoryFactory.abstractUnitRepository().save(
+              ((AbstractUnitWrapper) changedEntity).getAbstractUnit());
         break;
       case UNIT:
-        unitRepository.save(((UnitWrapper) changedEntity).getUnit());
+        repositoryFactory.unitRepository().save(((UnitWrapper) changedEntity).getUnit());
         break;
       case GROUP:
-        groupRepository.save(((GroupWrapper) changedEntity).getGroup());
+        repositoryFactory.groupRepository().save(((GroupWrapper) changedEntity).getGroup());
         break;
       case MODULE:
-        moduleRepository.save(((ModuleWrapper) changedEntity).getModule());
+        repositoryFactory.moduleRepository().save(((ModuleWrapper) changedEntity).getModule());
         break;
       case SESSION:
-        sessionRepository.save(((SessionWrapper) changedEntity).getSession());
+        repositoryFactory.sessionRepository().save(((SessionWrapper) changedEntity).getSession());
         break;
       default:
     }
@@ -139,34 +118,34 @@ public class DataService {
     int maxId;
     switch (changedType) {
       case COURSE:
-        maxId = courseRepository.getMaxId();
+        maxId = repositoryFactory.courseRepository().getMaxId();
         ((CourseWrapper) changedEntity).getCourse().setId(maxId + 1);
         ((CourseWrapper)changedEntity).setId(maxId + 1);
         break;
       case LEVEL:
-        maxId = levelRepository.getMaxId();
+        maxId = repositoryFactory.levelRepository().getMaxId();
         ((LevelWrapper) changedEntity).getLevel().setId(maxId + 1);
         ((LevelWrapper)changedEntity).setId(maxId + 1);
         break;
       case ABSTRACT_UNIT:
         ((AbstractUnitWrapper) changedEntity).getAbstractUnit().setId(
-              abstractUnitRepository.getMaxId() + 1);
+              repositoryFactory.abstractUnitRepository().getMaxId() + 1);
         break;
       case UNIT:
         ((UnitWrapper) changedEntity).getUnit().setId(
-              unitRepository.getMaxId() + 1);
+              repositoryFactory.unitRepository().getMaxId() + 1);
         break;
       case GROUP:
         ((GroupWrapper) changedEntity).getGroup().setId(
-              groupRepository.getMaxId() + 1);
+              repositoryFactory.groupRepository().getMaxId() + 1);
         break;
       case MODULE:
         ((ModuleWrapper) changedEntity).getModule().setId(
-              moduleRepository.getMaxId() + 1);
+              repositoryFactory.moduleRepository().getMaxId() + 1);
         break;
       case SESSION:
         ((SessionWrapper) changedEntity).getSession().setId(
-              sessionRepository.getMaxId() + 1);
+              repositoryFactory.sessionRepository().getMaxId() + 1);
         break;
       default:
     }
@@ -176,25 +155,26 @@ public class DataService {
   private void deleteEntity(EntityType changedType, EntityWrapper changedEntity) {
     switch (changedType) {
       case COURSE:
-        courseRepository.delete(((CourseWrapper)changedEntity).getCourse());
+        repositoryFactory.courseRepository().delete(((CourseWrapper)changedEntity).getCourse());
         break;
       case LEVEL:
-        levelRepository.delete(((LevelWrapper)changedEntity).getLevel());
+        repositoryFactory.levelRepository().delete(((LevelWrapper)changedEntity).getLevel());
         break;
       case MODULE:
-        moduleRepository.delete(((ModuleWrapper)changedEntity).getModule());
+        repositoryFactory.moduleRepository().delete(((ModuleWrapper)changedEntity).getModule());
         break;
       case ABSTRACT_UNIT:
-        abstractUnitRepository.delete(((AbstractUnitWrapper)changedEntity).getAbstractUnit());
+        repositoryFactory.abstractUnitRepository().delete(
+              ((AbstractUnitWrapper)changedEntity).getAbstractUnit());
         break;
       case UNIT:
-        unitRepository.delete(((UnitWrapper)changedEntity).getUnit());
+        repositoryFactory.unitRepository().delete(((UnitWrapper)changedEntity).getUnit());
         break;
       case GROUP:
-        groupRepository.delete(((GroupWrapper)changedEntity).getGroup());
+        repositoryFactory.groupRepository().delete(((GroupWrapper)changedEntity).getGroup());
         break;
       case SESSION:
-        sessionRepository.delete(((SessionWrapper)changedEntity).getSession());
+        repositoryFactory.sessionRepository().delete(((SessionWrapper)changedEntity).getSession());
         break;
       default:
     }
@@ -215,7 +195,7 @@ public class DataService {
    * Initialize all map properties on the first level.
    */
   private void initializeEntitiesFlat() {
-    courseRepository.findAll().forEach(course -> {
+    repositoryFactory.courseRepository().findAll().forEach(course -> {
       final CourseWrapper courseWrapper = new CourseWrapper(course);
       courseWrappersProperty.put(course.getKey(), courseWrapper);
       if (course.isMajor()) {
@@ -224,18 +204,18 @@ public class DataService {
         minorCourseWrappersProperty.add(courseWrapper);
       }
     });
-    levelRepository.findAll().forEach(level ->
+    repositoryFactory.levelRepository().findAll().forEach(level ->
         levelWrappersProperty.put(level.getId(), new LevelWrapper(level)));
-    moduleRepository.findAll().forEach(module ->
+    repositoryFactory.moduleRepository().findAll().forEach(module ->
         moduleWrappersProperty.put(module.getKey(), new ModuleWrapper(module)));
-    abstractUnitRepository.findAll().forEach(abstractUnit ->
+    repositoryFactory.abstractUnitRepository().findAll().forEach(abstractUnit ->
         abstractUnitWrappersProperty.put(abstractUnit.getKey(),
             new AbstractUnitWrapper(abstractUnit)));
-    unitRepository.findAll().forEach(unit ->
+    repositoryFactory.unitRepository().findAll().forEach(unit ->
         unitWrappersProperty.put(unit.getKey(), new UnitWrapper(unit)));
-    groupRepository.findAll().forEach(group ->
+    repositoryFactory.groupRepository().findAll().forEach(group ->
         groupWrappersProperty.put(String.valueOf(group.getId()), new GroupWrapper(group)));
-    sessionRepository.findAll().forEach(session ->
+    repositoryFactory.sessionRepository().findAll().forEach(session ->
         sessionWrappersProperty.put(String.valueOf(session.getId()), new SessionWrapper(session)));
   }
 
