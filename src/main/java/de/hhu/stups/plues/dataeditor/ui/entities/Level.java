@@ -5,7 +5,6 @@ import org.hibernate.annotations.Immutable;
 import java.io.Serializable;
 import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -55,6 +54,11 @@ public class Level extends ModelEntity implements Serializable {
   @OneToMany(mappedBy = "level", fetch = FetchType.LAZY)
   private Set<ModuleLevel> moduleLevels;
 
+  @OneToMany(fetch = FetchType.LAZY)
+  @JoinTable(name = "module_levels",
+        joinColumns = @JoinColumn(name = "level_id", referencedColumnName = "id"),
+        inverseJoinColumns = @JoinColumn(name = "module_id", referencedColumnName = "id"))
+  private Set<Module> modules;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinTable(name = "course_levels",
@@ -181,7 +185,7 @@ public class Level extends ModelEntity implements Serializable {
   }
 
   public Set<Module> getModules() {
-    return moduleLevels.stream().map(ModuleLevel::getModule).collect(Collectors.toSet());
+    return modules;
   }
 
   @Override
