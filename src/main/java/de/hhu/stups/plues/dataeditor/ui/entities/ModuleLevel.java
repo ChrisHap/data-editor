@@ -61,6 +61,10 @@ public class ModuleLevel extends ModelEntity implements Serializable {
     return creditPoints;
   }
 
+  public void setCreditPoints(int credits) {
+    creditPoints = credits;
+  }
+
   public Boolean getMandatory() {
     return mandatory;
   }
@@ -71,6 +75,10 @@ public class ModuleLevel extends ModelEntity implements Serializable {
 
   public Course getCourse() {
     return course;
+  }
+
+  public void setCourse(Course course) {
+    this.course = course;
   }
 
   public int getId() {
@@ -115,4 +123,5 @@ public class ModuleLevel extends ModelEntity implements Serializable {
   public void setLevel(final Level level) {
     this.level = level;
   }
+
 }

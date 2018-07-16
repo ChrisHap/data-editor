@@ -8,9 +8,12 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -50,6 +53,14 @@ public class Module extends ModelEntity implements Serializable {
   @OneToMany(mappedBy = "module")
   private Set<ModuleAbstractUnitType> moduleAbstractUnitTypes;
 
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinTable(name = "module_levels",
+        inverseJoinColumns = @JoinColumn(name = "level_id",
+              referencedColumnName = "id"),
+        joinColumns = @JoinColumn(name = "module_id",
+              referencedColumnName = "id"))
+  private Level level;
+
   public Module() {
     // Default constructor is required by hibernate
   }
@@ -68,6 +79,14 @@ public class Module extends ModelEntity implements Serializable {
 
   public void setId(final int id) {
     this.id = id;
+  }
+
+  public Level getLevel() {
+    return level;
+  }
+
+  public void setLevel(Level level) {
+    this.level = level;
   }
 
   public String getTitle() {
@@ -96,6 +115,10 @@ public class Module extends ModelEntity implements Serializable {
 
   public Set<ModuleLevel> getModuleLevels() {
     return this.moduleLevels;
+  }
+
+  public void setModuleLevels(Set<ModuleLevel> moduleLevels) {
+    this.moduleLevels = moduleLevels;
   }
 
   public Set<AbstractUnit> getAbstractUnits() {

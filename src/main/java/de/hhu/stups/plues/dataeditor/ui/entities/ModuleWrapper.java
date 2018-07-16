@@ -24,6 +24,7 @@ public class ModuleWrapper implements EntityWrapper {
   private final SetProperty<AbstractUnitWrapper> abstractUnitsProperty;
   private final SetProperty<CourseWrapper> coursesProperty;
   private final ObjectProperty<Module> moduleProperty;
+  private final ObjectProperty<Level> levelProperty;
 
   /**
    * Initialize the property bindings according to the given {@link Module}.
@@ -37,6 +38,7 @@ public class ModuleWrapper implements EntityWrapper {
     electiveUnitsProperty = new SimpleIntegerProperty(module.getElectiveUnits());
     abstractUnitsProperty = new SimpleSetProperty<>(FXCollections.observableSet());
     coursesProperty = new SimpleSetProperty<>(FXCollections.observableSet());
+    levelProperty = new SimpleObjectProperty<>(module.getLevel());
     moduleProperty = new SimpleObjectProperty<>(module);
     idProperty = new SimpleIntegerProperty(module.getId());
   }
@@ -160,5 +162,13 @@ public class ModuleWrapper implements EntityWrapper {
     module.setBundled(false);
     module.setElectiveUnits(0);
     return new ModuleWrapper(module);
+  }
+
+  public Level getLevel() {
+    return levelProperty.get();
+  }
+
+  public void setLevel(Level level) {
+    levelProperty.set(level);
   }
 }
