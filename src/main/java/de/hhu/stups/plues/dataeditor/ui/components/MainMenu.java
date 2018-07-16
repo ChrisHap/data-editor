@@ -55,8 +55,8 @@ public class MainMenu extends MenuBar {
   }
 
   public void initialize() {
-    menuItemSaveDbAs.disableProperty().bind(dbService.dataSourceProperty().isNull());
-    menuItemExportDb.disableProperty().bind(dbService.dataSourceProperty().isNull());
+    menuItemSaveDbAs.disableProperty().bind(dbService.dbFileProperty().isNull());
+    menuItemExportDb.disableProperty().bind(dbService.dbFileProperty().isNull());
   }
 
   /**
