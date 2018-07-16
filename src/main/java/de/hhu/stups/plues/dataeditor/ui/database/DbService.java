@@ -10,7 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.DataSourceBuilder;
-import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -28,7 +27,6 @@ public class DbService {
   private final ObjectProperty<DataSource> dataSourceProperty;
   private final ObjectProperty<File> dbFileProperty;
   private final ObjectProperty<Task<Void>> dbTaskProperty;
-  private AbstractRoutingDataSource abstractRoutingDataSource;
 
   /**
    * The database service to load and modify a .sqlite3 database.
@@ -110,6 +108,10 @@ public class DbService {
    */
   public ObjectProperty<DataSource> dataSourceProperty() {
     return dataSourceProperty;
+  }
+
+  public ObjectProperty<File> dbFileProperty() {
+    return dbFileProperty;
   }
 
   public ObjectProperty<Task<Void>> dbTaskProperty() {
