@@ -6,6 +6,7 @@ import de.hhu.stups.plues.dataeditor.ui.database.events.DataChangeEvent;
 import de.hhu.stups.plues.dataeditor.ui.database.events.DataChangeType;
 import de.hhu.stups.plues.dataeditor.ui.entities.AbstractUnitWrapper;
 import de.hhu.stups.plues.dataeditor.ui.entities.EntityWrapper;
+import de.hhu.stups.plues.dataeditor.ui.entities.Level;
 import de.hhu.stups.plues.dataeditor.ui.entities.LevelWrapper;
 import de.hhu.stups.plues.dataeditor.ui.entities.ModuleLevel;
 import de.hhu.stups.plues.dataeditor.ui.entities.ModuleWrapper;
@@ -18,20 +19,22 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import org.fxmisc.easybind.EasyBind;
 
 import java.net.URL;
+import java.util.HashSet;
 import java.util.ResourceBundle;
+import java.util.Set;
 
 public class ModuleEdit extends GridPane implements Initializable {
 
   private final ModuleWrapper moduleWrapper;
   private final BooleanProperty dataChangedProperty;
   private final DataService dataService;
-  private EntityWrapper parent;
 
   private ResourceBundle resources;
 
@@ -55,7 +58,14 @@ public class ModuleEdit extends GridPane implements Initializable {
   private VBox referenceBox;
   @FXML
   @SuppressWarnings("unused")
+  private VBox cbBox;
+  @FXML
+  @SuppressWarnings("unused")
   private ListView<AbstractUnitWrapper> listViewAbstractUnits;
+
+  @FXML
+  @SuppressWarnings("unused")
+  private ComboBox<EntityWrapper> cbParentLevel;
 
   /**
    * Initialize module edit.
@@ -93,23 +103,38 @@ public class ModuleEdit extends GridPane implements Initializable {
             resources.getString("pordnrError"), ButtonType.OK).showAndWait();
       return;
     }
-    if (parent != null) {
-      ModuleLevel parentModuleLevel = new ModuleLevel();
-      parentModuleLevel.setModule(moduleWrapper.getModule());
-      parentModuleLevel.setLevel(((LevelWrapper) parent).getLevel());
-      moduleWrapper.getModule().getModuleLevels().add(parentModuleLevel);
-      ((LevelWrapper) parent).getLevel().getModules().add(moduleWrapper.getModule());
-      dataService.dataChangeEventSource().push(
-          new DataChangeEvent(DataChangeType.STORE_ENTITY, moduleWrapper));
-      dataService.dataChangeEventSource().push(
-          new DataChangeEvent(DataChangeType.STORE_ENTITY, parent));
+    if (cbParentLevel.getValue() == null) {
+      new Alert(Alert.AlertType.ERROR,
+            resources.getString("parentLevelError"), ButtonType.OK).showAndWait();
+      return;
     }
+    Level parentLevel =
+          ((LevelWrapper) cbParentLevel.getSelectionModel().getSelectedItem()).getLevel();
+    moduleWrapper.getModule().setLevel(parentLevel);
+    moduleWrapper.setLevel(parentLevel);
 
-    moduleWrapper.setKeyProperty("P-DUMMY-M-DUMMY");
-    moduleWrapper.getModule().setKey("P-DUMMY-M-DUMMY");
+    ((LevelWrapper) cbParentLevel.getValue()).getLevel().getModules().add(
+          moduleWrapper.getModule());
+    moduleWrapper.setKeyProperty(txtKey.textProperty().get().toUpperCase());
+    moduleWrapper.getModule().setKey(txtKey.textProperty().get().toUpperCase());
+
+    ModuleLevel moduleLevel = new ModuleLevel();
+    moduleLevel.setLevel(parentLevel);
+    moduleLevel.setModule(moduleWrapper.getModule());
+    moduleLevel.setCourse(parentLevel.getCourse());
+    Set<ModuleLevel> moduleLevels = new HashSet<>();
+    moduleLevels.add(moduleLevel);
+    moduleWrapper.getModule().setModuleLevels(moduleLevels);
+
+    boolean isNew = moduleWrapper.getId() == 0;
 
     dataService.dataChangeEventSource().push(
           new DataChangeEvent(DataChangeType.STORE_ENTITY, moduleWrapper));
+
+    if (isNew) {
+      dataService.dataChangeEventSource().push(
+            new DataChangeEvent(DataChangeType.INSERT_NEW_ENTITY, moduleWrapper));
+    }
 
     dataChangedProperty.set(false);
   }
@@ -132,6 +157,8 @@ public class ModuleEdit extends GridPane implements Initializable {
     EasyBind.subscribe(txtPordnr.textProperty(), s -> dataChangedProperty.set(true));
     EasyBind.subscribe(listViewAbstractUnits.itemsProperty(), s -> dataChangedProperty.set(true));
     EasyBind.subscribe(cbBundled.selectedProperty(), s -> dataChangedProperty.set(true));
+    EasyBind.subscribe(cbParentLevel.getSelectionModel().selectedItemProperty(), entityWrapper ->
+          dataChangedProperty.set(true));
   }
 
   private void initializeInputFields() {
@@ -146,7 +173,14 @@ public class ModuleEdit extends GridPane implements Initializable {
     setPordnr();
     setAbstractUnits();
     setBundled();
+    setParentLevels();
     dataChangedProperty.set(false);
+  }
+
+  private void setParentLevels() {
+    cbParentLevel.getItems().clear();
+    cbParentLevel.getItems().addAll(dataService.getLevelWrappers().values());
+    cbParentLevel.getSelectionModel().select(moduleWrapper);
   }
 
   private void setBundled() {
