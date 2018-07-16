@@ -22,12 +22,13 @@ import java.util.stream.Collectors;
 @Scope("prototype")
 public class Inflater {
 
-  private static final ResourceBundle MAIN_BUNDLE = ResourceBundle.getBundle("lang.main");
+  private final ResourceBundle mainBundle;
   private final FXMLLoader loader;
 
   @Autowired
-  public Inflater(final FXMLLoader loader) {
+  public Inflater(final FXMLLoader loader, ResourceBundle bundle) {
     this.loader = loader;
+    mainBundle = bundle;
   }
 
   /**
@@ -90,7 +91,7 @@ public class Inflater {
     for (int i = 0; i < bundleNames.length; i++) {
       bundles[i] = ResourceBundle.getBundle("lang." + bundleNames[i]);
     }
-    bundles[bundleNames.length] = MAIN_BUNDLE;
+    bundles[bundleNames.length] = mainBundle;
 
     loader.setResources(new CustomMultiResourceBundle(bundles));
     try {
