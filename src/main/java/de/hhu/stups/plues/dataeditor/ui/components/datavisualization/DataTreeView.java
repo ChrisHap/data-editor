@@ -345,6 +345,13 @@ public class DataTreeView extends VBox implements Initializable {
       if (courseTreeItem != null) {
         courseTreeItem.getChildren().add(new TreeItem<>(newEntity));
       }
+    } else {
+      TreeItem<EntityWrapper> levelTreeItem =
+            getTreeItemForEntityWrapperRecursive(newEntity.getParent(),
+                  treeTableRoot.getChildren());
+      if (levelTreeItem != null) {
+        levelTreeItem.getChildren().add(new TreeItem<>(newEntity));
+      }
     }
   }
 
