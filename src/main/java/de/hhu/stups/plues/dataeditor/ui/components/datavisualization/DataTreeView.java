@@ -29,6 +29,7 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.TreeTableView;
 import javafx.scene.input.MouseButton;
+import javafx.scene.input.TransferMode;
 import javafx.scene.layout.VBox;
 import org.controlsfx.control.textfield.CustomTextField;
 import org.fxmisc.easybind.EasyBind;
@@ -95,6 +96,12 @@ public class DataTreeView extends VBox implements Initializable {
         dataContextMenu.setEntityWrapper(selectedTreeItem.getValue());
         dataContextMenu.show(this, event.getScreenX(), event.getScreenY());
       }
+    });
+    treeTableView.setOnDragDetected(test -> {
+      EntityWrapper wrapper = treeTableView.getSelectionModel().getSelectedItem().getValue();
+      dataService.setDraggedItem(wrapper);
+      treeTableView.startDragAndDrop(TransferMode.COPY);
+      System.out.println("DRAG STARTED");
     });
     EasyBind.subscribe(txtQuery.textProperty(), this::filterDataTree);
   }

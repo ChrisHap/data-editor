@@ -59,6 +59,8 @@ public class DataService {
   private final GroupRepository groupRepository;
   private final SessionRepository sessionRepository;
 
+  private EntityWrapper draggedItem;
+
   /**
    * Initialize the map properties to store and manage the database entity wrapper and subscribe to
    * {@link DbService}.
@@ -383,5 +385,13 @@ public class DataService {
 
   public EventSource<DataChangeEvent> dataChangeEventSource() {
     return dataChangeEventSource;
+  }
+
+  public void setDraggedItem(EntityWrapper wrapper) {
+    draggedItem = wrapper;
+  }
+
+  public EntityWrapper getDraggedItem() {
+    return draggedItem;
   }
 }
