@@ -23,7 +23,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.RadioButton;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.GridPane;
 import javafx.util.StringConverter;
@@ -90,10 +89,31 @@ public class CourseEdit extends GridPane implements Initializable {
     initializeCbDegree();
     initializeInputFields();
     lbMajorsOrMinors.textProperty().bind(Bindings.when(rbMajorCourse.selectedProperty())
-          .then(resources.getString("minors")).otherwise(resources.getString("majors")));
+        .then(resources.getString("minors")).otherwise(resources.getString("majors")));
     setDataListener();
     loadCourseData();
+    dataService.draggedEntityProperty().addListener((observable, oldValue, newValue) ->
+        listViewMajorsOrMinors.requestFocus());
+    setListViewDragListeners();
+  }
 
+  private void setListViewDragListeners() {
+    listViewMajorsOrMinors.setOnDragOver(event -> {
+      event.acceptTransferModes(TransferMode.COPY);
+      event.consume();
+    });
+    listViewMajorsOrMinors.setOnDragDropped(event -> {
+      event.setDropCompleted(true);
+      final EntityWrapper draggedWrapper = dataService.draggedEntityProperty().get();
+      if (draggedWrapper.getEntityType().equals(EntityType.COURSE)
+          && ((CourseWrapper) draggedWrapper).getCourse().isMinor()
+          && !listViewMajorsOrMinors.getItems().contains(draggedWrapper)) {
+        // TODO: check if  major or minor
+        listViewMajorsOrMinors.getItems().add(((CourseWrapper) draggedWrapper));
+        dataChangedProperty.set(true);
+      }
+      event.consume();
+    });
   }
 
   /**
@@ -122,10 +142,10 @@ public class CourseEdit extends GridPane implements Initializable {
     listViewMajorsOrMinors.getItems().clear();
     if (rbMajorCourse.isSelected()) {
       listViewMajorsOrMinors.getItems()
-            .addAll(courseWrapper.getMinorCourseWrappers());
+          .addAll(courseWrapper.getMinorCourseWrappers());
     } else {
       listViewMajorsOrMinors.getItems()
-            .addAll(courseWrapper.getMajorCourseWrappers());
+          .addAll(courseWrapper.getMajorCourseWrappers());
     }
   }
 
@@ -184,22 +204,22 @@ public class CourseEdit extends GridPane implements Initializable {
   public void persistChanges() {
     if (cbCourseDegree.getValue() == null) {
       new Alert(Alert.AlertType.ERROR,
-            resources.getString("degreeError"), ButtonType.OK).showAndWait();
+          resources.getString("degreeError"), ButtonType.OK).showAndWait();
       return;
     }
     try {
       courseWrapper.getCourse().setCreditPoints(Integer.parseInt(
-            txtCreditPoints.textProperty().getValue()));
+          txtCreditPoints.textProperty().getValue()));
     } catch (NumberFormatException exeption) {
       new Alert(Alert.AlertType.ERROR,
-            resources.getString("creditsError"), ButtonType.OK).showAndWait();
+          resources.getString("creditsError"), ButtonType.OK).showAndWait();
       return;
     }
     try {
       courseWrapper.getCourse().setPo(Integer.parseInt(txtPVersion.textProperty().get()));
     } catch (NumberFormatException exeption) {
       new Alert(Alert.AlertType.ERROR,
-            resources.getString("poError"), ButtonType.OK).showAndWait();
+          resources.getString("poError"), ButtonType.OK).showAndWait();
       return;
     }
     courseWrapper.getCourse().setDegree(cbCourseDegree.getValue().toString().toLowerCase());
@@ -217,20 +237,20 @@ public class CourseEdit extends GridPane implements Initializable {
     }
 
     courseWrapper.setKey(courseWrapper.getDegree().toString() + "-"
-          + txtShortName.textProperty().get().toUpperCase() + "-"
-          + CourseKzfa.toString(courseWrapper.getKzfa()) + "-"
-          + courseWrapper.getPo());
+        + txtShortName.textProperty().get().toUpperCase() + "-"
+        + CourseKzfa.toString(courseWrapper.getKzfa()) + "-"
+        + courseWrapper.getPo());
     courseWrapper.getCourse().setKey(courseWrapper.getDegree().toString() + "-"
-          + txtShortName.textProperty().get().toUpperCase() + "-"
-          + CourseKzfa.toString(courseWrapper.getKzfa()) + "-"
-          + courseWrapper.getPo());
+        + txtShortName.textProperty().get().toUpperCase() + "-"
+        + CourseKzfa.toString(courseWrapper.getKzfa()) + "-"
+        + courseWrapper.getPo());
 
     boolean isNew = courseWrapper.getId() == 0;
     dataService.dataChangeEventSource().push(
-          new DataChangeEvent(DataChangeType.STORE_ENTITY, courseWrapper));
+        new DataChangeEvent(DataChangeType.STORE_ENTITY, courseWrapper));
     if (isNew) {
       dataService.dataChangeEventSource().push(
-            new DataChangeEvent(DataChangeType.INSERT_NEW_ENTITY, courseWrapper));
+          new DataChangeEvent(DataChangeType.INSERT_NEW_ENTITY, courseWrapper));
     }
     dataChangedProperty.set(false);
   }
@@ -241,50 +261,14 @@ public class CourseEdit extends GridPane implements Initializable {
     txtCreditPoints.setLabelText(resources.getString("credits"));
     txtPVersion.setLabelText(resources.getString("pversion"));
     listViewMajorsOrMinors.setCellFactory(
-        param -> {
-            ListCell<CourseWrapper> listCell = new ListCell<CourseWrapper>() {
-              @Override
-              protected void updateItem(CourseWrapper item, boolean empty) {
-                super.updateItem(item, empty);
-                if (item != null) {
-                  setText(item.toString());
-                }
-              }
-            };
-
-            listCell.setOnDragDetected((MouseEvent event) -> {
-              listViewMajorsOrMinors.getItems().remove(listCell.getItem());
-              dataService.setDraggedItem(listCell.getItem());
-            });
-
-
-            listCell.setOnDragOver(event -> {
-              System.out.println("DRAGGED OVER");
-              event.acceptTransferModes(TransferMode.ANY);
-              event.consume();
-            });
-
-            listCell.setOnDragEntered(event -> {
-              System.out.println("DRAGGED OVER");
-              if (event.getGestureSource() != listCell
-                    && event.getDragboard().hasString()) {
-                /* allow for moving */
-                event.acceptTransferModes(TransferMode.ANY);
-              }
-
-              event.consume();
-            });
-
-            listCell.setOnDragDropped(event -> {
-              EntityWrapper dragged = dataService.getDraggedItem();
-              if (dragged != null && dragged.getEntityType().equals(EntityType.COURSE)) {
-                listViewMajorsOrMinors.getItems().add((CourseWrapper) dragged);
-                System.out.println("DRAG ENDED");
-              }
-              event.consume();
-            });
-
-            return listCell;
+        param -> new ListCell<CourseWrapper>() {
+          @Override
+          protected void updateItem(CourseWrapper item, boolean empty) {
+            super.updateItem(item, empty);
+            if (item != null) {
+              setText(item.toString());
+            }
+          }
         });
   }
 

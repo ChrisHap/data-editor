@@ -20,8 +20,10 @@ import de.hhu.stups.plues.dataeditor.ui.entities.repositories.SessionRepository;
 import de.hhu.stups.plues.dataeditor.ui.entities.repositories.UnitRepository;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.MapProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleMapProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
 import org.fxmisc.easybind.EasyBind;
@@ -58,7 +60,7 @@ public class DataService {
   private final GroupRepository groupRepository;
   private final SessionRepository sessionRepository;
 
-  private EntityWrapper draggedItem;
+  private ObjectProperty<EntityWrapper> draggedEntityProperty;
 
   /**
    * Initialize the map properties to store and manage the database entity wrapper and subscribe to
@@ -83,6 +85,7 @@ public class DataService {
     sessionWrappersProperty = new SimpleMapProperty<>(FXCollections.observableHashMap());
     groupWrappersProperty = new SimpleMapProperty<>(FXCollections.observableHashMap());
     dataChangeEventSource = new EventSource<>();
+    draggedEntityProperty = new SimpleObjectProperty<>();
 
     this.courseRepository = courseRepository;
     this.levelRepository = levelRepository;
@@ -100,14 +103,14 @@ public class DataService {
     if (dataChangeEvent.getDataChangeType().storeEntity()) {
       if (dataChangeEvent.getChangedEntity().getId() == 0) {
         saveNewEntity(dataChangeEvent.getChangedEntity().getEntityType(),
-              dataChangeEvent.getChangedEntity());
+            dataChangeEvent.getChangedEntity());
       } else {
         saveEntity(dataChangeEvent.getChangedEntity().getEntityType(),
-              dataChangeEvent.getChangedEntity());
+            dataChangeEvent.getChangedEntity());
       }
     } else if (dataChangeEvent.getDataChangeType().deleteEntity()) {
       deleteEntity(dataChangeEvent.getChangedEntity().getEntityType(),
-            dataChangeEvent.getChangedEntity());
+          dataChangeEvent.getChangedEntity());
     }
   }
 
@@ -144,32 +147,32 @@ public class DataService {
       case COURSE:
         maxId = courseRepository.getMaxId();
         ((CourseWrapper) changedEntity).getCourse().setId(maxId + 1);
-        ((CourseWrapper)changedEntity).setId(maxId + 1);
+        ((CourseWrapper) changedEntity).setId(maxId + 1);
         break;
       case LEVEL:
         maxId = levelRepository.getMaxId();
         ((LevelWrapper) changedEntity).getLevel().setId(maxId + 1);
-        ((LevelWrapper)changedEntity).setId(maxId + 1);
+        ((LevelWrapper) changedEntity).setId(maxId + 1);
         break;
       case ABSTRACT_UNIT:
         ((AbstractUnitWrapper) changedEntity).getAbstractUnit().setId(
-              abstractUnitRepository.getMaxId() + 1);
+            abstractUnitRepository.getMaxId() + 1);
         break;
       case UNIT:
         ((UnitWrapper) changedEntity).getUnit().setId(
-              unitRepository.getMaxId() + 1);
+            unitRepository.getMaxId() + 1);
         break;
       case GROUP:
         ((GroupWrapper) changedEntity).getGroup().setId(
-              groupRepository.getMaxId() + 1);
+            groupRepository.getMaxId() + 1);
         break;
       case MODULE:
         ((ModuleWrapper) changedEntity).getModule().setId(
-              moduleRepository.getMaxId() + 1);
+            moduleRepository.getMaxId() + 1);
         break;
       case SESSION:
         ((SessionWrapper) changedEntity).getSession().setId(
-              sessionRepository.getMaxId() + 1);
+            sessionRepository.getMaxId() + 1);
         break;
       default:
     }
@@ -179,25 +182,25 @@ public class DataService {
   private void deleteEntity(EntityType changedType, EntityWrapper changedEntity) {
     switch (changedType) {
       case COURSE:
-        courseRepository.delete(((CourseWrapper)changedEntity).getCourse());
+        courseRepository.delete(((CourseWrapper) changedEntity).getCourse());
         break;
       case LEVEL:
-        levelRepository.delete(((LevelWrapper)changedEntity).getLevel());
+        levelRepository.delete(((LevelWrapper) changedEntity).getLevel());
         break;
       case MODULE:
-        moduleRepository.delete(((ModuleWrapper)changedEntity).getModule());
+        moduleRepository.delete(((ModuleWrapper) changedEntity).getModule());
         break;
       case ABSTRACT_UNIT:
-        abstractUnitRepository.delete(((AbstractUnitWrapper)changedEntity).getAbstractUnit());
+        abstractUnitRepository.delete(((AbstractUnitWrapper) changedEntity).getAbstractUnit());
         break;
       case UNIT:
-        unitRepository.delete(((UnitWrapper)changedEntity).getUnit());
+        unitRepository.delete(((UnitWrapper) changedEntity).getUnit());
         break;
       case GROUP:
-        groupRepository.delete(((GroupWrapper)changedEntity).getGroup());
+        groupRepository.delete(((GroupWrapper) changedEntity).getGroup());
         break;
       case SESSION:
-        sessionRepository.delete(((SessionWrapper)changedEntity).getSession());
+        sessionRepository.delete(((SessionWrapper) changedEntity).getSession());
         break;
       default:
     }
@@ -387,11 +390,7 @@ public class DataService {
     return dataChangeEventSource;
   }
 
-  public void setDraggedItem(EntityWrapper wrapper) {
-    draggedItem = wrapper;
-  }
-
-  public EntityWrapper getDraggedItem() {
-    return draggedItem;
+  public ObjectProperty<EntityWrapper> draggedEntityProperty() {
+    return draggedEntityProperty;
   }
 }
