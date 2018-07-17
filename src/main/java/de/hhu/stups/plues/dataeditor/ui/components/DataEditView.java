@@ -69,55 +69,10 @@ public class DataEditView extends TabPane implements Initializable {
   }
 
   private void openEditTab(final DataChangeEvent dataChangeEvent) {
-    if (dataChangeEvent.getDataChangeType().changeEntity()) {
+    if (dataChangeEvent.getDataChangeType().changeEntity()
+          || dataChangeEvent.getDataChangeType().addEntity()) {
       addEntityTab(dataChangeEvent.getChangedEntity());
-    } else if (dataChangeEvent.getDataChangeType().addEntity()) {
-      addEmptyEntityTab(dataChangeEvent.getChangedEntity().getEntityType(),
-            dataChangeEvent.getChangedEntity());
     }
-  }
-
-  private void addEmptyEntityTab(EntityType newEntityType,
-                                 EntityWrapper newEntity) {
-    final Tab tab = new Tab();
-    switch (newEntityType) {
-      case COURSE:
-        tab.setText(resources.getString("course"));
-        tab.setContent(editViewProvider.getCourseEditView((CourseWrapper)newEntity));
-        break;
-      case LEVEL:
-        tab.setText(resources.getString("level"));
-        LevelEdit levelEdit = editViewProvider.getLevelEditView((LevelWrapper)newEntity);
-        tab.setContent(levelEdit);
-        break;
-      case MODULE:
-        tab.setText(resources.getString("module"));
-        ModuleEdit moduleEdit = editViewProvider.getModuleEditView((ModuleWrapper) newEntity);
-        tab.setContent(moduleEdit);
-        break;
-      case ABSTRACT_UNIT:
-        tab.setText(resources.getString("abstract_unit"));
-        AbstractUnitEdit abstractUnitEdit = editViewProvider.getAbstractUnitEditView(
-              (AbstractUnitWrapper) newEntity);
-        tab.setContent(abstractUnitEdit);
-        break;
-      case UNIT:
-        UnitEdit unitEdit = editViewProvider.getUnitEditView((UnitWrapper) newEntity);
-        tab.setContent(unitEdit);
-        break;
-      case GROUP:
-        GroupEdit groupEdit = editViewProvider.getGroupEditView((GroupWrapper) newEntity);
-        tab.setContent(groupEdit);
-        break;
-      case SESSION:
-        SessionEdit sessionEdit = editViewProvider.getSessionEditView((SessionWrapper) newEntity);
-        tab.setContent(sessionEdit);
-        break;
-      default:
-        break;
-    }
-    getTabs().add(tab);
-    getSelectionModel().select(tab);
   }
 
   private void addEntityTab(final EntityWrapper entityWrapper) {
