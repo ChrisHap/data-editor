@@ -5,6 +5,7 @@ import de.hhu.stups.plues.dataeditor.ui.database.DataService;
 import de.hhu.stups.plues.dataeditor.ui.database.events.DataChangeEvent;
 import de.hhu.stups.plues.dataeditor.ui.database.events.DataChangeType;
 import de.hhu.stups.plues.dataeditor.ui.entities.AbstractUnitWrapper;
+import de.hhu.stups.plues.dataeditor.ui.entities.EntityType;
 import de.hhu.stups.plues.dataeditor.ui.entities.EntityWrapper;
 import de.hhu.stups.plues.dataeditor.ui.entities.Level;
 import de.hhu.stups.plues.dataeditor.ui.entities.LevelWrapper;
@@ -21,6 +22,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListView;
+import javafx.scene.input.TransferMode;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import org.fxmisc.easybind.EasyBind;
@@ -86,6 +88,26 @@ public class ModuleEdit extends GridPane implements Initializable {
     initializeInputFields();
     setDataListener();
     loadModuleData();
+    setListViewDragListeners();
+  }
+
+  private void setListViewDragListeners() {
+    dataService.draggedEntityProperty().addListener((observable, oldValue, newValue) ->
+          listViewAbstractUnits.requestFocus());
+    listViewAbstractUnits.setOnDragOver(event -> {
+      event.acceptTransferModes(TransferMode.COPY);
+      event.consume();
+    });
+    listViewAbstractUnits.setOnDragDropped(event -> {
+      event.setDropCompleted(true);
+      final EntityWrapper draggedWrapper = dataService.draggedEntityProperty().get();
+      if (draggedWrapper.getEntityType().equals(EntityType.ABSTRACT_UNIT)
+            && (!listViewAbstractUnits.getItems().contains(draggedWrapper))) {
+        listViewAbstractUnits.getItems().add(((AbstractUnitWrapper) draggedWrapper));
+        dataChangedProperty.set(true);
+      }
+      event.consume();
+    });
   }
 
   /**

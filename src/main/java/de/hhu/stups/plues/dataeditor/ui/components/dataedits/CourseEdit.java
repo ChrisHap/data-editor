@@ -92,12 +92,12 @@ public class CourseEdit extends GridPane implements Initializable {
         .then(resources.getString("minors")).otherwise(resources.getString("majors")));
     setDataListener();
     loadCourseData();
-    dataService.draggedEntityProperty().addListener((observable, oldValue, newValue) ->
-        listViewMajorsOrMinors.requestFocus());
     setListViewDragListeners();
   }
 
   private void setListViewDragListeners() {
+    dataService.draggedEntityProperty().addListener((observable, oldValue, newValue) ->
+          listViewMajorsOrMinors.requestFocus());
     listViewMajorsOrMinors.setOnDragOver(event -> {
       event.acceptTransferModes(TransferMode.COPY);
       event.consume();
@@ -106,9 +106,8 @@ public class CourseEdit extends GridPane implements Initializable {
       event.setDropCompleted(true);
       final EntityWrapper draggedWrapper = dataService.draggedEntityProperty().get();
       if (draggedWrapper.getEntityType().equals(EntityType.COURSE)
-          && ((CourseWrapper) draggedWrapper).getCourse().isMinor()
+          && (((CourseWrapper) draggedWrapper).getCourse().isMinor() == rbMinorCourse.isSelected())
           && !listViewMajorsOrMinors.getItems().contains(draggedWrapper)) {
-        // TODO: check if  major or minor
         listViewMajorsOrMinors.getItems().add(((CourseWrapper) draggedWrapper));
         dataChangedProperty.set(true);
       }
