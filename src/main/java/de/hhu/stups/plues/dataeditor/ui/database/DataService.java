@@ -27,7 +27,6 @@ import javafx.collections.ObservableMap;
 import org.fxmisc.easybind.EasyBind;
 import org.reactfx.EventSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
 
 import java.util.stream.Collectors;
@@ -66,9 +65,10 @@ public class DataService {
    * {@link DbService}.
    */
 
+  //TODO Factory verwenden
   @Autowired
-  public DataService(final DbService dbService, ConfigurableApplicationContext context,
-                     CourseRepository courseRepository, LevelRepository levelRepository,
+  public DataService(final DbService dbService, CourseRepository courseRepository,
+                     LevelRepository levelRepository,
                      ModuleRepository moduleRepository,
                      AbstractUnitRepository abstractUnitRepository,
                      UnitRepository unitRepository, GroupRepository groupRepository,
