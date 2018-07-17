@@ -1,13 +1,6 @@
 package de.hhu.stups.plues.dataeditor.ui.components;
 
-import de.hhu.stups.plues.dataeditor.ui.components.dataedits.AbstractUnitEdit;
-import de.hhu.stups.plues.dataeditor.ui.components.dataedits.CourseEdit;
 import de.hhu.stups.plues.dataeditor.ui.components.dataedits.EditViewProvider;
-import de.hhu.stups.plues.dataeditor.ui.components.dataedits.GroupEdit;
-import de.hhu.stups.plues.dataeditor.ui.components.dataedits.LevelEdit;
-import de.hhu.stups.plues.dataeditor.ui.components.dataedits.ModuleEdit;
-import de.hhu.stups.plues.dataeditor.ui.components.dataedits.SessionEdit;
-import de.hhu.stups.plues.dataeditor.ui.components.dataedits.UnitEdit;
 import de.hhu.stups.plues.dataeditor.ui.database.DataService;
 import de.hhu.stups.plues.dataeditor.ui.database.DbService;
 import de.hhu.stups.plues.dataeditor.ui.database.events.DataChangeEvent;
@@ -15,7 +8,6 @@ import de.hhu.stups.plues.dataeditor.ui.database.events.DbEvent;
 import de.hhu.stups.plues.dataeditor.ui.database.events.DbEventType;
 import de.hhu.stups.plues.dataeditor.ui.entities.AbstractUnitWrapper;
 import de.hhu.stups.plues.dataeditor.ui.entities.CourseWrapper;
-import de.hhu.stups.plues.dataeditor.ui.entities.EntityType;
 import de.hhu.stups.plues.dataeditor.ui.entities.EntityWrapper;
 import de.hhu.stups.plues.dataeditor.ui.entities.GroupWrapper;
 import de.hhu.stups.plues.dataeditor.ui.entities.LevelWrapper;
@@ -80,33 +72,24 @@ public class DataEditView extends TabPane implements Initializable {
     switch (entityWrapper.getEntityType()) {
       case COURSE:
         tab.setText(resources.getString("course"));
-        final CourseEdit courseEdit =
-                editViewProvider.getCourseEditView((CourseWrapper) entityWrapper);
-        tab.setContent(courseEdit);
+        tab.setContent(editViewProvider.getCourseEditView((CourseWrapper) entityWrapper));
         break;
       case LEVEL:
         tab.setText(resources.getString("level"));
-        final LevelEdit levelEdit =
-                editViewProvider.getLevelEditView((LevelWrapper) entityWrapper);
-        tab.setContent(levelEdit);
+        tab.setContent(editViewProvider.getLevelEditView((LevelWrapper) entityWrapper));
         break;
       case MODULE:
         tab.setText(resources.getString("module"));
-        final ModuleEdit moduleEdit =
-                editViewProvider.getModuleEditView((ModuleWrapper) entityWrapper);
-        tab.setContent(moduleEdit);
+        tab.setContent(editViewProvider.getModuleEditView((ModuleWrapper) entityWrapper));
         break;
       case ABSTRACT_UNIT:
         tab.setText(resources.getString("abstract_unit"));
-        final AbstractUnitEdit abstractUnitEdit =
-                editViewProvider.getAbstractUnitEditView((AbstractUnitWrapper) entityWrapper);
-        tab.setContent(abstractUnitEdit);
+        tab.setContent(
+              editViewProvider.getAbstractUnitEditView((AbstractUnitWrapper) entityWrapper));
         break;
       case UNIT:
         tab.setText(resources.getString("unit"));
-        final UnitEdit unitEdit =
-                editViewProvider.getUnitEditView((UnitWrapper) entityWrapper);
-        tab.setContent(unitEdit);
+        tab.setContent(editViewProvider.getUnitEditView((UnitWrapper) entityWrapper));
         break;
       case GROUP:
         tab.setText(resources.getString("group"));
