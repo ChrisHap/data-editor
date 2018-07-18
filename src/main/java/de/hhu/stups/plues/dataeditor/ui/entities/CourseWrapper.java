@@ -11,19 +11,8 @@ import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableSet;
 
-import javax.persistence.Access;
-import javax.persistence.AccessType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
 import javax.persistence.Transient;
 
-@Entity
-@Access(AccessType.PROPERTY)
-@Table(name = "courses")
 public class CourseWrapper implements EntityWrapper {
 
   private IntegerProperty idProperty;
@@ -70,9 +59,6 @@ public class CourseWrapper implements EntityWrapper {
     idProperty = new SimpleIntegerProperty(course.getId());
   }
 
-  @Id
-  @Column(name = "id")
-  @GeneratedValue(strategy = GenerationType.AUTO)
   public int getId() {
     return idProperty.get();
   }
@@ -85,7 +71,6 @@ public class CourseWrapper implements EntityWrapper {
     return idProperty;
   }
 
-  @Column(name = "key")
   public String getKey() {
     return keyProperty.get();
   }
@@ -98,7 +83,6 @@ public class CourseWrapper implements EntityWrapper {
     return keyProperty;
   }
 
-  @Column(name = "po")
   public int getPo() {
     return poProperty.get();
   }
@@ -111,7 +95,6 @@ public class CourseWrapper implements EntityWrapper {
     return poProperty;
   }
 
-  @Column(name = "credit_poins")
   public int getCreditPoints() {
     return creditPointsProperty.get();
   }
@@ -124,7 +107,6 @@ public class CourseWrapper implements EntityWrapper {
     return creditPointsProperty;
   }
 
-  @Column(name = "short_name")
   public String getShortName() {
     return shortNameProperty.get();
   }
@@ -137,7 +119,6 @@ public class CourseWrapper implements EntityWrapper {
     return shortNameProperty;
   }
 
-  @Column(name = "name")
   public String getLongName() {
     return longNameProperty.get();
   }
@@ -150,7 +131,6 @@ public class CourseWrapper implements EntityWrapper {
     return longNameProperty;
   }
 
-  @Column(name = "degree")
   public CourseDegree getDegree() {
     return degreeProperty.get();
   }
@@ -163,7 +143,6 @@ public class CourseWrapper implements EntityWrapper {
     return degreeProperty;
   }
 
-  @Column(name = "kzfa")
   public CourseKzfa getKzfa() {
     return kzfaProperty.get();
   }
