@@ -5,6 +5,7 @@ import de.hhu.stups.plues.dataeditor.ui.database.DataService;
 import de.hhu.stups.plues.dataeditor.ui.database.events.DataChangeEvent;
 import de.hhu.stups.plues.dataeditor.ui.database.events.DataChangeType;
 import de.hhu.stups.plues.dataeditor.ui.entities.AbstractUnitWrapper;
+import de.hhu.stups.plues.dataeditor.ui.entities.EntityType;
 import de.hhu.stups.plues.dataeditor.ui.entities.EntityWrapper;
 import de.hhu.stups.plues.dataeditor.ui.entities.ModuleWrapper;
 import de.hhu.stups.plues.dataeditor.ui.entities.UnitWrapper;
@@ -16,6 +17,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ToggleButton;
+import javafx.scene.input.TransferMode;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import org.fxmisc.easybind.EasyBind;
@@ -60,14 +62,12 @@ public class AbstractUnitEdit extends GridPane implements Initializable {
   @SuppressWarnings("unused")
   private Button btPersistChanges;
 
-  private EntityWrapper parent;
-
   /**
    * Initialize abstract unit edit.
    */
   AbstractUnitEdit(final Inflater inflater,
-                          final DataService dataService,
-                          final AbstractUnitWrapper abstractUnitWrapper) {
+                   final DataService dataService,
+                   final AbstractUnitWrapper abstractUnitWrapper) {
     this.dataService = dataService;
     this.abstractUnitWrapper = abstractUnitWrapper;
     dataChangedProperty = new SimpleBooleanProperty(false);
@@ -82,6 +82,46 @@ public class AbstractUnitEdit extends GridPane implements Initializable {
     loadAbstractUnitData();
     setDataListener();
     btPersistChanges.disableProperty().bind(dataChangedProperty.not());
+    setListViewDragListeners();
+  }
+
+
+  private void setListViewDragListeners() {
+    dataService.draggedEntityProperty().addListener((observable, oldValue, newValue) ->
+          listViewModules.requestFocus());
+    listViewModules.setOnDragOver(event -> {
+      event.acceptTransferModes(TransferMode.COPY);
+      event.consume();
+    });
+    listViewModules.setOnDragDropped(event -> {
+      event.setDropCompleted(true);
+      final EntityWrapper draggedWrapper = dataService.draggedEntityProperty().get();
+      //noinspection SuspiciousMethodCalls
+      if (EntityType.MODULE.equals(draggedWrapper.getEntityType())
+            && !listViewModules.getItems().contains(draggedWrapper)) {
+        listViewModules.getItems().add(((ModuleWrapper) draggedWrapper));
+        dataChangedProperty.set(true);
+      }
+      event.consume();
+    });
+
+    dataService.draggedEntityProperty().addListener((observable, oldValue, newValue) ->
+          listViewUnits.requestFocus());
+    listViewUnits.setOnDragOver(event -> {
+      event.acceptTransferModes(TransferMode.COPY);
+      event.consume();
+    });
+    listViewUnits.setOnDragDropped(event -> {
+      event.setDropCompleted(true);
+      final EntityWrapper draggedWrapper = dataService.draggedEntityProperty().get();
+      //noinspection SuspiciousMethodCalls
+      if (EntityType.UNIT.equals(draggedWrapper.getEntityType())
+            && (!listViewUnits.getItems().contains(draggedWrapper))) {
+        listViewUnits.getItems().add(((UnitWrapper) draggedWrapper));
+        dataChangedProperty.set(true);
+      }
+      event.consume();
+    });
   }
 
   private void updateDataChanged() {
@@ -129,15 +169,12 @@ public class AbstractUnitEdit extends GridPane implements Initializable {
   @SuppressWarnings("unused")
   public void persistChanges() {
     abstractUnitWrapper.getAbstractUnit().setTitle(txtAbstractUnit.textProperty().get());
-    if (parent != null) {
-      abstractUnitWrapper.getAbstractUnit().getModules().add(((ModuleWrapper) parent).getModule());
-      ((ModuleWrapper) parent).getModule().getAbstractUnits().add(
-            abstractUnitWrapper.getAbstractUnit());
-      dataService.dataChangeEventSource().push(
-            new DataChangeEvent(DataChangeType.STORE_ENTITY, abstractUnitWrapper));
-    }
+    listViewModules.getItems().forEach(moduleWrapper -> {
+      abstractUnitWrapper.getAbstractUnit().getModules().add(moduleWrapper.getModule());
+      moduleWrapper.getModule().getAbstractUnits().add(abstractUnitWrapper.getAbstractUnit());
+    });
     dataService.dataChangeEventSource().push(
-        new DataChangeEvent(DataChangeType.STORE_ENTITY, abstractUnitWrapper));
+          new DataChangeEvent(DataChangeType.STORE_ENTITY, abstractUnitWrapper));
     dataChangedProperty.set(false);
   }
 
@@ -151,14 +188,14 @@ public class AbstractUnitEdit extends GridPane implements Initializable {
 
   private void setUnits() {
     listViewUnits.getItems().addAll(abstractUnitWrapper.getAbstractUnit()
-        .getUnits().stream().map(unit -> dataService.getUnitWrappers().get(unit.getKey()))
-        .collect(Collectors.toSet()));
+          .getUnits().stream().map(unit -> dataService.getUnitWrappers().get(unit.getKey()))
+          .collect(Collectors.toSet()));
   }
 
   private void setModules() {
     listViewModules.getItems().addAll(abstractUnitWrapper.getAbstractUnit()
-        .getModules().stream().map(module -> dataService.getModuleWrappers().get(module.getKey()))
-        .collect(Collectors.toSet()));
+          .getModules().stream().map(module -> dataService.getModuleWrappers().get(module.getKey()))
+          .collect(Collectors.toSet()));
   }
 
   private void setId() {

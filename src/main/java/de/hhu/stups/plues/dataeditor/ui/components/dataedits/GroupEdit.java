@@ -4,6 +4,7 @@ import de.hhu.stups.plues.dataeditor.ui.components.LabeledTextField;
 import de.hhu.stups.plues.dataeditor.ui.database.DataService;
 import de.hhu.stups.plues.dataeditor.ui.database.events.DataChangeEvent;
 import de.hhu.stups.plues.dataeditor.ui.database.events.DataChangeType;
+import de.hhu.stups.plues.dataeditor.ui.entities.EntityType;
 import de.hhu.stups.plues.dataeditor.ui.entities.EntityWrapper;
 import de.hhu.stups.plues.dataeditor.ui.entities.GroupWrapper;
 import de.hhu.stups.plues.dataeditor.ui.entities.SessionWrapper;
@@ -13,9 +14,13 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListView;
 import javafx.scene.control.RadioButton;
+import javafx.scene.input.TransferMode;
 import javafx.scene.layout.GridPane;
 import org.fxmisc.easybind.EasyBind;
 
@@ -46,15 +51,18 @@ public class GroupEdit extends GridPane implements Initializable {
   @FXML
   @SuppressWarnings("unused")
   private Button btPersistChanges;
+  @FXML
+  @SuppressWarnings("unused")
+  private ComboBox<UnitWrapper> cbParentUnit;
 
-  private EntityWrapper parent;
+  private ResourceBundle resources;
 
   /**
    * Initialize group edit.
    */
   GroupEdit(final Inflater inflater,
-                   final DataService dataService,
-                   final GroupWrapper groupWrapper) {
+            final DataService dataService,
+            final GroupWrapper groupWrapper) {
     this.groupWrapper = groupWrapper;
     this.dataService = dataService;
     dataChangedProperty = new SimpleBooleanProperty(false);
@@ -63,16 +71,45 @@ public class GroupEdit extends GridPane implements Initializable {
 
   @Override
   public void initialize(final URL location, final ResourceBundle resources) {
+    this.resources = resources;
     btPersistChanges.disableProperty().bind(dataChangedProperty.not());
     txtUnit.setLabelText(resources.getString("unit"));
     loadGroupData();
     setDataListener();
+    setListViewDragListeners();
+  }
+
+  private void setParenUnits() {
+    cbParentUnit.getItems().clear();
+    cbParentUnit.getItems().addAll(dataService.getUnitWrappers().values());
+    cbParentUnit.getSelectionModel().select(groupWrapper.getUnit());
+  }
+
+  private void setListViewDragListeners() {
+    dataService.draggedEntityProperty().addListener((observable, oldValue, newValue) ->
+          listViewSessions.requestFocus());
+    listViewSessions.setOnDragOver(event -> {
+      event.acceptTransferModes(TransferMode.COPY);
+      event.consume();
+    });
+    listViewSessions.setOnDragDropped(event -> {
+      event.setDropCompleted(true);
+      final EntityWrapper draggedWrapper = dataService.draggedEntityProperty().get();
+      //noinspection SuspiciousMethodCalls
+      if (EntityType.SESSION.equals(draggedWrapper.getEntityType())
+            && !listViewSessions.getItems().contains(draggedWrapper)) {
+        listViewSessions.getItems().add(((SessionWrapper) draggedWrapper));
+        dataChangedProperty.set(true);
+      }
+      event.consume();
+    });
   }
 
   private void loadGroupData() {
     setUnit();
     selectSemesterType();
     loadSessions();
+    setParenUnits();
     dataChangedProperty.set(false);
   }
 
@@ -91,7 +128,7 @@ public class GroupEdit extends GridPane implements Initializable {
   private void setDataListener() {
     EasyBind.subscribe(groupWrapper.unitProperty(), unitWrapper -> setUnit());
     EasyBind.subscribe(groupWrapper.sessionsProperty(), sessionWrappers ->
-        loadSessions());
+          loadSessions());
     EasyBind.subscribe(groupWrapper.halfSemesterProperty(), number -> selectSemesterType());
     updateDataChanged();
   }
@@ -120,14 +157,28 @@ public class GroupEdit extends GridPane implements Initializable {
   @FXML
   @SuppressWarnings("unused")
   public void persistChanges() {
-    if (parent != null) {
-      groupWrapper.getGroup().setUnit(((UnitWrapper) parent).getUnit());
-      ((UnitWrapper) parent).getUnit().getGroups().add(groupWrapper.getGroup());
-      dataService.dataChangeEventSource().push(
-            new DataChangeEvent(DataChangeType.STORE_ENTITY, parent));
+    if (cbParentUnit.getValue() == null) {
+      new Alert(Alert.AlertType.ERROR,
+            resources.getString("parentUnitError"), ButtonType.OK).showAndWait();
+      return;
+
     }
+    groupWrapper.getGroup().setUnit(cbParentUnit.getValue().getUnit());
+    cbParentUnit.getValue().getUnit().getGroups().add(groupWrapper.getGroup());
     dataService.dataChangeEventSource().push(
-        new DataChangeEvent(DataChangeType.STORE_ENTITY, groupWrapper));
+          new DataChangeEvent(DataChangeType.STORE_ENTITY, cbParentUnit.getValue()));
+
+    boolean isNew = groupWrapper.getGroup().getId() == 0;
+
+    dataService.dataChangeEventSource().push(
+          new DataChangeEvent(DataChangeType.STORE_ENTITY, groupWrapper));
+
+    if (isNew) {
+      dataService.dataChangeEventSource().push(
+            new DataChangeEvent(DataChangeType.INSERT_NEW_ENTITY, groupWrapper));
+    }
+
     dataChangedProperty.set(false);
   }
+
 }

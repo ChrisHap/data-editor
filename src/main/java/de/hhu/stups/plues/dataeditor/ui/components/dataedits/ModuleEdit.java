@@ -101,7 +101,7 @@ public class ModuleEdit extends GridPane implements Initializable {
     listViewAbstractUnits.setOnDragDropped(event -> {
       event.setDropCompleted(true);
       final EntityWrapper draggedWrapper = dataService.draggedEntityProperty().get();
-      if (draggedWrapper.getEntityType().equals(EntityType.ABSTRACT_UNIT)
+      if (EntityType.ABSTRACT_UNIT.equals(draggedWrapper.getEntityType())
             && (!listViewAbstractUnits.getItems().contains(draggedWrapper))) {
         listViewAbstractUnits.getItems().add(((AbstractUnitWrapper) draggedWrapper));
         dataChangedProperty.set(true);

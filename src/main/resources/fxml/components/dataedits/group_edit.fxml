@@ -12,6 +12,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
+<?import javafx.scene.control.ComboBox?>
 <fx:root type="GridPane" styleClass="windowPaddingLarge" vgap="5.0" hgap="5.0" prefHeight="500.0" alignment="CENTER"
          xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml">
     <columnConstraints>
@@ -22,7 +23,8 @@
         <RowConstraints percentHeight="2.5"/>
         <RowConstraints percentHeight="27.5"/>
         <RowConstraints percentHeight="5.0"/>
-        <RowConstraints percentHeight="60.0"/>
+        <RowConstraints percentHeight="5.0"/>
+        <RowConstraints percentHeight="55.0"/>
     </rowConstraints>
     <LabeledTextField fx:id="txtUnit" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
     <fx:define>
@@ -37,6 +39,10 @@
         <Label text="%sessions"/>
         <ListView fx:id="listViewSessions"/>
     </VBox>
+    <VBox fx:id="cbBox" spacing="5.0" GridPane.columnIndex="0" GridPane.rowIndex="3" minWidth="0" maxWidth="Infinity">
+        <Label text="%unit"/>
+        <ComboBox fx:id="cbParentUnit" minWidth="0" maxWidth="Infinity" prefWidth="600.0"/>
+    </VBox>
     <Button fx:id="btPersistChanges" text="%persist" onAction="#persistChanges" GridPane.columnIndex="0"
-            GridPane.rowIndex="3"/>
+            GridPane.rowIndex="4"/>
 </fx:root>

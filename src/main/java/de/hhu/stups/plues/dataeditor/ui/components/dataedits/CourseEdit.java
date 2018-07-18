@@ -105,8 +105,8 @@ public class CourseEdit extends GridPane implements Initializable {
     listViewMajorsOrMinors.setOnDragDropped(event -> {
       event.setDropCompleted(true);
       final EntityWrapper draggedWrapper = dataService.draggedEntityProperty().get();
-      if (draggedWrapper.getEntityType().equals(EntityType.COURSE)
-          && (((CourseWrapper) draggedWrapper).getCourse().isMinor() == rbMinorCourse.isSelected())
+      if (EntityType.COURSE.equals(draggedWrapper.getEntityType())
+          && (((CourseWrapper) draggedWrapper).getCourse().isMinor() == rbMajorCourse.isSelected())
           && !listViewMajorsOrMinors.getItems().contains(draggedWrapper)) {
         listViewMajorsOrMinors.getItems().add(((CourseWrapper) draggedWrapper));
         dataChangedProperty.set(true);

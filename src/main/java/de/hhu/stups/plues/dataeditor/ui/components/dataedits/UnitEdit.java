@@ -5,6 +5,7 @@ import de.hhu.stups.plues.dataeditor.ui.database.DataService;
 import de.hhu.stups.plues.dataeditor.ui.database.events.DataChangeEvent;
 import de.hhu.stups.plues.dataeditor.ui.database.events.DataChangeType;
 import de.hhu.stups.plues.dataeditor.ui.entities.AbstractUnitWrapper;
+import de.hhu.stups.plues.dataeditor.ui.entities.EntityType;
 import de.hhu.stups.plues.dataeditor.ui.entities.EntityWrapper;
 import de.hhu.stups.plues.dataeditor.ui.entities.GroupWrapper;
 import de.hhu.stups.plues.dataeditor.ui.entities.UnitWrapper;
@@ -15,6 +16,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
+import javafx.scene.input.TransferMode;
 import javafx.scene.layout.GridPane;
 import org.fxmisc.easybind.EasyBind;
 
@@ -48,8 +50,6 @@ public class UnitEdit extends GridPane implements Initializable {
   @SuppressWarnings("unused")
   private Button btPersistChanges;
 
-  private EntityWrapper parent;
-
   /**
    * Initialize unit edit.
    */
@@ -69,6 +69,45 @@ public class UnitEdit extends GridPane implements Initializable {
     initializeInputFields();
     setDataListener();
     loadUnitData();
+    setListViewDragListeners();
+  }
+
+  private void setListViewDragListeners() {
+    dataService.draggedEntityProperty().addListener((observable, oldValue, newValue) ->
+          listViewAbstractUnits.requestFocus());
+    listViewAbstractUnits.setOnDragOver(event -> {
+      event.acceptTransferModes(TransferMode.COPY);
+      event.consume();
+    });
+    listViewAbstractUnits.setOnDragDropped(event -> {
+      event.setDropCompleted(true);
+      final EntityWrapper draggedWrapper = dataService.draggedEntityProperty().get();
+      //noinspection SuspiciousMethodCalls
+      if (EntityType.ABSTRACT_UNIT.equals(draggedWrapper.getEntityType())
+            && !listViewAbstractUnits.getItems().contains(draggedWrapper)) {
+        listViewAbstractUnits.getItems().add(((AbstractUnitWrapper) draggedWrapper));
+        dataChangedProperty.set(true);
+      }
+      event.consume();
+    });
+
+    dataService.draggedEntityProperty().addListener((observable, oldValue, newValue) ->
+          listViewGroups.requestFocus());
+    listViewGroups.setOnDragOver(event -> {
+      event.acceptTransferModes(TransferMode.COPY);
+      event.consume();
+    });
+    listViewGroups.setOnDragDropped(event -> {
+      event.setDropCompleted(true);
+      final EntityWrapper draggedWrapper = dataService.draggedEntityProperty().get();
+      //noinspection SuspiciousMethodCalls
+      if (EntityType.GROUP.equals(draggedWrapper.getEntityType())
+            && (!listViewGroups.getItems().contains(draggedWrapper))) {
+        listViewGroups.getItems().add(((GroupWrapper) draggedWrapper));
+        dataChangedProperty.set(true);
+      }
+      event.consume();
+    });
   }
 
   private void updateDataChanged() {
@@ -97,16 +136,24 @@ public class UnitEdit extends GridPane implements Initializable {
   @SuppressWarnings("unused")
   public void persistChanges() {
     unitWrapper.getUnit().setTitle(txtUnit.textProperty().get());
-    if (parent != null) {
+    listViewAbstractUnits.getItems().forEach(parent -> {
       unitWrapper.getUnit().getAbstractUnits().add(
-            ((AbstractUnitWrapper) parent).getAbstractUnit());
-      ((AbstractUnitWrapper) parent).getAbstractUnit().getUnits().add(unitWrapper.getUnit());
+            parent.getAbstractUnit());
+      parent.getAbstractUnit().getUnits().add(unitWrapper.getUnit());
       dataService.dataChangeEventSource().push(
             new DataChangeEvent(DataChangeType.STORE_ENTITY, parent));
-    }
+    });
+
+    boolean isNew = unitWrapper.getUnit().getId() == 0;
+
     dataService.dataChangeEventSource().push(
         new DataChangeEvent(DataChangeType.STORE_ENTITY, unitWrapper));
     dataChangedProperty.set(false);
+
+    if (isNew) {
+      dataService.dataChangeEventSource().push(
+            new DataChangeEvent(DataChangeType.INSERT_NEW_ENTITY, unitWrapper));
+    }
   }
 
 
