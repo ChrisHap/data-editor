@@ -101,6 +101,9 @@ public class DataTreeView extends VBox implements Initializable {
       }
     });
     treeTableView.setOnDragDetected(test -> {
+      if (treeTableView.getSelectionModel().getSelectedItem() == null) {
+        return;
+      }
       EntityWrapper wrapper = treeTableView.getSelectionModel().getSelectedItem().getValue();
       dataService.draggedEntityProperty().set(wrapper);
       Dragboard db = treeTableView.startDragAndDrop(TransferMode.COPY);
