@@ -1,6 +1,7 @@
 package de.hhu.stups.plues.dataeditor.ui.entities;
 
 import org.hibernate.annotations.Immutable;
+import org.springframework.lang.Nullable;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -60,6 +61,7 @@ public class Level extends ModelEntity implements Serializable {
         inverseJoinColumns = @JoinColumn(name = "module_id", referencedColumnName = "id"))
   private Set<Module> modules;
 
+  @Nullable
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinTable(name = "course_levels",
         inverseJoinColumns = @JoinColumn(name = "course_id",
