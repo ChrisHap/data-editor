@@ -17,6 +17,7 @@ import de.hhu.stups.plues.dataeditor.ui.entities.repositories.CourseRepository;
 import de.hhu.stups.plues.dataeditor.ui.entities.repositories.GroupRepository;
 import de.hhu.stups.plues.dataeditor.ui.entities.repositories.LevelRepository;
 import de.hhu.stups.plues.dataeditor.ui.entities.repositories.ModuleRepository;
+import de.hhu.stups.plues.dataeditor.ui.entities.repositories.RepositoryFactory;
 import de.hhu.stups.plues.dataeditor.ui.entities.repositories.SessionRepository;
 import de.hhu.stups.plues.dataeditor.ui.entities.repositories.UnitRepository;
 import javafx.beans.property.ListProperty;
@@ -68,14 +69,8 @@ public class DataService {
    * {@link DbService}.
    */
 
-  //TODO Factory verwenden
   @Autowired
-  public DataService(final DbService dbService, CourseRepository courseRepository,
-                     LevelRepository levelRepository,
-                     ModuleRepository moduleRepository,
-                     AbstractUnitRepository abstractUnitRepository,
-                     UnitRepository unitRepository, GroupRepository groupRepository,
-                     SessionRepository sessionRepository) {
+  public DataService(final DbService dbService, RepositoryFactory repositoryFactory) {
     courseWrappersProperty = new SimpleMapProperty<>(FXCollections.observableHashMap());
     majorCourseWrappersProperty = new SimpleListProperty<>(FXCollections.observableArrayList());
     minorCourseWrappersProperty = new SimpleListProperty<>(FXCollections.observableArrayList());
@@ -88,13 +83,13 @@ public class DataService {
     dataChangeEventSource = new EventSource<>();
     draggedEntityProperty = new SimpleObjectProperty<>();
 
-    this.courseRepository = courseRepository;
-    this.levelRepository = levelRepository;
-    this.moduleRepository = moduleRepository;
-    this.abstractUnitRepository = abstractUnitRepository;
-    this.unitRepository = unitRepository;
-    this.groupRepository = groupRepository;
-    this.sessionRepository = sessionRepository;
+    this.courseRepository = repositoryFactory.getCourseRepository();
+    this.levelRepository = repositoryFactory.getLevelRepository();
+    this.moduleRepository = repositoryFactory.getModuleRepository();
+    this.abstractUnitRepository = repositoryFactory.getAbstractUnitRepository();
+    this.unitRepository = repositoryFactory.getUnitRepository();
+    this.groupRepository = repositoryFactory.getGroupRepository();
+    this.sessionRepository = repositoryFactory.getSessionRepository();
 
     EasyBind.subscribe(dbService.dataSourceProperty(), this::loadData);
     dataChangeEventSource.subscribe(this::persistData);
@@ -104,14 +99,14 @@ public class DataService {
     if (dataChangeEvent.getDataChangeType().storeEntity()) {
       if (dataChangeEvent.getChangedEntity().getId() == 0) {
         saveNewEntity(dataChangeEvent.getChangedEntity().getEntityType(),
-            dataChangeEvent.getChangedEntity());
+              dataChangeEvent.getChangedEntity());
       } else {
         saveEntity(dataChangeEvent.getChangedEntity().getEntityType(),
-            dataChangeEvent.getChangedEntity());
+              dataChangeEvent.getChangedEntity());
       }
     } else if (dataChangeEvent.getDataChangeType().deleteEntity()) {
       deleteEntity(dataChangeEvent.getChangedEntity().getEntityType(),
-          dataChangeEvent.getChangedEntity());
+            dataChangeEvent.getChangedEntity());
     }
   }
 
@@ -121,7 +116,7 @@ public class DataService {
         courseRepository.save(((CourseWrapper) changedEntity).getCourse());
         break;
       case LEVEL:
-        saveLevel((LevelWrapper)changedEntity);
+        saveLevel((LevelWrapper) changedEntity);
         break;
       case ABSTRACT_UNIT:
         abstractUnitRepository.save(((AbstractUnitWrapper) changedEntity).getAbstractUnit());
@@ -156,43 +151,44 @@ public class DataService {
         } else {
           minorCourseWrappersProperty.add(((CourseWrapper) changedEntity));
         }
+        courseRepository.save(((CourseWrapper) changedEntity).getCourse());
         break;
       case LEVEL:
-        saveNewLevel((LevelWrapper)changedEntity);
+        saveNewLevel((LevelWrapper) changedEntity);
         break;
       case ABSTRACT_UNIT:
         ((AbstractUnitWrapper) changedEntity).getAbstractUnit().setId(
-            abstractUnitRepository.getMaxId() + 1);
+              abstractUnitRepository.getMaxId() + 1);
         abstractUnitWrappersProperty.put(((AbstractUnitWrapper) changedEntity).getKey(),
               ((AbstractUnitWrapper) changedEntity));
+        abstractUnitRepository.save(((AbstractUnitWrapper) changedEntity).getAbstractUnit());
         break;
       case UNIT:
         ((UnitWrapper) changedEntity).getUnit().setId(
-            unitRepository.getMaxId() + 1);
+              unitRepository.getMaxId() + 1);
         unitWrappersProperty.put(((UnitWrapper) changedEntity).getKey(),
               ((UnitWrapper) changedEntity));
         break;
       case GROUP:
         ((GroupWrapper) changedEntity).getGroup().setId(
-            groupRepository.getMaxId() + 1);
+              groupRepository.getMaxId() + 1);
         groupWrappersProperty.put(String.valueOf(changedEntity.getId()),
               ((GroupWrapper) changedEntity));
         break;
       case MODULE:
         ((ModuleWrapper) changedEntity).getModule().setId(
-            moduleRepository.getMaxId() + 1);
+              moduleRepository.getMaxId() + 1);
         moduleWrappersProperty.put(((ModuleWrapper) changedEntity).getKey(),
               ((ModuleWrapper) changedEntity));
         break;
       case SESSION:
         ((SessionWrapper) changedEntity).getSession().setId(
-            sessionRepository.getMaxId() + 1);
+              sessionRepository.getMaxId() + 1);
         sessionWrappersProperty.put(String.valueOf(changedEntity.getId()),
               ((SessionWrapper) changedEntity));
         break;
       default:
     }
-    //saveEntity(changedType, changedEntity);
   }
 
   private void saveNewLevel(LevelWrapper levelWrapper) {
@@ -200,10 +196,10 @@ public class DataService {
     levelWrapper.getLevel().setId(maxId + 1);
     levelWrapper.setId(maxId + 1);
     Level lvl = levelWrapper.getLevel();
-    levelRepository.insertSimpleLevel(lvl.getId(),lvl.getName(),lvl.getTm(), lvl.getArt(),
-          lvl.getMin(),lvl.getMax(),lvl.getMinCreditPoints(),lvl.getMaxCreditPoints(),
+    levelRepository.insertSimpleLevel(lvl.getId(), lvl.getName(), lvl.getTm(), lvl.getArt(),
+          lvl.getMin(), lvl.getMax(), lvl.getMinCreditPoints(), lvl.getMaxCreditPoints(),
           lvl.getParent() == null ? null : lvl.getParent().getId());
-    if (lvl.getParent() == null) {
+    if (lvl.getParent() == null && lvl.getCourse() != null) {
       levelRepository.insertCourseLevel(lvl.getCourse().getId(), lvl.getId());
     }
     levelWrappersProperty.put(levelWrapper.getId(), levelWrapper);
@@ -212,10 +208,11 @@ public class DataService {
   private void saveLevel(LevelWrapper levelWrapper) {
     levelRepository.deleteCourseLevel(levelWrapper.getId());
     Level lvl = levelWrapper.getLevel();
-    levelRepository.updateSimpleLevel(lvl.getId(),lvl.getName(),lvl.getTm(), lvl.getArt(),
-          lvl.getMin(),lvl.getMax(),lvl.getMinCreditPoints(),lvl.getMaxCreditPoints(),
+    levelRepository.updateSimpleLevel(lvl.getId(), lvl.getName(), lvl.getTm(), lvl.getArt(),
+          lvl.getMin(), lvl.getMax(), lvl.getMinCreditPoints(), lvl.getMaxCreditPoints(),
           lvl.getParent() == null ? null : lvl.getParent().getId());
-    if (lvl.getParent() == null) {
+    if (lvl.getParent() == null && lvl.getCourse() != null) {
+
       levelRepository.insertCourseLevel(lvl.getCourse().getId(), lvl.getId());
     }
   }
@@ -272,18 +269,23 @@ public class DataService {
       }
     });
     levelRepository.findAll().forEach(level ->
-        levelWrappersProperty.put(level.getId(), new LevelWrapper(level)));
+          levelWrappersProperty.put(level.getId(),
+                new LevelWrapper(level)));
     moduleRepository.findAll().forEach(module ->
-        moduleWrappersProperty.put(module.getKey(), new ModuleWrapper(module)));
+          moduleWrappersProperty.put(module.getKey(),
+                new ModuleWrapper(module)));
     abstractUnitRepository.findAll().forEach(abstractUnit ->
-        abstractUnitWrappersProperty.put(abstractUnit.getKey(),
-            new AbstractUnitWrapper(abstractUnit)));
+          abstractUnitWrappersProperty.put(abstractUnit.getKey(),
+                new AbstractUnitWrapper(abstractUnit)));
     unitRepository.findAll().forEach(unit ->
-        unitWrappersProperty.put(unit.getKey(), new UnitWrapper(unit)));
+          unitWrappersProperty.put(unit.getKey(),
+                new UnitWrapper(unit)));
     groupRepository.findAll().forEach(group ->
-        groupWrappersProperty.put(String.valueOf(group.getId()), new GroupWrapper(group)));
+          groupWrappersProperty.put(String.valueOf(group.getId()),
+                new GroupWrapper(group)));
     sessionRepository.findAll().forEach(session ->
-        sessionWrappersProperty.put(String.valueOf(session.getId()), new SessionWrapper(session)));
+          sessionWrappersProperty.put(String.valueOf(session.getId()),
+                new SessionWrapper(session)));
   }
 
   /**
@@ -294,60 +296,60 @@ public class DataService {
   private void initializeEntitiesNested() {
     abstractUnitWrappersProperty.values().forEach(abstractUnitWrapper -> {
       abstractUnitWrapper.modulesProperty().addAll(
-          abstractUnitWrapper.getAbstractUnit().getModules().stream()
-              .map(module -> moduleWrappersProperty.get(module.getKey()))
-              .collect(Collectors.toSet()));
+            abstractUnitWrapper.getAbstractUnit().getModules().stream()
+                .map(module -> moduleWrappersProperty.get(module.getKey()))
+                .collect(Collectors.toSet()));
       abstractUnitWrapper.unitsProperty().addAll(
-          abstractUnitWrapper.getAbstractUnit().getUnits().stream()
-              .map(unit -> unitWrappersProperty.get(unit.getKey())).collect(Collectors.toSet()));
+            abstractUnitWrapper.getAbstractUnit().getUnits().stream()
+                .map(unit -> unitWrappersProperty.get(unit.getKey())).collect(Collectors.toSet()));
     });
     moduleWrappersProperty.values().forEach(moduleWrapper -> {
       moduleWrapper.abstractUnitsProperty().addAll(
-          moduleWrapper.getModule().getAbstractUnits().stream()
-              .map(abstractUnit -> abstractUnitWrappersProperty.get(abstractUnit.getKey()))
-              .collect(Collectors.toSet()));
+            moduleWrapper.getModule().getAbstractUnits().stream()
+                  .map(abstractUnit -> abstractUnitWrappersProperty.get(abstractUnit.getKey()))
+                  .collect(Collectors.toSet()));
       moduleWrapper.coursesProperty().addAll(
-          moduleWrapper.getModule().getCourses().stream()
-              .map(course -> courseWrappersProperty.get(course.getKey()))
-              .collect(Collectors.toSet()));
+            moduleWrapper.getModule().getCourses().stream()
+                  .map(course -> courseWrappersProperty.get(course.getKey()))
+                  .collect(Collectors.toSet()));
     });
     unitWrappersProperty.values().forEach(unitWrapper -> {
       unitWrapper.abstractUnitsProperty().addAll(
-          unitWrapper.getUnit().getAbstractUnits().stream()
-              .map(abstractUnit -> abstractUnitWrappersProperty.get(abstractUnit.getKey()))
-              .collect(Collectors.toSet()));
+            unitWrapper.getUnit().getAbstractUnits().stream()
+                  .map(abstractUnit -> abstractUnitWrappersProperty.get(abstractUnit.getKey()))
+                  .collect(Collectors.toSet()));
       unitWrapper.groupsProperty().addAll(
-          unitWrapper.getUnit().getGroups().stream()
-              .map(group -> groupWrappersProperty.get(String.valueOf(group.getId())))
-              .collect(Collectors.toSet()));
+            unitWrapper.getUnit().getGroups().stream()
+                  .map(group -> groupWrappersProperty.get(String.valueOf(group.getId())))
+                  .collect(Collectors.toSet()));
     });
     // add majors and minors to course wrappers
     courseWrappersProperty.values().forEach(courseWrapper -> {
       courseWrapper.majorCourseWrapperProperty().addAll(
-          courseWrapper.getCourse().getMajorCourses().stream()
-              .map(course -> courseWrappersProperty().get(course.getKey()))
-              .collect(Collectors.toSet()));
+            courseWrapper.getCourse().getMajorCourses().stream()
+                  .map(course -> courseWrappersProperty().get(course.getKey()))
+                  .collect(Collectors.toSet()));
       courseWrapper.minorCourseWrapperProperty().addAll(
-          courseWrapper.getCourse().getMinorCourses().stream()
-              .map(course -> courseWrappersProperty().get(course.getKey()))
-              .collect(Collectors.toSet()));
+            courseWrapper.getCourse().getMinorCourses().stream()
+                  .map(course -> courseWrappersProperty().get(course.getKey()))
+                  .collect(Collectors.toSet()));
     });
     levelWrappersProperty.values().forEach(levelWrapper -> {
       if (levelWrapper.getLevel().getParent() != null) {
         levelWrapper.setParent(levelWrappersProperty.get(levelWrapper.getLevel().getParent()
-            .getId()));
+              .getId()));
       }
       if (levelWrapper.getLevel().getCourse() != null) {
         levelWrapper.setCourseProperty(courseWrappersProperty().get(levelWrapper.getLevel()
-            .getCourse().getKey()));
+              .getCourse().getKey()));
       }
     });
     groupWrappersProperty.values().forEach(groupWrapper -> {
       groupWrapper.setUnit(unitWrappersProperty.get(groupWrapper.getGroup().getUnit().getKey()));
       groupWrapper.sessionsProperty().addAll(
-          groupWrapper.getGroup().getSessions().stream()
-              .map(session -> sessionWrappersProperty.get(String.valueOf(session.getId())))
-              .collect(Collectors.toSet()));
+            groupWrapper.getGroup().getSessions().stream()
+                  .map(session -> sessionWrappersProperty.get(String.valueOf(session.getId())))
+                  .collect(Collectors.toSet()));
     });
   }
 
