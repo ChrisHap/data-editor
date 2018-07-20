@@ -20,7 +20,6 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "units")
-@Immutable
 public class Unit extends ModelEntity implements Serializable {
   private static final long serialVersionUID = 7811943921513982554L;
 

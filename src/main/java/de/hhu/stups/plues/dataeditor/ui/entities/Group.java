@@ -18,7 +18,6 @@ import javax.persistence.Table;
 @SuppressWarnings("unused")
 @Entity
 @Table(name = "groups")
-@Immutable
 public class Group extends ModelEntity implements Serializable {
 
   private static final long serialVersionUID = 4765838728047788944L;

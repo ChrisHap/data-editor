@@ -19,7 +19,6 @@ import javax.persistence.Table;
 @SuppressWarnings("unused")
 @Entity
 @Table(name = "abstract_units")
-@Immutable
 public class AbstractUnit extends ModelEntity implements Serializable {
 
   private static final long serialVersionUID = 289898052527025134L;
