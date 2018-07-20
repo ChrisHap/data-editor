@@ -4,7 +4,6 @@ import de.hhu.stups.plues.dataeditor.ui.components.LabeledTextField;
 import de.hhu.stups.plues.dataeditor.ui.database.DataService;
 import de.hhu.stups.plues.dataeditor.ui.database.events.DataChangeEvent;
 import de.hhu.stups.plues.dataeditor.ui.database.events.DataChangeType;
-import de.hhu.stups.plues.dataeditor.ui.entities.EntityWrapper;
 import de.hhu.stups.plues.dataeditor.ui.entities.Group;
 import de.hhu.stups.plues.dataeditor.ui.entities.GroupWrapper;
 import de.hhu.stups.plues.dataeditor.ui.entities.SessionWrapper;
@@ -57,14 +56,12 @@ public class SessionEdit extends GridPane implements Initializable {
 
   private HashSet<String> validDays;
 
-  private EntityWrapper parent;
-
   /**
    * Initialize session edit.
    */
   SessionEdit(final Inflater inflater,
-                     final DataService dataService,
-                     final SessionWrapper sessionWrapper) {
+              final DataService dataService,
+              final SessionWrapper sessionWrapper) {
     this.sessionWrapper = sessionWrapper;
     this.dataService = dataService;
     dataChangedProperty = new SimpleBooleanProperty(false);
@@ -140,7 +137,7 @@ public class SessionEdit extends GridPane implements Initializable {
     final Group group = sessionWrapper.getGroup();
     if (group != null) {
       cbGroup.getSelectionModel().select(dataService.getGroupWrappers()
-          .get(String.valueOf(group.getId())));
+            .get(String.valueOf(group.getId())));
     }
   }
 
@@ -151,11 +148,18 @@ public class SessionEdit extends GridPane implements Initializable {
   @FXML
   @SuppressWarnings("unused")
   public void persistChanges() {
+    if (cbGroup.getValue() != null) {
+      new Alert(Alert.AlertType.ERROR, resources.getString("parentGroupError"),
+            ButtonType.OK).showAndWait();
+      return;
+    }
+
     if (!validDays.contains(txtDay.textProperty().get())) {
       new Alert(Alert.AlertType.ERROR, resources.getString("dayError"),
             ButtonType.OK).showAndWait();
       return;
     }
+
     sessionWrapper.getSession().setDay(txtDay.textProperty().get());
     try {
       sessionWrapper.getSession().setDuration(Integer.parseInt(txtDuration.textProperty().get()));
@@ -164,14 +168,23 @@ public class SessionEdit extends GridPane implements Initializable {
     } catch (NumberFormatException exception) {
       new Alert(Alert.AlertType.ERROR, resources.getString("numberFormatError"), ButtonType.OK);
     }
-    if (parent != null) {
-      sessionWrapper.getSession().setGroup(((GroupWrapper) parent).getGroup());
-      ((GroupWrapper) parent).getGroup().getSessions().add(sessionWrapper.getSession());
-      dataService.dataChangeEventSource().push(
-            new DataChangeEvent(DataChangeType.STORE_ENTITY, parent));
-    }
+
+    sessionWrapper.getSession().setGroup(cbGroup.getValue().getGroup());
+    cbGroup.getValue().getGroup().getSessions().add(sessionWrapper.getSession());
     dataService.dataChangeEventSource().push(
-        new DataChangeEvent(DataChangeType.STORE_ENTITY, sessionWrapper));
+          new DataChangeEvent(DataChangeType.STORE_ENTITY, cbGroup.getValue()));
+
+    boolean isNew = sessionWrapper.getSession().getId() == 0;
+
+    dataService.dataChangeEventSource().push(
+          new DataChangeEvent(DataChangeType.STORE_ENTITY, sessionWrapper));
+    sessionWrapper.setId(sessionWrapper.getSession().getId());
+
+    if (isNew) {
+      dataService.dataChangeEventSource().push(
+            new DataChangeEvent(DataChangeType.INSERT_NEW_ENTITY, sessionWrapper));
+    }
+
     dataChangedProperty.set(false);
   }
 }

@@ -147,11 +147,15 @@ public class LevelEdit extends GridPane implements Initializable {
       levelWrapper.setParent((LevelWrapper)cbParentLevel.getValue());
       levelWrapper.getLevel().setCourse(null);
       levelWrapper.setCourseProperty(null);
+      dataService.dataChangeEventSource().push(
+            new DataChangeEvent(DataChangeType.STORE_ENTITY, cbParentLevel.getValue()));
     } else {
       levelWrapper.getLevel().setCourse(((CourseWrapper)cbParentCourse.getValue()).getCourse());
       levelWrapper.setCourseProperty((CourseWrapper)cbParentCourse.getValue());
       levelWrapper.getLevel().setParent(null);
       levelWrapper.setParent(null);
+      dataService.dataChangeEventSource().push(
+            new DataChangeEvent(DataChangeType.STORE_ENTITY, cbParentCourse.getValue()));
     }
 
     boolean isNew = levelWrapper.getLevel().getId() == 0;

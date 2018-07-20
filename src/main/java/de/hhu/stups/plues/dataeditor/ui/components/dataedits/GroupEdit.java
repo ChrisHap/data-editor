@@ -173,6 +173,8 @@ public class GroupEdit extends GridPane implements Initializable {
     dataService.dataChangeEventSource().push(
           new DataChangeEvent(DataChangeType.STORE_ENTITY, groupWrapper));
 
+    groupWrapper.setId(groupWrapper.getGroup().getId());
+
     if (isNew) {
       dataService.dataChangeEventSource().push(
             new DataChangeEvent(DataChangeType.INSERT_NEW_ENTITY, groupWrapper));

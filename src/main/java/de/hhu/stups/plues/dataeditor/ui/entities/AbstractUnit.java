@@ -25,7 +25,7 @@ public class AbstractUnit extends ModelEntity implements Serializable {
 
   @Id
   @Column(name = "id")
-  private Integer id;
+  private int id;
 
   @NaturalId
   private String key;
@@ -76,11 +76,11 @@ public class AbstractUnit extends ModelEntity implements Serializable {
     return Objects.hash(super.hashCode(), id, key, title);
   }
 
-  public Integer getId() {
+  public int getId() {
     return id;
   }
 
-  public void setId(final Integer id) {
+  public void setId(final int id) {
     this.id = id;
   }
 

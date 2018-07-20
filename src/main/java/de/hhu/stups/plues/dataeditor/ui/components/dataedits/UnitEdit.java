@@ -145,15 +145,16 @@ public class UnitEdit extends GridPane implements Initializable {
     });
 
     boolean isNew = unitWrapper.getUnit().getId() == 0;
-
     dataService.dataChangeEventSource().push(
         new DataChangeEvent(DataChangeType.STORE_ENTITY, unitWrapper));
-    dataChangedProperty.set(false);
+    unitWrapper.setId(unitWrapper.getUnit().getId());
 
     if (isNew) {
       dataService.dataChangeEventSource().push(
             new DataChangeEvent(DataChangeType.INSERT_NEW_ENTITY, unitWrapper));
     }
+
+    dataChangedProperty.set(false);
   }
 
 

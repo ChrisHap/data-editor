@@ -173,8 +173,19 @@ public class AbstractUnitEdit extends GridPane implements Initializable {
       abstractUnitWrapper.getAbstractUnit().getModules().add(moduleWrapper.getModule());
       moduleWrapper.getModule().getAbstractUnits().add(abstractUnitWrapper.getAbstractUnit());
     });
+
+    boolean isNew = abstractUnitWrapper.getAbstractUnit().getId() == 0;
+
     dataService.dataChangeEventSource().push(
           new DataChangeEvent(DataChangeType.STORE_ENTITY, abstractUnitWrapper));
+    abstractUnitWrapper.setId(abstractUnitWrapper.getAbstractUnit().getId());
+
+
+    if (isNew) {
+      dataService.dataChangeEventSource().push(
+            new DataChangeEvent(DataChangeType.INSERT_NEW_ENTITY, abstractUnitWrapper));
+    }
+
     dataChangedProperty.set(false);
   }
 
