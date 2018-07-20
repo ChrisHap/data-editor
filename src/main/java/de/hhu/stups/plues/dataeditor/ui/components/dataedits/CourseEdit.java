@@ -244,10 +244,11 @@ public class CourseEdit extends GridPane implements Initializable {
         + CourseKzfa.toString(courseWrapper.getKzfa()) + "-"
         + courseWrapper.getPo());
 
-    courseWrapper.setId(courseWrapper.getCourse().getId());
-    boolean isNew = courseWrapper.getId() == 0;
+    boolean isNew = courseWrapper.getCourse().getId() == 0;
     dataService.dataChangeEventSource().push(
         new DataChangeEvent(DataChangeType.STORE_ENTITY, courseWrapper));
+    courseWrapper.setId(courseWrapper.getCourse().getId());
+
     if (isNew) {
       dataService.dataChangeEventSource().push(
           new DataChangeEvent(DataChangeType.INSERT_NEW_ENTITY, courseWrapper));

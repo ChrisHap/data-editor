@@ -26,7 +26,7 @@ public class Level extends ModelEntity implements Serializable {
 
   @Id
   @Column(name = "id")
-  private Integer id;
+  private int id;
 
   private String art;
 
@@ -129,11 +129,11 @@ public class Level extends ModelEntity implements Serializable {
     this.minCreditPoints = min;
   }
 
-  public Integer getId() {
+  public int getId() {
     return id;
   }
 
-  public void setId(final Integer id) {
+  public void setId(final int id) {
     this.id = id;
   }
 
