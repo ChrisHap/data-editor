@@ -33,7 +33,7 @@ public class LevelWrapper implements EntityWrapper {
     childrenProperty = new SimpleSetProperty<>();
     levelProperty = new SimpleObjectProperty<>(level);
     courseProperty = new SimpleObjectProperty<>();
-    idProperty = new SimpleIntegerProperty();
+    idProperty = new SimpleIntegerProperty(level.getId());
   }
 
   public int getId() {
