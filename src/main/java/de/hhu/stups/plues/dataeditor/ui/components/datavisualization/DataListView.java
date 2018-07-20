@@ -14,7 +14,10 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListView;
+import javafx.scene.input.ClipboardContent;
+import javafx.scene.input.Dragboard;
 import javafx.scene.input.MouseButton;
+import javafx.scene.input.TransferMode;
 import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
 import org.controlsfx.control.textfield.CustomTextField;
@@ -73,6 +76,18 @@ public class DataListView extends VBox implements Initializable {
         dataContextMenu.setEntityWrapper(selectedEntityWrapper);
         dataContextMenu.show(this, event.getScreenX(), event.getScreenY());
       }
+    });
+    listView.setOnDragDetected(test -> {
+      if (listView.getSelectionModel().getSelectedItem() == null) {
+        return;
+      }
+      EntityWrapper wrapper = listView.getSelectionModel().getSelectedItem();
+      dataService.draggedEntityProperty().set(wrapper);
+      Dragboard db = listView.startDragAndDrop(TransferMode.COPY);
+      // an empty clipboard, we use the DataService to pass the object
+      ClipboardContent clipboardContent = new ClipboardContent();
+      clipboardContent.putString("");
+      db.setContent(clipboardContent);
     });
     EasyBind.subscribe(txtQuery.textProperty(),filter -> loadFilteredData(filter.toLowerCase()));
   }
