@@ -189,6 +189,7 @@ public class DataService {
     if (lvl.getParent() == null) {
       levelRepository.insertCourseLevel(lvl.getCourse().getId(), lvl.getId());
     }
+    levelWrappersProperty.put(levelWrapper.getId(), levelWrapper);
   }
 
   private void saveLevel(LevelWrapper levelWrapper) {
