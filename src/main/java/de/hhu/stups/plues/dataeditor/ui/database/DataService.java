@@ -7,6 +7,7 @@ import de.hhu.stups.plues.dataeditor.ui.entities.CourseWrapper;
 import de.hhu.stups.plues.dataeditor.ui.entities.EntityType;
 import de.hhu.stups.plues.dataeditor.ui.entities.EntityWrapper;
 import de.hhu.stups.plues.dataeditor.ui.entities.GroupWrapper;
+import de.hhu.stups.plues.dataeditor.ui.entities.Level;
 import de.hhu.stups.plues.dataeditor.ui.entities.LevelWrapper;
 import de.hhu.stups.plues.dataeditor.ui.entities.ModuleWrapper;
 import de.hhu.stups.plues.dataeditor.ui.entities.SessionWrapper;
@@ -120,7 +121,7 @@ public class DataService {
         courseRepository.save(((CourseWrapper) changedEntity).getCourse());
         break;
       case LEVEL:
-        levelRepository.save(((LevelWrapper) changedEntity).getLevel());
+        saveLevel((LevelWrapper)changedEntity);
         break;
       case ABSTRACT_UNIT:
         abstractUnitRepository.save(((AbstractUnitWrapper) changedEntity).getAbstractUnit());
@@ -150,9 +151,7 @@ public class DataService {
         ((CourseWrapper) changedEntity).setId(maxId + 1);
         break;
       case LEVEL:
-        maxId = levelRepository.getMaxId();
-        ((LevelWrapper) changedEntity).getLevel().setId(maxId + 1);
-        ((LevelWrapper) changedEntity).setId(maxId + 1);
+        saveNewLevel((LevelWrapper)changedEntity);
         break;
       case ABSTRACT_UNIT:
         ((AbstractUnitWrapper) changedEntity).getAbstractUnit().setId(
@@ -176,7 +175,31 @@ public class DataService {
         break;
       default:
     }
-    saveEntity(changedType, changedEntity);
+    //saveEntity(changedType, changedEntity);
+  }
+
+  private void saveNewLevel(LevelWrapper levelWrapper) {
+    int maxId = levelRepository.getMaxId();
+    levelWrapper.getLevel().setId(maxId + 1);
+    levelWrapper.setId(maxId + 1);
+    Level lvl = levelWrapper.getLevel();
+    levelRepository.insertSimpleLevel(lvl.getId(),lvl.getName(),lvl.getTm(), lvl.getArt(),
+          lvl.getMin(),lvl.getMax(),lvl.getMinCreditPoints(),lvl.getMaxCreditPoints(),
+          lvl.getParent() == null ? null : lvl.getParent().getId());
+    if (lvl.getParent() == null) {
+      levelRepository.insertCourseLevel(lvl.getCourse().getId(), lvl.getId());
+    }
+  }
+
+  private void saveLevel(LevelWrapper levelWrapper) {
+    levelRepository.deleteCourseLevel(levelWrapper.getId());
+    Level lvl = levelWrapper.getLevel();
+    levelRepository.updateSimpleLevel(lvl.getId(),lvl.getName(),lvl.getTm(), lvl.getArt(),
+          lvl.getMin(),lvl.getMax(),lvl.getMinCreditPoints(),lvl.getMaxCreditPoints(),
+          lvl.getParent() == null ? null : lvl.getParent().getId());
+    if (lvl.getParent() == null) {
+      levelRepository.insertCourseLevel(lvl.getCourse().getId(), lvl.getId());
+    }
   }
 
   private void deleteEntity(EntityType changedType, EntityWrapper changedEntity) {
