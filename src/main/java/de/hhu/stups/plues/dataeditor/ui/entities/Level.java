@@ -20,7 +20,6 @@ import javax.persistence.Table;
 @SuppressWarnings("unused")
 @Entity
 @Table(name = "levels")
-@Immutable
 public class Level extends ModelEntity implements Serializable {
 
   private static final long serialVersionUID = -2571508967373463723L;

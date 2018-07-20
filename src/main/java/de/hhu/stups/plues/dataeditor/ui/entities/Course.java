@@ -16,7 +16,6 @@ import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-@SuppressWarnings("unused")
 @Entity
 @Table(name = "courses")
 public class Course extends ModelEntity implements Serializable {
