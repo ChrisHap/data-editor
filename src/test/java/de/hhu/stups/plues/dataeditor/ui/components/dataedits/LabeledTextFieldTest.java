@@ -11,15 +11,20 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.testfx.framework.junit.ApplicationTest;
 
+import java.util.Locale;
+import java.util.ResourceBundle;
+
 public class LabeledTextFieldTest extends ApplicationTest {
 
   private LabeledTextField labeledTextField;
+  private final Locale locale = new Locale("en");
+  private final ResourceBundle bundle = ResourceBundle.getBundle("lang.main", locale);
 
 
   @Test
   public void testLabeledTextField() {
     final Label label = (Label) labeledTextField.lookup("#label");
-    Assert.assertEquals(null, label.getText());
+    Assert.assertNull(label.getText());
     Assert.assertTrue(label.isVisible());
     labeledTextField.setLabelText("test");
     Assert.assertTrue(labeledTextField.textProperty().isEmpty().get());
@@ -37,7 +42,7 @@ public class LabeledTextFieldTest extends ApplicationTest {
 
   @Override
   public void start(final Stage stage) throws Exception {
-    final Inflater inflater = new Inflater(new FXMLLoader());
+    final Inflater inflater = new Inflater(new FXMLLoader(),bundle);
     labeledTextField = new LabeledTextField(inflater);
 
     final Scene scene = new Scene(labeledTextField, 100, 100);
