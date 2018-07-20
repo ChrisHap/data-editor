@@ -57,7 +57,6 @@ repositories {
 
 dependencies {    
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: '2.0.1.RELEASE'
-    compile 'org.springframework.boot:spring-boot-configuration-processor'
     compile group: 'org.xerial', name: 'sqlite-jdbc', version: '3.7.2'
     compile group: 'com.zsoltfabok', name: 'sqlite-dialect', version: '1.0'
     compile group: 'org.hibernate', name: 'hibernate-java8', version: '5.2.1.Final'
