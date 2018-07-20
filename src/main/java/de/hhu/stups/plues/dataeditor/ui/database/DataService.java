@@ -149,6 +149,13 @@ public class DataService {
         maxId = courseRepository.getMaxId();
         ((CourseWrapper) changedEntity).getCourse().setId(maxId + 1);
         ((CourseWrapper) changedEntity).setId(maxId + 1);
+        courseWrappersProperty.put(((CourseWrapper) changedEntity).getKey(),
+              ((CourseWrapper) changedEntity));
+        if (((CourseWrapper) changedEntity).getCourse().isMajor()) {
+          majorCourseWrappersProperty.add((CourseWrapper) changedEntity);
+        } else {
+          minorCourseWrappersProperty.add(((CourseWrapper) changedEntity));
+        }
         break;
       case LEVEL:
         saveNewLevel((LevelWrapper)changedEntity);
@@ -156,22 +163,32 @@ public class DataService {
       case ABSTRACT_UNIT:
         ((AbstractUnitWrapper) changedEntity).getAbstractUnit().setId(
             abstractUnitRepository.getMaxId() + 1);
+        abstractUnitWrappersProperty.put(((AbstractUnitWrapper) changedEntity).getKey(),
+              ((AbstractUnitWrapper) changedEntity));
         break;
       case UNIT:
         ((UnitWrapper) changedEntity).getUnit().setId(
             unitRepository.getMaxId() + 1);
+        unitWrappersProperty.put(((UnitWrapper) changedEntity).getKey(),
+              ((UnitWrapper) changedEntity));
         break;
       case GROUP:
         ((GroupWrapper) changedEntity).getGroup().setId(
             groupRepository.getMaxId() + 1);
+        groupWrappersProperty.put(String.valueOf(changedEntity.getId()),
+              ((GroupWrapper) changedEntity));
         break;
       case MODULE:
         ((ModuleWrapper) changedEntity).getModule().setId(
             moduleRepository.getMaxId() + 1);
+        moduleWrappersProperty.put(((ModuleWrapper) changedEntity).getKey(),
+              ((ModuleWrapper) changedEntity));
         break;
       case SESSION:
         ((SessionWrapper) changedEntity).getSession().setId(
             sessionRepository.getMaxId() + 1);
+        sessionWrappersProperty.put(String.valueOf(changedEntity.getId()),
+              ((SessionWrapper) changedEntity));
         break;
       default:
     }
