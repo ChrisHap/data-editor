@@ -143,7 +143,7 @@ public class SessionWrapper implements EntityWrapper {
    * Creates an empty SessionWrapper.
    * @return the empty SessionWrapper.
    */
-  public static SessionWrapper createEmptySessionWrapper(){
+  public static SessionWrapper createEmptySessionWrapper() {
     Session session = new Session();
     session.setDay("");
     session.setDuration(0);
