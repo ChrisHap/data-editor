@@ -20,7 +20,8 @@ public interface LevelRepository extends CrudRepository<Level,Integer> {
   @Modifying
   void insertSimpleLevel(@Param("id") int id, @Param("name") String name, @Param("tm") String tm,
                          @Param("art") String art, @Param("min") int min, @Param("max") int max,
-                         @Param("min_credit_points") int minCp, @Param("max_credit_points") int maxCp,
+                         @Param("min_credit_points") int minCp,
+                         @Param("max_credit_points") int maxCp,
                          @Param("parent_id") Integer parentId);
 
   @Transactional
@@ -30,7 +31,8 @@ public interface LevelRepository extends CrudRepository<Level,Integer> {
   @Modifying
   void updateSimpleLevel(@Param("id") int id, @Param("name") String name, @Param("tm") String tm,
                          @Param("art") String art, @Param("min") int min, @Param("max") int max,
-                         @Param("min_credit_points") int minCp, @Param("max_credit_points") int maxCp,
+                         @Param("min_credit_points") int minCp,
+                         @Param("max_credit_points") int maxCp,
                          @Param("parent_id") Integer parentId);
 
   @Transactional
