@@ -1,7 +1,5 @@
 package de.hhu.stups.plues.dataeditor.ui.entities;
 
-import org.hibernate.annotations.NaturalId;
-
 import java.io.Serializable;
 import java.util.Objects;
 import java.util.Set;
@@ -25,7 +23,7 @@ public class Course extends ModelEntity implements Serializable {
   @Column(name = "id")
   private int id;
 
-  @NaturalId
+  @Column(name = "key")
   private String key;
   private Integer po;
 
