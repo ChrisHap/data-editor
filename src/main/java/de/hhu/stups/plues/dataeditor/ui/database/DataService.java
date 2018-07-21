@@ -140,7 +140,6 @@ public class DataService {
   }
 
   private void saveNewEntity(EntityType changedType, EntityWrapper changedEntity) {
-    int maxId;
     switch (changedType) {
       case COURSE:
         saveNewCourse((CourseWrapper)changedEntity);
