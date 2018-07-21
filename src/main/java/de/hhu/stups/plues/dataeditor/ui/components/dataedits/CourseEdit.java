@@ -231,12 +231,18 @@ public class CourseEdit extends GridPane implements Initializable {
     courseWrapper.setLongName(txtFullName.textProperty().getValue());
     courseWrapper.getCourse().setShortName(txtShortName.textProperty().getValue());
     courseWrapper.setShortName(txtShortName.textProperty().getValue());
+    courseWrapper.getMajorCourseWrappers().clear();
+    courseWrapper.getCourse().getMajorCourses().clear();
+    courseWrapper.getMinorCourseWrappers().clear();
+    courseWrapper.getCourse().getMinorCourses().clear();
     if (rbMajorCourse.isSelected()) {
       courseWrapper.getCourse().setKzfa("H");
       courseWrapper.setKzfa(CourseKzfa.getKzfaFromString("H"));
       listViewMajorsOrMinors.getItems().forEach(item -> {
         courseWrapper.getCourse().getMinorCourses().add(item.getCourse());
         courseWrapper.getMinorCourseWrappers().add(item);
+        item.getMinorCourseWrappers().add(courseWrapper);
+        item.getCourse().getMinorCourses().add(courseWrapper.getCourse());
       });
     } else {
       courseWrapper.getCourse().setKzfa("N");
@@ -244,6 +250,8 @@ public class CourseEdit extends GridPane implements Initializable {
       listViewMajorsOrMinors.getItems().forEach(item -> {
         courseWrapper.getCourse().getMajorCourses().add(item.getCourse());
         courseWrapper.getMajorCourseWrappers().add(item);
+        item.getMajorCourseWrappers().add(courseWrapper);
+        item.getCourse().getMajorCourses().add(courseWrapper.getCourse());
       });
     }
 
