@@ -35,7 +35,7 @@ public interface CourseRepository extends CrudRepository<Course, Integer> {
 
   @Transactional
   @Modifying
-  @Query(value = "delete from course_levels where minor_course_id = ?1",
+  @Query(value = "delete from minors where minor_course_id = ?1",
         nativeQuery = true)
   void deleteMinor(int minorId);
 
