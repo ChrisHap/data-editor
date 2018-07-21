@@ -439,8 +439,11 @@ public class DataTreeView extends VBox implements Initializable {
     //       the attributes itself are updated via property bindings
     TreeItem<EntityWrapper> current = getTreeItemForEntityWrapperRecursive(changedEntity,
           treeTableRoot.getChildren());
-    if (current != null) {
-      current.getParent().getChildren().remove(current);
+    TreeItem<EntityWrapper> child = current;
+    while (child != null) {
+      child.getParent().getChildren().remove(child);
+      child = getTreeItemForEntityWrapperRecursive(changedEntity,
+            treeTableRoot.getChildren());
     }
     switch (changedEntity.getEntityType()) {
       case COURSE:
