@@ -465,8 +465,13 @@ public class DataTreeView extends VBox implements Initializable {
         });
         break;
       case LEVEL:
-        getTreeItemForEntityWrapperRecursive(((LevelWrapper)changedEntity).getCourseWrapper(),
-              treeTableRoot.getChildren()).getChildren().add(bestChild);
+        if (((LevelWrapper)changedEntity).getParent() == null) {
+          getTreeItemForEntityWrapperRecursive(((LevelWrapper) changedEntity).getCourseWrapper(),
+                treeTableRoot.getChildren()).getChildren().add(bestChild);
+        } else {
+          getTreeItemForEntityWrapperRecursive(((LevelWrapper) changedEntity).getParent(),
+                treeTableRoot.getChildren()).getChildren().add(bestChild);
+        }
         break;
       case MODULE:
         getTreeItemForEntityWrapperRecursive(dataService.getLevelWrappers().get(
