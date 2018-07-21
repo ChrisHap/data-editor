@@ -13,6 +13,7 @@ import de.hhu.stups.plues.dataeditor.ui.layout.Inflater;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
@@ -209,13 +210,16 @@ public class CourseEdit extends GridPane implements Initializable {
     try {
       courseWrapper.getCourse().setCreditPoints(Integer.parseInt(
           txtCreditPoints.textProperty().getValue()));
+      courseWrapper.setCreditPoints(Integer.parseInt(
+            txtCreditPoints.textProperty().getValue()));
     } catch (NumberFormatException exeption) {
       new Alert(Alert.AlertType.ERROR,
           resources.getString("creditsError"), ButtonType.OK).showAndWait();
       return;
     }
     try {
-      courseWrapper.getCourse().setPo(Integer.parseInt(txtPVersion.textProperty().get()));
+      courseWrapper.getCourse().setPo(Integer.parseInt(txtPVersion.textProperty().getValue()));
+      courseWrapper.setPo(Integer.parseInt(txtPVersion.textProperty().getValue()));
     } catch (NumberFormatException exeption) {
       new Alert(Alert.AlertType.ERROR,
           resources.getString("poError"), ButtonType.OK).showAndWait();
@@ -230,9 +234,17 @@ public class CourseEdit extends GridPane implements Initializable {
     if (rbMajorCourse.isSelected()) {
       courseWrapper.getCourse().setKzfa("H");
       courseWrapper.setKzfa(CourseKzfa.getKzfaFromString("H"));
+      listViewMajorsOrMinors.getItems().forEach(item -> {
+        courseWrapper.getCourse().getMinorCourses().add(item.getCourse());
+        courseWrapper.getMinorCourseWrappers().add(item);
+      });
     } else {
       courseWrapper.getCourse().setKzfa("N");
       courseWrapper.setKzfa(CourseKzfa.getKzfaFromString("N"));
+      listViewMajorsOrMinors.getItems().forEach(item -> {
+        courseWrapper.getCourse().getMajorCourses().add(item.getCourse());
+        courseWrapper.getMajorCourseWrappers().add(item);
+      });
     }
 
     courseWrapper.setKey(courseWrapper.getDegree().toString() + "-"
