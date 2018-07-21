@@ -32,7 +32,7 @@ public interface CourseRepository extends CrudRepository<Course, Integer> {
 
   @Transactional
   @Modifying
-  @Query(value = "insert into minors (course_id, minor_course_id) VALUES (?1, ?2)",
+  @Query(value = "insert into minors (course_id, minor_course_id) VALUES (?2, ?1)",
         nativeQuery = true)
   void insertMinor(int minorId, int majorId);
 
