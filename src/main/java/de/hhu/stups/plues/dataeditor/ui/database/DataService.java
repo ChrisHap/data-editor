@@ -115,7 +115,7 @@ public class DataService {
   private void saveEntity(EntityType changedType, EntityWrapper changedEntity) {
     switch (changedType) {
       case COURSE:
-        courseRepository.save(((CourseWrapper) changedEntity).getCourse());
+        saveCourse((CourseWrapper)changedEntity);
         break;
       case LEVEL:
         saveLevel((LevelWrapper) changedEntity);
@@ -143,17 +143,7 @@ public class DataService {
     int maxId;
     switch (changedType) {
       case COURSE:
-        maxId = courseRepository.getMaxId();
-        ((CourseWrapper) changedEntity).getCourse().setId(maxId + 1);
-        ((CourseWrapper) changedEntity).setId(maxId + 1);
-        courseWrappersProperty.put(((CourseWrapper) changedEntity).getKey(),
-              ((CourseWrapper) changedEntity));
-        if (((CourseWrapper) changedEntity).getCourse().isMajor()) {
-          majorCourseWrappersProperty.add((CourseWrapper) changedEntity);
-        } else {
-          minorCourseWrappersProperty.add(((CourseWrapper) changedEntity));
-        }
-        courseRepository.save(((CourseWrapper) changedEntity).getCourse());
+        saveNewCourse((CourseWrapper)changedEntity);
         break;
       case LEVEL:
         saveNewLevel((LevelWrapper) changedEntity);
@@ -256,6 +246,36 @@ public class DataService {
             mod.getTitle(),false);
     }
     moduleWrappersProperty.put(mod.getKey(), moduleWrapper);
+  }
+
+  private void saveCourse(CourseWrapper courseWrapper) {
+    courseRepository.deleteMinor(courseWrapper.getId());
+    Course co = courseWrapper.getCourse();
+    courseRepository.updateSimpleCourse(co.getId(), co.getKey(), co.getDegree(),
+          co.getShortName(), co.getFullName(), co.getKzfa(), co.getPo(), co.getCreditPoints());
+    if (co.isMinor()) {
+      co.getMajorCourses().forEach(course ->
+            courseRepository.insertMinor(co.getId(), course.getId()));
+    }
+  }
+
+  private void saveNewCourse(CourseWrapper courseWrapper) {
+    int maxId = courseRepository.getMaxId();
+    courseWrapper.getCourse().setId(maxId + 1);
+    courseWrapper.setId(maxId + 1);
+    courseWrappersProperty.put(courseWrapper.getKey(), courseWrapper);
+    Course co = courseWrapper.getCourse();
+    courseRepository.deleteMinor(co.getId());
+    courseRepository.insertSimpleCourse(co.getId(), co.getKey(), co.getDegree(), co.getShortName(),
+          co.getFullName(), co.getKzfa(), co.getPo(), co.getCreditPoints());
+    if (courseWrapper.getCourse().isMajor()) {
+      majorCourseWrappersProperty.add(courseWrapper);
+    } else {
+      minorCourseWrappersProperty.add(courseWrapper);
+      co.getMajorCourses().forEach(course ->
+            courseRepository.insertMinor(co.getId(), course.getId()));
+    }
+
   }
 
   private void deleteEntity(EntityType changedType, EntityWrapper changedEntity) {
