@@ -288,7 +288,7 @@ public class DataTreeView extends VBox implements Initializable {
         treeTableRoot.getChildren().clear();
         reloadData();
         break;
-      case CHANGE_ENTITY:
+      case STORE_ENTITY:
         updateSingleEntity(dataChangeEvent.getChangedEntity());
         break;
       case INSERT_NEW_ENTITY:
@@ -437,6 +437,47 @@ public class DataTreeView extends VBox implements Initializable {
   private void updateSingleEntity(final EntityWrapper changedEntity) {
     // TODO: update single entity wrapper, i.e., either add or remove the entity,
     //       the attributes itself are updated via property bindings
+    TreeItem<EntityWrapper> current = getTreeItemForEntityWrapperRecursive(changedEntity,
+          treeTableRoot.getChildren());
+    if (current != null) {
+      current.getParent().getChildren().remove(current);
+    }
+    switch (changedEntity.getEntityType()) {
+      case COURSE:
+        addCourseToTreeView((CourseWrapper)changedEntity);
+        break;
+      case LEVEL:
+        getTreeItemForEntityWrapperRecursive(((LevelWrapper)changedEntity).getCourseWrapper(),
+              treeTableRoot.getChildren()).getChildren().add(current);
+        break;
+      case MODULE:
+        getTreeItemForEntityWrapperRecursive(dataService.getLevelWrappers().get(
+              ((ModuleWrapper)changedEntity).getLevel().getId()),
+              treeTableRoot.getChildren()).getChildren().add(current);
+        break;
+      case ABSTRACT_UNIT:
+        ((AbstractUnitWrapper)changedEntity).getModules().forEach( moduleWrapper ->
+              getTreeItemForEntityWrapperRecursive(moduleWrapper,
+              treeTableRoot.getChildren()).getChildren().add(current));
+        break;
+      case UNIT:
+        ((UnitWrapper)changedEntity).getAbstractUnits().forEach( abstractUnitWrapper ->
+              getTreeItemForEntityWrapperRecursive(abstractUnitWrapper,
+              treeTableRoot.getChildren()).getChildren().add(current));
+        break;
+      case SESSION:
+        getTreeItemForEntityWrapperRecursive(dataService.getGroupWrappers().get(
+              String.valueOf(((SessionWrapper)changedEntity).getGroup().getId())),
+              treeTableRoot.getChildren()).getChildren().add(current);
+        break;
+      case GROUP:
+        getTreeItemForEntityWrapperRecursive(dataService.getGroupWrappers().get(
+              String.valueOf(((GroupWrapper)changedEntity).getUnit().getId())),
+              treeTableRoot.getChildren()).getChildren().add(current);
+        break;
+      default:
+        break;
+    }
   }
 
   private void addCourseToTreeView(final CourseWrapper courseWrapper) {
