@@ -3,12 +3,14 @@ package de.hhu.stups.plues.dataeditor.ui.database;
 import de.hhu.stups.plues.dataeditor.ui.database.events.DataChangeEvent;
 import de.hhu.stups.plues.dataeditor.ui.database.events.DataChangeType;
 import de.hhu.stups.plues.dataeditor.ui.entities.AbstractUnitWrapper;
+import de.hhu.stups.plues.dataeditor.ui.entities.Course;
 import de.hhu.stups.plues.dataeditor.ui.entities.CourseWrapper;
 import de.hhu.stups.plues.dataeditor.ui.entities.EntityType;
 import de.hhu.stups.plues.dataeditor.ui.entities.EntityWrapper;
 import de.hhu.stups.plues.dataeditor.ui.entities.GroupWrapper;
 import de.hhu.stups.plues.dataeditor.ui.entities.Level;
 import de.hhu.stups.plues.dataeditor.ui.entities.LevelWrapper;
+import de.hhu.stups.plues.dataeditor.ui.entities.Module;
 import de.hhu.stups.plues.dataeditor.ui.entities.ModuleWrapper;
 import de.hhu.stups.plues.dataeditor.ui.entities.SessionWrapper;
 import de.hhu.stups.plues.dataeditor.ui.entities.UnitWrapper;
@@ -118,6 +120,9 @@ public class DataService {
       case LEVEL:
         saveLevel((LevelWrapper) changedEntity);
         break;
+      case MODULE:
+        saveModule((ModuleWrapper)changedEntity);
+        break;
       case ABSTRACT_UNIT:
         abstractUnitRepository.save(((AbstractUnitWrapper) changedEntity).getAbstractUnit());
         break;
@@ -126,9 +131,6 @@ public class DataService {
         break;
       case GROUP:
         groupRepository.save(((GroupWrapper) changedEntity).getGroup());
-        break;
-      case MODULE:
-        moduleRepository.save(((ModuleWrapper) changedEntity).getModule());
         break;
       case SESSION:
         sessionRepository.save(((SessionWrapper) changedEntity).getSession());
@@ -156,6 +158,9 @@ public class DataService {
       case LEVEL:
         saveNewLevel((LevelWrapper) changedEntity);
         break;
+      case MODULE:
+        saveNewModule((ModuleWrapper) changedEntity);
+        break;
       case ABSTRACT_UNIT:
         ((AbstractUnitWrapper) changedEntity).getAbstractUnit().setId(
               abstractUnitRepository.getMaxId() + 1);
@@ -168,24 +173,21 @@ public class DataService {
               unitRepository.getMaxId() + 1);
         unitWrappersProperty.put(((UnitWrapper) changedEntity).getKey(),
               ((UnitWrapper) changedEntity));
+        unitRepository.save(((UnitWrapper)changedEntity).getUnit());
         break;
       case GROUP:
         ((GroupWrapper) changedEntity).getGroup().setId(
               groupRepository.getMaxId() + 1);
         groupWrappersProperty.put(String.valueOf(changedEntity.getId()),
               ((GroupWrapper) changedEntity));
-        break;
-      case MODULE:
-        ((ModuleWrapper) changedEntity).getModule().setId(
-              moduleRepository.getMaxId() + 1);
-        moduleWrappersProperty.put(((ModuleWrapper) changedEntity).getKey(),
-              ((ModuleWrapper) changedEntity));
+        groupRepository.save(((GroupWrapper)changedEntity).getGroup());
         break;
       case SESSION:
         ((SessionWrapper) changedEntity).getSession().setId(
               sessionRepository.getMaxId() + 1);
         sessionWrappersProperty.put(String.valueOf(changedEntity.getId()),
               ((SessionWrapper) changedEntity));
+        sessionRepository.save(((SessionWrapper)changedEntity).getSession());
         break;
       default:
     }
@@ -215,6 +217,45 @@ public class DataService {
 
       levelRepository.insertCourseLevel(lvl.getCourse().getId(), lvl.getId());
     }
+  }
+
+  private void saveModule(ModuleWrapper moduleWrapper) {
+    moduleRepository.deleteModuleLevel(moduleWrapper.getId());
+    Module mod = moduleWrapper.getModule();
+    moduleRepository.updateSimpleModule(mod.getId(), mod.getKey(), mod.getTitle(),
+          mod.getPordnr(), mod.getElectiveUnits(),mod.getBundled());
+    Level lvl = mod.getLevel();
+    Level dummyLevel = lvl;
+    while (dummyLevel.getParent() != null) {
+      dummyLevel = dummyLevel.getParent();
+    }
+    Course course = dummyLevel.getCourse();
+    //TODO mandatory einbauen
+    if (course != null) {
+      moduleRepository.insertModuleLevel(mod.getId(),lvl.getId(),course.getId(),
+            mod.getTitle(),false);
+    }
+  }
+
+  private void saveNewModule(ModuleWrapper moduleWrapper) {
+    int maxId = levelRepository.getMaxId();
+    moduleWrapper.getModule().setId(maxId + 1);
+    moduleWrapper.setId(maxId + 1);
+    Module mod = moduleWrapper.getModule();
+    moduleRepository.insertSimpleModule(mod.getId(), mod.getKey(), mod.getTitle(), mod.getPordnr(),
+          mod.getElectiveUnits(), mod.getBundled());
+    Level lvl = mod.getLevel();
+    Level dummyLevel = lvl;
+    while (dummyLevel.getParent() != null) {
+      dummyLevel = dummyLevel.getParent();
+    }
+    Course course = dummyLevel.getCourse();
+    //TODO mandatory einbauen
+    if (course != null) {
+      moduleRepository.insertModuleLevel(mod.getId(),lvl.getId(),course.getId(),
+            mod.getTitle(),false);
+    }
+    moduleWrappersProperty.put(mod.getKey(), moduleWrapper);
   }
 
   private void deleteEntity(EntityType changedType, EntityWrapper changedEntity) {
