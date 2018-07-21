@@ -4,6 +4,7 @@ import de.hhu.stups.plues.dataeditor.ui.entities.Course;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
 public interface CourseRepository extends CrudRepository<Course, Integer> {
@@ -20,12 +21,14 @@ public interface CourseRepository extends CrudRepository<Course, Integer> {
 
   @Transactional
   @Modifying
-  @Query(value = "update courses set id = :id, key = :key, degree = :degree, "
+  @Query(value = "update courses set key = :key, degree = :degree, "
         + "short_name = :shortName, name = :name, kzfa = :kzfa, po = :po, "
-        + "credit_points = :creditPoints",
+        + "credit_points = :creditPoints where id = :id",
         nativeQuery = true)
-  void updateSimpleCourse(int id, String key, String degree, String shortName, String name,
-                          String kzfa, int po, int creditPoints);
+  void updateSimpleCourse(@Param("id") int id, @Param("key") String key,
+                          @Param("degree") String degree, @Param("shortName") String shortName,
+                          @Param("name") String name, @Param("kzfa") String kzfa,
+                          @Param("po") int po, @Param("creditPoints") int creditPoints);
 
   @Transactional
   @Modifying
