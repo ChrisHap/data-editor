@@ -407,15 +407,18 @@ public class DataTreeView extends VBox implements Initializable {
   }
 
   private TreeItem<EntityWrapper> getTreeItemForEntityWrapperRecursive(
-      EntityWrapper entityWrapper, List<TreeItem<EntityWrapper>> nodes) {
-    for (TreeItem<EntityWrapper> node : nodes) {
-      if (node.getValue().equals(entityWrapper)) {
-        return node;
-      }
-      TreeItem<EntityWrapper> rec =
-          getTreeItemForEntityWrapperRecursive(entityWrapper, node.getChildren());
-      if (rec != null) {
-        return rec;
+      final EntityWrapper entityWrapper,
+      final List<TreeItem<EntityWrapper>> nodes) {
+    for (final TreeItem<EntityWrapper> node : nodes) {
+      if (node != null) {
+        if (node.getValue().equals(entityWrapper)) {
+          return node;
+        }
+        final TreeItem<EntityWrapper> rec =
+            getTreeItemForEntityWrapperRecursive(entityWrapper, node.getChildren());
+        if (rec != null) {
+          return rec;
+        }
       }
     }
     return null;
