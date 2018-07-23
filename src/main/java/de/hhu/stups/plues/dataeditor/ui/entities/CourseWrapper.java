@@ -167,7 +167,7 @@ public class CourseWrapper implements EntityWrapper {
     return degreeProperty.get();
   }
 
-  public void setDegree(CourseDegree degree) {
+  public void setDegree(final CourseDegree degree) {
     this.degreeProperty.set(degree);
     this.courseProperty.get().setDegree(degree.toString().toLowerCase());
   }
@@ -180,7 +180,7 @@ public class CourseWrapper implements EntityWrapper {
     return kzfaProperty.get();
   }
 
-  public void setKzfa(CourseKzfa kzfa) {
+  public void setKzfa(final CourseKzfa kzfa) {
     this.kzfaProperty.set(kzfa);
     this.courseProperty.get().setKzfa(kzfa.toString());
   }

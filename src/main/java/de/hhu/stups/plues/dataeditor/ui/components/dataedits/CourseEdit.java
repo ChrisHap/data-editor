@@ -301,11 +301,12 @@ public class CourseEdit extends GridPane implements Initializable {
     listViewMajorsOrMinors.setCellFactory(
         param -> new ListCell<CourseWrapper>() {
           @Override
-          protected void updateItem(CourseWrapper item, boolean empty) {
+          protected void updateItem(final CourseWrapper item, final boolean empty) {
             super.updateItem(item, empty);
             if (item != null && !empty) {
               setText(item.toString());
             } else {
+              setText("");
               setGraphic(null);
             }
           }
