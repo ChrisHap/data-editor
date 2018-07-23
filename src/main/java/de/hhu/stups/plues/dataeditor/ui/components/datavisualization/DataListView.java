@@ -2,7 +2,6 @@ package de.hhu.stups.plues.dataeditor.ui.components.datavisualization;
 
 import de.hhu.stups.plues.dataeditor.ui.database.DataService;
 import de.hhu.stups.plues.dataeditor.ui.database.events.DataChangeEvent;
-import de.hhu.stups.plues.dataeditor.ui.database.events.DataChangeType;
 import de.hhu.stups.plues.dataeditor.ui.entities.EntityType;
 import de.hhu.stups.plues.dataeditor.ui.entities.EntityWrapper;
 import de.hhu.stups.plues.dataeditor.ui.layout.Inflater;
@@ -66,7 +65,7 @@ public class DataListView extends VBox implements Initializable {
     txtQuery.prefWidthProperty().bind(widthProperty());
     listView.prefWidthProperty().bind(widthProperty());
     listView.prefHeightProperty().bind(heightProperty().subtract(
-          cbEntityType.heightProperty()).subtract(txtQuery.heightProperty()));
+        cbEntityType.heightProperty()).subtract(txtQuery.heightProperty()));
     dataService.dataChangeEventSource().subscribe(this::updateDataList);
     listView.setOnMouseClicked(event -> {
       dataContextMenu.hide();
@@ -88,109 +87,116 @@ public class DataListView extends VBox implements Initializable {
       clipboardContent.putString("");
       db.setContent(clipboardContent);
     });
-    EasyBind.subscribe(txtQuery.textProperty(),filter -> loadFilteredData(filter.toLowerCase()));
+    EasyBind.subscribe(txtQuery.textProperty(), filter -> loadFilteredData(filter.toLowerCase()));
   }
 
-  private void updateDataList(DataChangeEvent dataChangeEvent) {
-    if (dataChangeEvent.getDataChangeType().reloadDb()) {
-      loadData(cbEntityType.getSelectionModel().getSelectedItem());
-    } else if (dataChangeEvent.getDataChangeType() == DataChangeType.INSERT_NEW_ENTITY
-          && cbEntityType.getValue() == dataChangeEvent.getChangedEntity().getEntityType()) {
-      listView.getItems().add(dataChangeEvent.getChangedEntity());
-    }
-  }
-
-  private void initializeComboBox() {
-    cbEntityType.getSelectionModel().selectedItemProperty().addListener(
-        (observable, oldValue, newValue) -> Platform.runLater(() -> loadData(newValue)));
-    cbEntityType.setConverter(new StringConverter<EntityType>() {
-      @Override
-      public String toString(final EntityType entityType) {
-        return resources.getString(entityType.toString());
-      }
-
-      @Override
-      public EntityType fromString(final String string) {
-        return null;
-      }
-    });
-    cbEntityType.getSelectionModel().selectFirst();
-  }
-
-  private void loadData(final EntityType entityType) {
-    listView.getItems().clear();
-    switch (entityType) {
-      case COURSE:
-        listView.getItems().addAll(dataService.getCourseWrappers().values());
+  private void updateDataList(final DataChangeEvent dataChangeEvent) {
+    switch (dataChangeEvent.getDataChangeType()) {
+      case RELOAD_DB:
+        Platform.runLater(() -> loadData(cbEntityType.getSelectionModel().getSelectedItem()));
         break;
-      case LEVEL:
-        listView.getItems().addAll(dataService.getLevelWrappers().values());
+      case INSERT_NEW_ENTITY:
+        if (cbEntityType.getValue() == dataChangeEvent.getChangedEntity().getEntityType()) {
+          listView.getItems().add(dataChangeEvent.getChangedEntity());
+        }
         break;
-      case MODULE:
-        listView.getItems().addAll(dataService.getModuleWrappers().values());
-        break;
-      case ABSTRACT_UNIT:
-        listView.getItems().addAll(dataService.getAbstractUnitWrappers().values());
-        break;
-      case UNIT:
-        listView.getItems().addAll(dataService.getUnitWrappers().values());
-        break;
-      case GROUP:
-        listView.getItems().addAll(dataService.getGroupWrappers().values());
-        break;
-      case SESSION:
-        listView.getItems().addAll(dataService.getSessionWrappers().values());
-        break;
-      default:
+      case DELETE_ENTITY:
+        listView.getItems().remove(dataChangeEvent.getChangedEntity());
         break;
     }
   }
 
-  private void loadFilteredData(String filter) {
-    listView.getItems().clear();
-    switch (cbEntityType.getSelectionModel().getSelectedItem()) {
-      case COURSE:
-        listView.setItems((dataService.getCourseWrappers().values().stream().filter(
-            courseWrapper -> courseWrapper.getLongName().toLowerCase().contains(filter)
-                    || courseWrapper.getShortName().toLowerCase().contains(filter)
-                    || courseWrapper.getKey().toLowerCase().contains(filter))).collect(
-                          Collectors.toCollection(FXCollections::observableArrayList)));
-        break;
-      case LEVEL:
-        listView.setItems((dataService.getLevelWrappers().values().stream().filter(
-            levelWrapper -> levelWrapper.getName().toLowerCase().contains(filter))).collect(
-            Collectors.toCollection(FXCollections::observableArrayList)));
-        break;
-      case MODULE:
-        listView.setItems((dataService.getModuleWrappers().values().stream().filter(
-            moduleWrapper -> moduleWrapper.getKey().toLowerCase().contains(filter)
+    private void initializeComboBox () {
+      cbEntityType.getSelectionModel().selectedItemProperty().addListener(
+          (observable, oldValue, newValue) -> Platform.runLater(() -> loadData(newValue)));
+      cbEntityType.setConverter(new StringConverter<EntityType>() {
+        @Override
+        public String toString(final EntityType entityType) {
+          return resources.getString(entityType.toString());
+        }
+
+        @Override
+        public EntityType fromString(final String string) {
+          return null;
+        }
+      });
+      cbEntityType.getSelectionModel().selectFirst();
+    }
+
+    private void loadData ( final EntityType entityType){
+      listView.getItems().clear();
+      switch (entityType) {
+        case COURSE:
+          listView.getItems().addAll(dataService.getCourseWrappers().values());
+          break;
+        case LEVEL:
+          listView.getItems().addAll(dataService.getLevelWrappers().values());
+          break;
+        case MODULE:
+          listView.getItems().addAll(dataService.getModuleWrappers().values());
+          break;
+        case ABSTRACT_UNIT:
+          listView.getItems().addAll(dataService.getAbstractUnitWrappers().values());
+          break;
+        case UNIT:
+          listView.getItems().addAll(dataService.getUnitWrappers().values());
+          break;
+        case GROUP:
+          listView.getItems().addAll(dataService.getGroupWrappers().values());
+          break;
+        case SESSION:
+          listView.getItems().addAll(dataService.getSessionWrappers().values());
+          break;
+        default:
+          break;
+      }
+    }
+
+    private void loadFilteredData (String filter){
+      listView.getItems().clear();
+      switch (cbEntityType.getSelectionModel().getSelectedItem()) {
+        case COURSE:
+          listView.setItems((dataService.getCourseWrappers().values().stream().filter(
+              courseWrapper -> courseWrapper.getLongName().toLowerCase().contains(filter)
+                  || courseWrapper.getShortName().toLowerCase().contains(filter)
+                  || courseWrapper.getKey().toLowerCase().contains(filter))).collect(
+              Collectors.toCollection(FXCollections::observableArrayList)));
+          break;
+        case LEVEL:
+          listView.setItems((dataService.getLevelWrappers().values().stream().filter(
+              levelWrapper -> levelWrapper.getName().toLowerCase().contains(filter))).collect(
+              Collectors.toCollection(FXCollections::observableArrayList)));
+          break;
+        case MODULE:
+          listView.setItems((dataService.getModuleWrappers().values().stream().filter(
+              moduleWrapper -> moduleWrapper.getKey().toLowerCase().contains(filter)
                   || moduleWrapper.getTitle().toLowerCase().contains(filter))).collect(
-            Collectors.toCollection(FXCollections::observableArrayList)));
-        break;
-      case ABSTRACT_UNIT:
-        listView.setItems((dataService.getAbstractUnitWrappers().values().stream().filter(
-            abstractUnitWrapper -> abstractUnitWrapper.getKey().toLowerCase().contains(filter)
+              Collectors.toCollection(FXCollections::observableArrayList)));
+          break;
+        case ABSTRACT_UNIT:
+          listView.setItems((dataService.getAbstractUnitWrappers().values().stream().filter(
+              abstractUnitWrapper -> abstractUnitWrapper.getKey().toLowerCase().contains(filter)
                   || abstractUnitWrapper.getTitle().toLowerCase().contains(filter))).collect(
-            Collectors.toCollection(FXCollections::observableArrayList)));
-        break;
-      case UNIT:
-        listView.setItems((dataService.getUnitWrappers().values().stream().filter(
-            unitWrapper -> unitWrapper.getKey().toLowerCase().contains(filter)
+              Collectors.toCollection(FXCollections::observableArrayList)));
+          break;
+        case UNIT:
+          listView.setItems((dataService.getUnitWrappers().values().stream().filter(
+              unitWrapper -> unitWrapper.getKey().toLowerCase().contains(filter)
                   || unitWrapper.getTitle().toLowerCase().contains(filter))).collect(
-            Collectors.toCollection(FXCollections::observableArrayList)));
-        break;
-      case GROUP:
-        listView.setItems((dataService.getGroupWrappers().values().stream().filter(
-            groupWrapper -> String.valueOf(groupWrapper.getId()).equals(filter))).collect(
-            Collectors.toCollection(FXCollections::observableArrayList)));
-        break;
-      case SESSION:
-        listView.setItems((dataService.getSessionWrappers().values().stream().filter(
-            sessionWrapper -> String.valueOf(sessionWrapper.getId()).equals(filter))).collect(
-            Collectors.toCollection(FXCollections::observableArrayList)));
-        break;
-      default:
-        break;
+              Collectors.toCollection(FXCollections::observableArrayList)));
+          break;
+        case GROUP:
+          listView.setItems((dataService.getGroupWrappers().values().stream().filter(
+              groupWrapper -> String.valueOf(groupWrapper.getId()).equals(filter))).collect(
+              Collectors.toCollection(FXCollections::observableArrayList)));
+          break;
+        case SESSION:
+          listView.setItems((dataService.getSessionWrappers().values().stream().filter(
+              sessionWrapper -> String.valueOf(sessionWrapper.getId()).equals(filter))).collect(
+              Collectors.toCollection(FXCollections::observableArrayList)));
+          break;
+        default:
+          break;
+      }
     }
   }
-}
