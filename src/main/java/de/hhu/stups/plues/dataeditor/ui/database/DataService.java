@@ -140,6 +140,7 @@ public class DataService {
   }
 
   private void saveNewEntity(EntityType changedType, EntityWrapper changedEntity) {
+    int maxId;
     switch (changedType) {
       case COURSE:
         saveNewCourse((CourseWrapper)changedEntity);
@@ -151,29 +152,33 @@ public class DataService {
         saveNewModule((ModuleWrapper) changedEntity);
         break;
       case ABSTRACT_UNIT:
-        ((AbstractUnitWrapper) changedEntity).getAbstractUnit().setId(
-              abstractUnitRepository.getMaxId() + 1);
+        maxId = abstractUnitRepository.getMaxId() + 1;
+        ((AbstractUnitWrapper) changedEntity).getAbstractUnit().setId(maxId);
+        ((AbstractUnitWrapper) changedEntity).setId(maxId);
         abstractUnitWrappersProperty.put(((AbstractUnitWrapper) changedEntity).getKey(),
               ((AbstractUnitWrapper) changedEntity));
         abstractUnitRepository.save(((AbstractUnitWrapper) changedEntity).getAbstractUnit());
         break;
       case UNIT:
-        ((UnitWrapper) changedEntity).getUnit().setId(
-              unitRepository.getMaxId() + 1);
+        maxId = unitRepository.getMaxId() + 1;
+        ((UnitWrapper) changedEntity).getUnit().setId(maxId);
+        ((UnitWrapper) changedEntity).setId(maxId);
         unitWrappersProperty.put(((UnitWrapper) changedEntity).getKey(),
               ((UnitWrapper) changedEntity));
         unitRepository.save(((UnitWrapper)changedEntity).getUnit());
         break;
       case GROUP:
-        ((GroupWrapper) changedEntity).getGroup().setId(
-              groupRepository.getMaxId() + 1);
+        maxId = groupRepository.getMaxId() + 1;
+        ((GroupWrapper) changedEntity).getGroup().setId(maxId);
+        ((GroupWrapper)changedEntity).setId(maxId);
         groupWrappersProperty.put(String.valueOf(changedEntity.getId()),
               ((GroupWrapper) changedEntity));
         groupRepository.save(((GroupWrapper)changedEntity).getGroup());
         break;
       case SESSION:
-        ((SessionWrapper) changedEntity).getSession().setId(
-              sessionRepository.getMaxId() + 1);
+        maxId = sessionRepository.getMaxId() + 1;
+        ((SessionWrapper) changedEntity).getSession().setId(maxId);
+        ((SessionWrapper) changedEntity).setId(maxId);
         sessionWrappersProperty.put(String.valueOf(changedEntity.getId()),
               ((SessionWrapper) changedEntity));
         sessionRepository.save(((SessionWrapper)changedEntity).getSession());
