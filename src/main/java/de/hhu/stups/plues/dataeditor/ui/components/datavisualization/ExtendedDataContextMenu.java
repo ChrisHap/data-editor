@@ -19,7 +19,9 @@ class ExtendedDataContextMenu extends BasicDataContextMenu {
   private final DataContextMenuType dataContextMenuType;
 
   /**
-   * Extended {@link BasicDataContextMenu} additionally having the option to add entities.
+   * Extended {@link BasicDataContextMenu} additionally having the option to add entities either
+   * {@link DataContextMenuType#FLAT flat} (only add the same entities on the top level) or
+   * {@link DataContextMenuType#NESTED} (allow to add child entities).
    */
   ExtendedDataContextMenu(final DataService dataService) {
     super(dataService);
