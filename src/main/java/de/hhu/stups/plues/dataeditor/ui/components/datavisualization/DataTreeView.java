@@ -294,8 +294,21 @@ public class DataTreeView extends VBox implements Initializable {
       case INSERT_NEW_ENTITY:
         insertNewEntity(dataChangeEvent.getChangedEntity());
         break;
+      case DELETE_ENTITY:
+        deleteEntity(dataChangeEvent.getChangedEntity());
+        break;
       default:
         break;
+    }
+  }
+
+  private void deleteEntity(EntityWrapper wrapper) {
+    TreeItem<EntityWrapper> child = getTreeItemForEntityWrapperRecursive(wrapper,
+          treeTableRoot.getChildren());
+    while (child != null) {
+      child.getParent().getChildren().remove(child);
+      child = getTreeItemForEntityWrapperRecursive(wrapper,
+            treeTableRoot.getChildren());
     }
   }
 
@@ -435,8 +448,6 @@ public class DataTreeView extends VBox implements Initializable {
   }
 
   private void updateSingleEntity(final EntityWrapper changedEntity) {
-    // TODO: update single entity wrapper, i.e., either add or remove the entity,
-    //       the attributes itself are updated via property bindings
     TreeItem<EntityWrapper> current = getTreeItemForEntityWrapperRecursive(changedEntity,
           treeTableRoot.getChildren());
     TreeItem<EntityWrapper> child = current;
@@ -451,27 +462,10 @@ public class DataTreeView extends VBox implements Initializable {
     final TreeItem<EntityWrapper> bestChild = current;
     switch (changedEntity.getEntityType()) {
       case COURSE:
-        treeTableRoot.getChildren().add(bestChild);
-        ((CourseWrapper)changedEntity).getMajorCourseWrappers().forEach(courseWrapper -> {
-          TreeItem<EntityWrapper> parentCourse = getTreeItemForEntityWrapperRecursive(courseWrapper,
-                treeTableRoot.getChildren());
-          if (parentCourse != null) {
-            parentCourse.getChildren().forEach(courseChild -> {
-              if (courseChild.getValue().getEntityType() == null) {
-                courseChild.getChildren().add(new TreeItem<>(changedEntity));
-              }
-            });
-          }
-        });
+        addSimpleCourse((CourseWrapper)changedEntity, bestChild);
         break;
       case LEVEL:
-        if (((LevelWrapper)changedEntity).getParent() == null) {
-          getTreeItemForEntityWrapperRecursive(((LevelWrapper) changedEntity).getCourseWrapper(),
-                treeTableRoot.getChildren()).getChildren().add(bestChild);
-        } else {
-          getTreeItemForEntityWrapperRecursive(((LevelWrapper) changedEntity).getParent(),
-                treeTableRoot.getChildren()).getChildren().add(bestChild);
-        }
+        addSimpleLevel((LevelWrapper) changedEntity, bestChild);
         break;
       case MODULE:
         getTreeItemForEntityWrapperRecursive(dataService.getLevelWrappers().get(
@@ -494,12 +488,41 @@ public class DataTreeView extends VBox implements Initializable {
               treeTableRoot.getChildren()).getChildren().add(bestChild);
         break;
       case GROUP:
-        getTreeItemForEntityWrapperRecursive(dataService.getGroupWrappers().get(
-              String.valueOf(((GroupWrapper)changedEntity).getUnit().getId())),
-              treeTableRoot.getChildren()).getChildren().add(bestChild);
+        TreeItem<EntityWrapper> parent =  getTreeItemForEntityWrapperRecursive(
+              dataService.getGroupWrappers().get(String.valueOf(
+                    ((GroupWrapper)changedEntity).getUnit().getId())),
+              treeTableRoot.getChildren());
+        if (parent != null) {
+          parent.getChildren().add(bestChild);
+        }
         break;
       default:
         break;
+    }
+  }
+
+  private void addSimpleCourse(CourseWrapper wrapper, TreeItem<EntityWrapper> bestChild) {
+    treeTableRoot.getChildren().add(bestChild);
+    wrapper.getMajorCourseWrappers().forEach(courseWrapper -> {
+      TreeItem<EntityWrapper> parentCourse = getTreeItemForEntityWrapperRecursive(courseWrapper,
+            treeTableRoot.getChildren());
+      if (parentCourse != null) {
+        parentCourse.getChildren().forEach(courseChild -> {
+          if (courseChild.getValue().getEntityType() == null) {
+            courseChild.getChildren().add(new TreeItem<>(wrapper));
+          }
+        });
+      }
+    });
+  }
+
+  private void addSimpleLevel(LevelWrapper wrapper, TreeItem bestChild) {
+    if (wrapper.getParent() == null) {
+      getTreeItemForEntityWrapperRecursive(wrapper.getCourseWrapper(),
+            treeTableRoot.getChildren()).getChildren().add(bestChild);
+    } else {
+      getTreeItemForEntityWrapperRecursive(wrapper.getParent(),
+            treeTableRoot.getChildren()).getChildren().add(bestChild);
     }
   }
 
