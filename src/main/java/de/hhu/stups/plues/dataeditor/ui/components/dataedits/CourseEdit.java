@@ -11,6 +11,7 @@ import de.hhu.stups.plues.dataeditor.ui.entities.CourseWrapper;
 import de.hhu.stups.plues.dataeditor.ui.entities.EntityType;
 import de.hhu.stups.plues.dataeditor.ui.entities.EntityWrapper;
 import de.hhu.stups.plues.dataeditor.ui.layout.Inflater;
+import javafx.beans.InvalidationListener;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -99,6 +100,8 @@ public class CourseEdit extends GridPane implements Initializable {
     loadCourseData();
     dataService.dataChangeEventSource().subscribe(this::updateData);
 
+    listViewMajorsOrMinors.getItems().addListener((InvalidationListener) observable ->
+      dataChangedProperty.set(true));
     listViewMajorsOrMinors.setOnMouseClicked(event -> {
       entityListViewContextMenu.hide();
       final CourseWrapper selectedItem =
