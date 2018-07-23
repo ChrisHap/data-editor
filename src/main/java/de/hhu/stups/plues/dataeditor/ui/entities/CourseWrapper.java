@@ -12,6 +12,8 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableSet;
 
 import javax.persistence.Transient;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -42,13 +44,10 @@ public class CourseWrapper implements EntityWrapper {
         CourseDegree.getDegreeFromString(course.getDegree()));
     kzfaProperty = new SimpleObjectProperty<>(CourseKzfa.getKzfaFromString(course.getKzfa()));
     courseProperty = new SimpleObjectProperty<>(course);
+    idProperty = new SimpleIntegerProperty(course.getId());
     majorCourseWrapperProperty = new SimpleSetProperty<>(FXCollections.observableSet());
     minorCourseWrapperProperty = new SimpleSetProperty<>(FXCollections.observableSet());
-    idProperty = new SimpleIntegerProperty(course.getId());
-    majorCourseWrapperProperty.addListener((observable, oldValue, newValue) ->
-        addOrRemoveCourse(courseProperty.get().getMajorCourses(), oldValue, newValue));
-    minorCourseWrapperProperty.addListener((observable, oldValue, newValue) ->
-        addOrRemoveCourse(courseProperty.get().getMinorCourses(), oldValue, newValue));
+    setPropertyListener();
   }
 
   /**
@@ -61,7 +60,55 @@ public class CourseWrapper implements EntityWrapper {
     course.setCreditPoints(5);
     course.setDegree("bk");
     course.setPo(2016);
+    course.setMinorCourses(new HashSet<>());
+    course.setMajorCourses(new HashSet<>());
     return new CourseWrapper(course);
+  }
+
+  private void setPropertyListener() {
+    creditPointsProperty.addListener((observable, oldValue, newValue) ->
+        courseProperty.get().setCreditPoints(newValue.intValue()));
+    shortNameProperty.addListener((observable, oldValue, newValue) ->
+        courseProperty.get().setShortName(newValue));
+    keyProperty.addListener((observable, oldValue, newValue) ->
+        courseProperty.get().setKey(newValue));
+    kzfaProperty.addListener((observable, oldValue, newValue) -> {
+      final Course course = courseProperty.get();
+      if (newValue != null) {
+        course.setKzfa(newValue.toString());
+        return;
+      }
+      course.setKzfa("");
+    });
+    poProperty.addListener((observable, oldValue, newValue) -> {
+      if (newValue != null) {
+        courseProperty.get().setPo(newValue.intValue());
+        return;
+      }
+      courseProperty.get().setPo(-1);
+    });
+    degreeProperty.addListener((observable, oldValue, newValue) -> {
+      final Course course = courseProperty.get();
+      if (newValue != null) {
+        course.setDegree(newValue.toString().toLowerCase());
+        return;
+      }
+      course.setDegree("");
+    });
+    longNameProperty.addListener((observable, oldValue, newValue) ->
+        courseProperty.get().setLongName(newValue));
+    idProperty.addListener((observable, oldValue, newValue) -> {
+      final Course course = courseProperty.get();
+      if (newValue != null) {
+        course.setId(newValue.intValue());
+        return;
+      }
+      course.setId(-1);
+    });
+    majorCourseWrapperProperty.addListener((observable, oldValue, newValue) ->
+        addOrRemoveCourse(courseProperty.get().getMajorCourses(), oldValue, newValue));
+    minorCourseWrapperProperty.addListener((observable, oldValue, newValue) ->
+        addOrRemoveCourse(courseProperty.get().getMinorCourses(), oldValue, newValue));
   }
 
   /**
@@ -104,7 +151,6 @@ public class CourseWrapper implements EntityWrapper {
 
   public void setKey(final String key) {
     this.keyProperty.set(key);
-    this.courseProperty.get().setShortName(key);
   }
 
   public StringProperty keyProperty() {
@@ -117,7 +163,6 @@ public class CourseWrapper implements EntityWrapper {
 
   public void setPo(final int po) {
     this.poProperty.set(po);
-    this.courseProperty.get().setPo(po);
   }
 
   public IntegerProperty poProperty() {
@@ -130,7 +175,6 @@ public class CourseWrapper implements EntityWrapper {
 
   public void setCreditPoints(final int creditPoints) {
     this.creditPointsProperty.set(creditPoints);
-    this.courseProperty.get().setCreditPoints(creditPoints);
   }
 
   public IntegerProperty creditPointsProperty() {
@@ -143,7 +187,6 @@ public class CourseWrapper implements EntityWrapper {
 
   public void setShortName(final String shortName) {
     this.shortNameProperty.set(shortName);
-    this.courseProperty.get().setShortName(shortName);
   }
 
   public StringProperty shortNameProperty() {
@@ -156,7 +199,6 @@ public class CourseWrapper implements EntityWrapper {
 
   public void setLongName(final String longName) {
     this.longNameProperty.set(longName);
-    this.courseProperty.get().setLongName(longName);
   }
 
   public StringProperty longNameProperty() {
@@ -169,7 +211,6 @@ public class CourseWrapper implements EntityWrapper {
 
   public void setDegree(final CourseDegree degree) {
     this.degreeProperty.set(degree);
-    this.courseProperty.get().setDegree(degree.toString().toLowerCase());
   }
 
   public ObjectProperty<CourseDegree> degreeProperty() {
@@ -182,7 +223,6 @@ public class CourseWrapper implements EntityWrapper {
 
   public void setKzfa(final CourseKzfa kzfa) {
     this.kzfaProperty.set(kzfa);
-    this.courseProperty.get().setKzfa(kzfa.toString());
   }
 
   public ObjectProperty<CourseKzfa> kzfaProperty() {
