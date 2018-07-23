@@ -274,9 +274,9 @@ public class CourseEdit extends GridPane implements Initializable {
 
     final Course course = courseWrapper.getCourse();
     boolean isNew = course.getId() == 0;
+    courseWrapper.setId(course.getId());
     dataService.dataChangeEventSource().push(
         new DataChangeEvent(DataChangeType.STORE_ENTITY, courseWrapper));
-    courseWrapper.setId(course.getId());
 
     if (isNew) {
       dataService.dataChangeEventSource().push(

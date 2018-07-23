@@ -140,7 +140,7 @@ public class DataService {
   }
 
   private void saveNewEntity(EntityType changedType, EntityWrapper changedEntity) {
-    int maxId;
+    final int maxId;
     switch (changedType) {
       case COURSE:
         saveNewCourse((CourseWrapper) changedEntity);
@@ -187,11 +187,11 @@ public class DataService {
     }
   }
 
-  private void saveNewLevel(LevelWrapper levelWrapper) {
-    int maxId = levelRepository.getMaxId();
+  private void saveNewLevel(final LevelWrapper levelWrapper) {
+    final int maxId = levelRepository.getMaxId();
     levelWrapper.getLevel().setId(maxId + 1);
     levelWrapper.setId(maxId + 1);
-    Level lvl = levelWrapper.getLevel();
+    final Level lvl = levelWrapper.getLevel();
     levelRepository.insertSimpleLevel(lvl.getId(), lvl.getName(), lvl.getTm(), lvl.getArt(),
         lvl.getMin(), lvl.getMax(), lvl.getMinCreditPoints(), lvl.getMaxCreditPoints(),
         lvl.getParent() == null ? null : lvl.getParent().getId());
@@ -201,29 +201,28 @@ public class DataService {
     levelWrappersProperty.put(levelWrapper.getId(), levelWrapper);
   }
 
-  private void saveLevel(LevelWrapper levelWrapper) {
+  private void saveLevel(final LevelWrapper levelWrapper) {
     levelRepository.deleteCourseLevel(levelWrapper.getId());
-    Level lvl = levelWrapper.getLevel();
+    final Level lvl = levelWrapper.getLevel();
     levelRepository.updateSimpleLevel(lvl.getId(), lvl.getName(), lvl.getTm(), lvl.getArt(),
         lvl.getMin(), lvl.getMax(), lvl.getMinCreditPoints(), lvl.getMaxCreditPoints(),
         lvl.getParent() == null ? null : lvl.getParent().getId());
     if (lvl.getParent() == null && lvl.getCourse() != null) {
-
       levelRepository.insertCourseLevel(lvl.getCourse().getId(), lvl.getId());
     }
   }
 
   private void saveModule(ModuleWrapper moduleWrapper) {
     moduleRepository.deleteModuleLevel(moduleWrapper.getId());
-    Module mod = moduleWrapper.getModule();
+    final Module mod = moduleWrapper.getModule();
     moduleRepository.updateSimpleModule(mod.getId(), mod.getKey(), mod.getTitle(),
         mod.getPordnr(), mod.getElectiveUnits(), mod.getBundled());
-    Level lvl = mod.getLevel();
+    final Level lvl = mod.getLevel();
     Level dummyLevel = lvl;
     while (dummyLevel.getParent() != null) {
       dummyLevel = dummyLevel.getParent();
     }
-    Course course = dummyLevel.getCourse();
+    final Course course = dummyLevel.getCourse();
     //TODO mandatory einbauen
     if (course != null) {
       moduleRepository.insertModuleLevel(mod.getId(), lvl.getId(), course.getId(),
@@ -231,19 +230,19 @@ public class DataService {
     }
   }
 
-  private void saveNewModule(ModuleWrapper moduleWrapper) {
-    int maxId = levelRepository.getMaxId();
+  private void saveNewModule(final ModuleWrapper moduleWrapper) {
+    final int maxId = levelRepository.getMaxId();
     moduleWrapper.getModule().setId(maxId + 1);
     moduleWrapper.setId(maxId + 1);
-    Module mod = moduleWrapper.getModule();
+    final Module mod = moduleWrapper.getModule();
     moduleRepository.insertSimpleModule(mod.getId(), mod.getKey(), mod.getTitle(), mod.getPordnr(),
         mod.getElectiveUnits(), mod.getBundled());
-    Level lvl = mod.getLevel();
+    final Level lvl = mod.getLevel();
     Level dummyLevel = lvl;
     while (dummyLevel.getParent() != null) {
       dummyLevel = dummyLevel.getParent();
     }
-    Course course = dummyLevel.getCourse();
+    final Course course = dummyLevel.getCourse();
     //TODO mandatory einbauen
     if (course != null) {
       moduleRepository.insertModuleLevel(mod.getId(), lvl.getId(), course.getId(),
@@ -252,9 +251,9 @@ public class DataService {
     moduleWrappersProperty.put(mod.getKey(), moduleWrapper);
   }
 
-  private void saveCourse(CourseWrapper courseWrapper) {
+  private void saveCourse(final CourseWrapper courseWrapper) {
     courseRepository.deleteMinor(courseWrapper.getId());
-    Course co = courseWrapper.getCourse();
+    final Course co = courseWrapper.getCourse();
     courseRepository.updateSimpleCourse(co.getId(), co.getKey(), co.getDegree(),
         co.getShortName(), co.getFullName(), co.getKzfa(), co.getPo(), co.getCreditPoints());
     if (co.isMinor()) {
@@ -263,12 +262,12 @@ public class DataService {
     }
   }
 
-  private void saveNewCourse(CourseWrapper courseWrapper) {
-    int maxId = courseRepository.getMaxId();
+  private void saveNewCourse(final CourseWrapper courseWrapper) {
+    final int maxId = courseRepository.getMaxId();
     courseWrapper.getCourse().setId(maxId + 1);
     courseWrapper.setId(maxId + 1);
     courseWrappersProperty.put(courseWrapper.getKey(), courseWrapper);
-    Course co = courseWrapper.getCourse();
+    final Course co = courseWrapper.getCourse();
     courseRepository.deleteMinor(co.getId());
     courseRepository.insertSimpleCourse(co.getId(), co.getKey(), co.getDegree(), co.getShortName(),
         co.getFullName(), co.getKzfa(), co.getPo(), co.getCreditPoints());
@@ -279,10 +278,9 @@ public class DataService {
       co.getMajorCourses().forEach(course ->
           courseRepository.insertMinor(co.getId(), course.getId()));
     }
-
   }
 
-  private void deleteEntity(EntityType changedType, EntityWrapper changedEntity) {
+  private void deleteEntity(final EntityType changedType, final EntityWrapper changedEntity) {
     switch (changedType) {
       case COURSE:
         courseRepository.delete(((CourseWrapper) changedEntity).getCourse());
