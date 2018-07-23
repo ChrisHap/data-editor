@@ -4,6 +4,7 @@ import de.hhu.stups.plues.dataeditor.ui.components.LabeledTextField;
 import de.hhu.stups.plues.dataeditor.ui.database.DataService;
 import de.hhu.stups.plues.dataeditor.ui.database.events.DataChangeEvent;
 import de.hhu.stups.plues.dataeditor.ui.database.events.DataChangeType;
+import de.hhu.stups.plues.dataeditor.ui.entities.Course;
 import de.hhu.stups.plues.dataeditor.ui.entities.CourseDegree;
 import de.hhu.stups.plues.dataeditor.ui.entities.CourseKzfa;
 import de.hhu.stups.plues.dataeditor.ui.entities.CourseWrapper;
@@ -13,7 +14,6 @@ import de.hhu.stups.plues.dataeditor.ui.layout.Inflater;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
@@ -24,6 +24,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.RadioButton;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.GridPane;
 import javafx.util.StringConverter;
@@ -36,6 +37,7 @@ public class CourseEdit extends GridPane implements Initializable {
 
   private final DataService dataService;
   private final BooleanProperty dataChangedProperty;
+  private final EntityListViewContextMenu entityListViewContextMenu;
 
   private CourseWrapper courseWrapper;
   private ResourceBundle resources;
@@ -79,13 +81,15 @@ public class CourseEdit extends GridPane implements Initializable {
              final CourseWrapper courseWrapper) {
     this.dataService = dataService;
     this.courseWrapper = courseWrapper;
-    dataChangedProperty = new SimpleBooleanProperty(false);
+    this.dataChangedProperty = new SimpleBooleanProperty(false);
+    this.entityListViewContextMenu = new EntityListViewContextMenu();
     inflater.inflate("components/dataedits/course_edit", this, this, "course_edit");
   }
 
   @Override
   public void initialize(final URL location, final ResourceBundle resources) {
     this.resources = resources;
+    this.entityListViewContextMenu.setParent(listViewMajorsOrMinors);
     btPersistChanges.disableProperty().bind(dataChangedProperty.not());
     initializeCbDegree();
     initializeInputFields();
@@ -93,12 +97,37 @@ public class CourseEdit extends GridPane implements Initializable {
         .then(resources.getString("minors")).otherwise(resources.getString("majors")));
     setDataListener();
     loadCourseData();
+    dataService.dataChangeEventSource().subscribe(this::updateData);
+
+    listViewMajorsOrMinors.setOnMouseClicked(event -> {
+      entityListViewContextMenu.hide();
+      final CourseWrapper selectedItem =
+          listViewMajorsOrMinors.getSelectionModel().getSelectedItem();
+      if (selectedItem != null && MouseButton.SECONDARY.equals(event.getButton())) {
+        entityListViewContextMenu.show(listViewMajorsOrMinors,
+            event.getScreenX(), event.getScreenY());
+      }
+    });
     setListViewDragListeners();
+  }
+
+  private void updateData(final DataChangeEvent dataChangeEvent) {
+    final EntityWrapper changedEntity = dataChangeEvent.getChangedEntity();
+    if (dataChangeEvent.getDataChangeType().equals(DataChangeType.DELETE_ENTITY)
+        && changedEntity.getEntityType().equals(EntityType.COURSE)) {
+      final CourseWrapper changedCourseWrapper = (CourseWrapper) changedEntity;
+      listViewMajorsOrMinors.getItems().remove(changedCourseWrapper);
+      if (rbMajorCourse.isSelected()) {
+        courseWrapper.minorCourseWrapperProperty().get().remove(changedCourseWrapper);
+      } else {
+        courseWrapper.majorCourseWrapperProperty().get().remove(changedCourseWrapper);
+      }
+    }
   }
 
   private void setListViewDragListeners() {
     dataService.draggedEntityProperty().addListener((observable, oldValue, newValue) ->
-          listViewMajorsOrMinors.requestFocus());
+        listViewMajorsOrMinors.requestFocus());
     listViewMajorsOrMinors.setOnDragOver(event -> {
       event.acceptTransferModes(TransferMode.COPY);
       event.consume();
@@ -208,72 +237,60 @@ public class CourseEdit extends GridPane implements Initializable {
       return;
     }
     try {
-      courseWrapper.getCourse().setCreditPoints(Integer.parseInt(
-          txtCreditPoints.textProperty().getValue()));
       courseWrapper.setCreditPoints(Integer.parseInt(
-            txtCreditPoints.textProperty().getValue()));
+          txtCreditPoints.textProperty().getValue()));
     } catch (NumberFormatException exeption) {
       new Alert(Alert.AlertType.ERROR,
           resources.getString("creditsError"), ButtonType.OK).showAndWait();
       return;
     }
     try {
-      courseWrapper.getCourse().setPo(Integer.parseInt(txtPVersion.textProperty().getValue()));
       courseWrapper.setPo(Integer.parseInt(txtPVersion.textProperty().getValue()));
     } catch (NumberFormatException exeption) {
       new Alert(Alert.AlertType.ERROR,
           resources.getString("poError"), ButtonType.OK).showAndWait();
       return;
     }
-    courseWrapper.getCourse().setDegree(cbCourseDegree.getValue().toString().toLowerCase());
     courseWrapper.setDegree(cbCourseDegree.getValue());
-    courseWrapper.getCourse().setLongName(txtFullName.textProperty().getValue());
     courseWrapper.setLongName(txtFullName.textProperty().getValue());
-    courseWrapper.getCourse().setShortName(txtShortName.textProperty().getValue());
     courseWrapper.setShortName(txtShortName.textProperty().getValue());
     courseWrapper.getMajorCourseWrappers().clear();
-    courseWrapper.getCourse().getMajorCourses().clear();
     courseWrapper.getMinorCourseWrappers().clear();
-    courseWrapper.getCourse().getMinorCourses().clear();
     if (rbMajorCourse.isSelected()) {
-      courseWrapper.getCourse().setKzfa("H");
       courseWrapper.setKzfa(CourseKzfa.getKzfaFromString("H"));
       listViewMajorsOrMinors.getItems().forEach(item -> {
-        courseWrapper.getCourse().getMinorCourses().add(item.getCourse());
         courseWrapper.getMinorCourseWrappers().add(item);
         item.getMinorCourseWrappers().add(courseWrapper);
-        item.getCourse().getMinorCourses().add(courseWrapper.getCourse());
       });
     } else {
-      courseWrapper.getCourse().setKzfa("N");
       courseWrapper.setKzfa(CourseKzfa.getKzfaFromString("N"));
       listViewMajorsOrMinors.getItems().forEach(item -> {
-        courseWrapper.getCourse().getMajorCourses().add(item.getCourse());
         courseWrapper.getMajorCourseWrappers().add(item);
         item.getMajorCourseWrappers().add(courseWrapper);
-        item.getCourse().getMajorCourses().add(courseWrapper.getCourse());
       });
     }
 
-    courseWrapper.setKey(courseWrapper.getDegree().toString() + "-"
-        + txtShortName.textProperty().get().toUpperCase() + "-"
-        + CourseKzfa.toString(courseWrapper.getKzfa()) + "-"
-        + courseWrapper.getPo());
-    courseWrapper.getCourse().setKey(courseWrapper.getDegree().toString() + "-"
-        + txtShortName.textProperty().get().toUpperCase() + "-"
-        + CourseKzfa.toString(courseWrapper.getKzfa()) + "-"
-        + courseWrapper.getPo());
+    courseWrapper.setKey(createCourseKey(courseWrapper, txtShortName));
 
-    boolean isNew = courseWrapper.getCourse().getId() == 0;
+    final Course course = courseWrapper.getCourse();
+    boolean isNew = course.getId() == 0;
     dataService.dataChangeEventSource().push(
         new DataChangeEvent(DataChangeType.STORE_ENTITY, courseWrapper));
-    courseWrapper.setId(courseWrapper.getCourse().getId());
+    courseWrapper.setId(course.getId());
 
     if (isNew) {
       dataService.dataChangeEventSource().push(
           new DataChangeEvent(DataChangeType.INSERT_NEW_ENTITY, courseWrapper));
     }
     dataChangedProperty.set(false);
+  }
+
+  private String createCourseKey(final CourseWrapper courseWrapper,
+                                 final LabeledTextField txtShortName) {
+    return courseWrapper.getDegree().toString() + "-"
+        + txtShortName.textProperty().get().toUpperCase() + "-"
+        + CourseKzfa.toString(courseWrapper.getKzfa()) + "-"
+        + courseWrapper.getPo();
   }
 
   private void initializeInputFields() {
@@ -286,8 +303,10 @@ public class CourseEdit extends GridPane implements Initializable {
           @Override
           protected void updateItem(CourseWrapper item, boolean empty) {
             super.updateItem(item, empty);
-            if (item != null) {
+            if (item != null && !empty) {
               setText(item.toString());
+            } else {
+              setGraphic(null);
             }
           }
         });
