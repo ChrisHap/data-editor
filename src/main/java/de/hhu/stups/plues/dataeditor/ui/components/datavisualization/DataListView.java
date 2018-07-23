@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 public class DataListView extends VBox implements Initializable {
 
   private final DataService dataService;
-  private final DataContextMenu dataContextMenu;
+  private final ExtendedDataContextMenu dataContextMenu;
 
   private ResourceBundle resources;
 
@@ -48,14 +48,13 @@ public class DataListView extends VBox implements Initializable {
   private ListView<EntityWrapper> listView;
 
   /**
-   * Initialize {@link DataService} and {@link DataContextMenu}.
+   * Initialize {@link DataService} and {@link ExtendedDataContextMenu}.
    */
   @Autowired
   public DataListView(final Inflater inflater,
-                      final DataService dataService,
-                      final DataContextMenu dataContextMenu) {
+                      final DataService dataService) {
     this.dataService = dataService;
-    this.dataContextMenu = dataContextMenu;
+    this.dataContextMenu = new ExtendedDataContextMenu(dataService, DataContextMenuType.FLAT);
     inflater.inflate("components/datavisualization/data_list_view", this, this, "data_view");
   }
 
