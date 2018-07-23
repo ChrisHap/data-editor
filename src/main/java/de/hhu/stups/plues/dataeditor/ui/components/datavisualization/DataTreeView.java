@@ -46,7 +46,7 @@ import java.util.ResourceBundle;
 public class DataTreeView extends VBox implements Initializable {
 
   private final DataService dataService;
-  private final DataContextMenu dataContextMenu;
+  private final ExtendedDataContextMenu dataContextMenu;
 
   private ResourceBundle resources;
 
@@ -67,10 +67,9 @@ public class DataTreeView extends VBox implements Initializable {
    */
   @Autowired
   public DataTreeView(final Inflater inflater,
-                      final DataService dataService,
-                      final DataContextMenu dataContextMenu) {
+                      final DataService dataService) {
     this.dataService = dataService;
-    this.dataContextMenu = dataContextMenu;
+    this.dataContextMenu = new ExtendedDataContextMenu(dataService);
     inflater.inflate("components/datavisualization/data_tree_view", this, this, "data_view");
   }
 
@@ -449,7 +448,7 @@ public class DataTreeView extends VBox implements Initializable {
 
   private void updateSingleEntity(final EntityWrapper changedEntity) {
     TreeItem<EntityWrapper> current = getTreeItemForEntityWrapperRecursive(changedEntity,
-          treeTableRoot.getChildren());
+        treeTableRoot.getChildren());
     TreeItem<EntityWrapper> child = current;
     while (child != null) {
       if (child.getChildren().size() > current.getChildren().size()) {
@@ -457,7 +456,7 @@ public class DataTreeView extends VBox implements Initializable {
       }
       child.getParent().getChildren().remove(child);
       child = getTreeItemForEntityWrapperRecursive(changedEntity,
-            treeTableRoot.getChildren());
+          treeTableRoot.getChildren());
     }
     final TreeItem<EntityWrapper> bestChild = current;
     switch (changedEntity.getEntityType()) {
@@ -469,23 +468,23 @@ public class DataTreeView extends VBox implements Initializable {
         break;
       case MODULE:
         getTreeItemForEntityWrapperRecursive(dataService.getLevelWrappers().get(
-              ((ModuleWrapper)changedEntity).getLevel().getId()),
-              treeTableRoot.getChildren()).getChildren().add(bestChild);
+            ((ModuleWrapper) changedEntity).getLevel().getId()),
+            treeTableRoot.getChildren()).getChildren().add(bestChild);
         break;
       case ABSTRACT_UNIT:
-        ((AbstractUnitWrapper)changedEntity).getModules().forEach( moduleWrapper ->
-              getTreeItemForEntityWrapperRecursive(moduleWrapper,
-              treeTableRoot.getChildren()).getChildren().add(bestChild));
+        ((AbstractUnitWrapper) changedEntity).getModules().forEach(moduleWrapper ->
+            getTreeItemForEntityWrapperRecursive(moduleWrapper,
+                treeTableRoot.getChildren()).getChildren().add(bestChild));
         break;
       case UNIT:
-        ((UnitWrapper)changedEntity).getAbstractUnits().forEach( abstractUnitWrapper ->
-              getTreeItemForEntityWrapperRecursive(abstractUnitWrapper,
-              treeTableRoot.getChildren()).getChildren().add(bestChild));
+        ((UnitWrapper) changedEntity).getAbstractUnits().forEach(abstractUnitWrapper ->
+            getTreeItemForEntityWrapperRecursive(abstractUnitWrapper,
+                treeTableRoot.getChildren()).getChildren().add(bestChild));
         break;
       case SESSION:
         getTreeItemForEntityWrapperRecursive(dataService.getGroupWrappers().get(
-              String.valueOf(((SessionWrapper)changedEntity).getGroup().getId())),
-              treeTableRoot.getChildren()).getChildren().add(bestChild);
+            String.valueOf(((SessionWrapper) changedEntity).getGroup().getId())),
+            treeTableRoot.getChildren()).getChildren().add(bestChild);
         break;
       case GROUP:
         TreeItem<EntityWrapper> parent =  getTreeItemForEntityWrapperRecursive(
