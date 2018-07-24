@@ -189,7 +189,6 @@ public class DataService {
 
   private void saveNewLevel(final LevelWrapper levelWrapper) {
     final int maxId = levelRepository.getMaxId();
-    levelWrapper.getLevel().setId(maxId + 1);
     levelWrapper.setId(maxId + 1);
     final Level lvl = levelWrapper.getLevel();
     levelRepository.insertSimpleLevel(lvl.getId(), lvl.getName(), lvl.getTm(), lvl.getArt(),

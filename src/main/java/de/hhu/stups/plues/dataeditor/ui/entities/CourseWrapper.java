@@ -11,10 +11,10 @@ import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableSet;
 
-import javax.persistence.Transient;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
+import javax.persistence.Transient;
 
 public class CourseWrapper implements EntityWrapper {
 
@@ -34,6 +34,7 @@ public class CourseWrapper implements EntityWrapper {
    * Initialize the property bindings according to the given {@link Course}.
    */
   public CourseWrapper(final Course course) {
+    assert course != null;
     keyProperty = new SimpleStringProperty(course.getKey());
     poProperty = new SimpleIntegerProperty(course.getPo());
     creditPointsProperty = new SimpleIntegerProperty(course.getCreditPoints());
@@ -113,7 +114,8 @@ public class CourseWrapper implements EntityWrapper {
   /**
    * Add or remove a major or minor course from the underlying course entity.
    *
-   * @param courses  The set of major or minor courses from the underlying {@link this#courseProperty course entity}.
+   * @param courses  The set of major or minor courses from the underlying
+   * {@link this#courseProperty course entity}.
    * @param oldValue The old value of the major or minor course property.
    * @param newValue The new value of the major or minor course property.
    */

@@ -132,27 +132,20 @@ public class LevelEdit extends GridPane implements Initializable {
   @FXML
   @SuppressWarnings("unused")
   public void persistChanges() {
-    levelWrapper.getLevel().setName(txtLevel.textProperty().get());
     levelWrapper.setNameProperty(txtLevel.textProperty().get());
     try {
       levelWrapper.setMaxCredits(Integer.parseInt(txtMaxCp.textProperty().get()));
-      levelWrapper.getLevel().setMaxCreditPoints(Integer.parseInt(txtMaxCp.textProperty().get()));
       levelWrapper.setMinCredits(Integer.parseInt(txtMinCp.textProperty().get()));
-      levelWrapper.getLevel().setMinCreditPoints(Integer.parseInt(txtMinCp.textProperty().get()));
     } catch (NumberFormatException exception) {
       new Alert(Alert.AlertType.ERROR, resources.getString("creditsError"), ButtonType.OK);
     }
     if (rbParentLevel.isSelected()) {
-      levelWrapper.getLevel().setParent(((LevelWrapper)cbParentLevel.getValue()).getLevel());
       levelWrapper.setParent((LevelWrapper)cbParentLevel.getValue());
-      levelWrapper.getLevel().setCourse(null);
       levelWrapper.setCourseProperty(null);
       dataService.dataChangeEventSource().push(
             new DataChangeEvent(DataChangeType.STORE_ENTITY, cbParentLevel.getValue()));
     } else {
-      levelWrapper.getLevel().setCourse(((CourseWrapper)cbParentCourse.getValue()).getCourse());
       levelWrapper.setCourseProperty((CourseWrapper)cbParentCourse.getValue());
-      levelWrapper.getLevel().setParent(null);
       levelWrapper.setParent(null);
       dataService.dataChangeEventSource().push(
             new DataChangeEvent(DataChangeType.STORE_ENTITY, cbParentCourse.getValue()));

@@ -10,6 +10,9 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.ObservableSet;
 
+import java.util.Set;
+import java.util.stream.Collectors;
+
 public class LevelWrapper implements EntityWrapper {
 
   private final IntegerProperty idProperty;
@@ -34,6 +37,59 @@ public class LevelWrapper implements EntityWrapper {
     levelProperty = new SimpleObjectProperty<>(level);
     courseProperty = new SimpleObjectProperty<>();
     idProperty = new SimpleIntegerProperty(level.getId());
+    setPropertyListener();
+  }
+
+  private void setPropertyListener() {
+    nameProperty.addListener((observable, oldValue, newValue) ->
+          levelProperty.get().setName(newValue));
+    minCreditsProperty.addListener((observable, oldValue, newValue) ->
+          levelProperty.get().setMinCreditPoints(newValue.intValue()));
+    maxCreditsProperty.addListener((observable, oldValue, newValue) ->
+          levelProperty.get().setMaxCreditPoints(newValue.intValue()));
+
+    parentProperty.addListener((observable, oldValue, newValue) -> {
+      if (newValue != null) {
+        levelProperty.get().setParent(newValue.getLevel());
+      } else {
+        levelProperty.get().setParent(null);
+      }
+    });
+
+    courseProperty.addListener((observable, oldValue, newValue) -> {
+      if (newValue != null) {
+        levelProperty.get().setCourse(newValue.getCourse());
+      } else {
+        levelProperty.get().setCourse(null);
+      }
+    });
+
+    childrenProperty.addListener((observable, oldValue, newValue) ->
+          addOrRemoveLevel(levelProperty.get().getChildren(), oldValue, newValue));
+
+    idProperty.addListener((observable, oldValue, newValue) -> {
+      final Level level = levelProperty.get();
+      if (newValue != null) {
+        level.setId(newValue.intValue());
+        return;
+      }
+      level.setId(-1);
+    });
+  }
+
+  private void addOrRemoveLevel(final Set<Level> courses,
+                                 final ObservableSet<LevelWrapper> oldValue,
+                                 final ObservableSet<LevelWrapper> newValue) {
+    if (newValue.size() > oldValue.size()) {
+      newValue.removeAll(oldValue);
+      courses.addAll(newValue.stream().map(LevelWrapper::getLevel).collect(Collectors.toSet()));
+      return;
+    }
+    if (newValue.size() < oldValue.size()) {
+      oldValue.removeAll(newValue);
+      courses.removeAll(
+            oldValue.stream().map(LevelWrapper::getLevel).collect(Collectors.toSet()));
+    }
   }
 
   public int getId() {
