@@ -4,7 +4,6 @@ import de.hhu.stups.plues.dataeditor.ui.components.LabeledTextField;
 import de.hhu.stups.plues.dataeditor.ui.database.DataService;
 import de.hhu.stups.plues.dataeditor.ui.database.events.DataChangeEvent;
 import de.hhu.stups.plues.dataeditor.ui.database.events.DataChangeType;
-import de.hhu.stups.plues.dataeditor.ui.entities.Course;
 import de.hhu.stups.plues.dataeditor.ui.entities.CourseDegree;
 import de.hhu.stups.plues.dataeditor.ui.entities.CourseKzfa;
 import de.hhu.stups.plues.dataeditor.ui.entities.CourseWrapper;
@@ -101,7 +100,7 @@ public class CourseEdit extends GridPane implements Initializable {
     dataService.dataChangeEventSource().subscribe(this::updateData);
 
     listViewMajorsOrMinors.getItems().addListener((InvalidationListener) observable ->
-      dataChangedProperty.set(true));
+        dataChangedProperty.set(true));
     listViewMajorsOrMinors.setOnMouseClicked(event -> {
       entityListViewContextMenu.hide();
       final CourseWrapper selectedItem =
@@ -275,17 +274,16 @@ public class CourseEdit extends GridPane implements Initializable {
 
     courseWrapper.setKey(createCourseKey(courseWrapper, txtShortName));
 
-    final Course course = courseWrapper.getCourse();
-    boolean isNew = course.getId() == 0;
-    courseWrapper.setId(course.getId());
+    boolean isNew = courseWrapper.getId() == 0;
+
+    dataService.dataChangeEventSource().push(
+          new DataChangeEvent(DataChangeType.STORE_ENTITY, courseWrapper));
 
     if (isNew) {
       dataService.dataChangeEventSource().push(
           new DataChangeEvent(DataChangeType.INSERT_NEW_ENTITY, courseWrapper));
-    } else {
-      dataService.dataChangeEventSource().push(
-          new DataChangeEvent(DataChangeType.STORE_ENTITY, courseWrapper));
     }
+
     dataChangedProperty.set(false);
   }
 
