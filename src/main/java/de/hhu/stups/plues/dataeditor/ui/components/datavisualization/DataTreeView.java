@@ -444,6 +444,7 @@ public class DataTreeView extends VBox implements Initializable {
           treeTableRoot.getChildren());
     }
     final TreeItem<EntityWrapper> bestChild = current;
+    TreeItem<EntityWrapper> parent;
     switch (changedEntity.getEntityType()) {
       case COURSE:
         addSimpleCourse((CourseWrapper) changedEntity, bestChild);
@@ -467,14 +468,17 @@ public class DataTreeView extends VBox implements Initializable {
                 treeTableRoot.getChildren()).getChildren().add(bestChild));
         break;
       case SESSION:
-        getTreeItemForEntityWrapperRecursive(dataService.getGroupWrappers().get(
-            String.valueOf(((SessionWrapper) changedEntity).getGroup().getId())),
-            treeTableRoot.getChildren()).getChildren().add(bestChild);
+        parent = getTreeItemForEntityWrapperRecursive(
+              dataService.getGroupWrappers().get(
+            ((SessionWrapper) changedEntity).getGroup().getId()),
+            treeTableRoot.getChildren());
+        if (parent != null) {
+          parent.getChildren().add(bestChild);
+        }
         break;
       case GROUP:
-        TreeItem<EntityWrapper> parent = getTreeItemForEntityWrapperRecursive(
-            dataService.getGroupWrappers().get(String.valueOf(
-                ((GroupWrapper) changedEntity).getUnit().getId())),
+        parent = getTreeItemForEntityWrapperRecursive(
+            dataService.getGroupWrappers().get(((GroupWrapper) changedEntity).getUnit().getId()),
             treeTableRoot.getChildren());
         if (parent != null) {
           parent.getChildren().add(bestChild);
@@ -513,13 +517,19 @@ public class DataTreeView extends VBox implements Initializable {
     });
   }
 
-  private void addSimpleLevel(LevelWrapper wrapper, TreeItem bestChild) {
+  private void addSimpleLevel(LevelWrapper wrapper, TreeItem<EntityWrapper> bestChild) {
     if (wrapper.getParent() == null) {
-      getTreeItemForEntityWrapperRecursive(wrapper.getCourseWrapper(),
-          treeTableRoot.getChildren()).getChildren().add(bestChild);
+      TreeItem<EntityWrapper> parent = getTreeItemForEntityWrapperRecursive(
+            wrapper.getCourseWrapper(), treeTableRoot.getChildren());
+      if (parent != null) {
+        parent.getChildren().add(bestChild);
+      }
     } else {
-      getTreeItemForEntityWrapperRecursive(wrapper.getParent(),
-          treeTableRoot.getChildren()).getChildren().add(bestChild);
+      TreeItem<EntityWrapper> parent = getTreeItemForEntityWrapperRecursive(
+            wrapper.getParent(), treeTableRoot.getChildren());
+      if (parent != null) {
+        parent.getChildren().add(bestChild);
+      }
     }
   }
 
@@ -533,7 +543,7 @@ public class DataTreeView extends VBox implements Initializable {
       treeItemCourse.getChildren().add(minorsSubRoot);
       course.getMinorCourses().forEach(minorCourse ->
           minorsSubRoot.getChildren().add(new TreeItem<>(dataService.courseWrappersProperty()
-              .get(minorCourse.getKey()))));
+              .get(minorCourse.getId()))));
     }
     course.getLevels().forEach(level -> addLevelToTreeItem(treeItemCourse, level));
   }
@@ -554,7 +564,7 @@ public class DataTreeView extends VBox implements Initializable {
   private void addModuleToTreeItem(final TreeItem<EntityWrapper> treeItemParent,
                                    final Module module) {
     final TreeItem<EntityWrapper> moduleTreeItem =
-        new TreeItem<>(dataService.getModuleWrappers().get(module.getKey()));
+        new TreeItem<>(dataService.getModuleWrappers().get(module.getId()));
     treeItemParent.getChildren().add(moduleTreeItem);
     module.getAbstractUnits().forEach(abstractUnit ->
         addAbstractUnitToTreeItem(moduleTreeItem, abstractUnit));
@@ -563,7 +573,7 @@ public class DataTreeView extends VBox implements Initializable {
   private void addAbstractUnitToTreeItem(final TreeItem<EntityWrapper> treeItemParent,
                                          final AbstractUnit abstractUnit) {
     final TreeItem<EntityWrapper> abstractUnitTreeItem =
-        new TreeItem<>(dataService.getAbstractUnitWrappers().get(abstractUnit.getKey()));
+        new TreeItem<>(dataService.getAbstractUnitWrappers().get(abstractUnit.getId()));
     treeItemParent.getChildren().add(abstractUnitTreeItem);
     abstractUnit.getUnits().forEach(unit -> addUnitToTreeItem(abstractUnitTreeItem, unit));
   }
@@ -571,15 +581,15 @@ public class DataTreeView extends VBox implements Initializable {
   private void addUnitToTreeItem(final TreeItem<EntityWrapper> treeItemParent,
                                  final Unit unit) {
     final TreeItem<EntityWrapper> unitTreeItem = new TreeItem<>(dataService.unitWrappersProperty()
-        .get(unit.getKey()));
+        .get(unit.getId()));
     treeItemParent.getChildren().add(unitTreeItem);
     unit.getGroups().forEach(group -> {
       final TreeItem<EntityWrapper> treeItemGroup = new TreeItem<>(
-          dataService.groupWrappersProperty().get(String.valueOf(group.getId())));
+          dataService.groupWrappersProperty().get(group.getId()));
       unitTreeItem.getChildren().add(treeItemGroup);
       group.getSessions().forEach(session -> treeItemGroup.getChildren().add(
           new TreeItem<>(dataService.sessionWrappersProperty()
-              .get(String.valueOf(session.getId())))));
+              .get(session.getId()))));
     });
   }
 }

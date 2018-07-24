@@ -46,15 +46,15 @@ import javax.sql.DataSource;
 public class DataService {
 
   private final EventSource<DataChangeEvent> dataChangeEventSource;
-  private final MapProperty<String, CourseWrapper> courseWrappersProperty;
+  private final MapProperty<Integer, CourseWrapper> courseWrappersProperty;
   private final ListProperty<CourseWrapper> majorCourseWrappersProperty;
   private final ListProperty<CourseWrapper> minorCourseWrappersProperty;
   private final MapProperty<Integer, LevelWrapper> levelWrappersProperty;
-  private final MapProperty<String, ModuleWrapper> moduleWrappersProperty;
-  private final MapProperty<String, AbstractUnitWrapper> abstractUnitWrappersProperty;
-  private final MapProperty<String, UnitWrapper> unitWrappersProperty;
-  private final MapProperty<String, SessionWrapper> sessionWrappersProperty;
-  private final MapProperty<String, GroupWrapper> groupWrappersProperty;
+  private final MapProperty<Integer, ModuleWrapper> moduleWrappersProperty;
+  private final MapProperty<Integer, AbstractUnitWrapper> abstractUnitWrappersProperty;
+  private final MapProperty<Integer, UnitWrapper> unitWrappersProperty;
+  private final MapProperty<Integer, SessionWrapper> sessionWrappersProperty;
+  private final MapProperty<Integer, GroupWrapper> groupWrappersProperty;
 
   private final CourseRepository courseRepository;
   private final LevelRepository levelRepository;
@@ -155,7 +155,7 @@ public class DataService {
         maxId = abstractUnitRepository.getMaxId() + 1;
         ((AbstractUnitWrapper) changedEntity).getAbstractUnit().setId(maxId);
         ((AbstractUnitWrapper) changedEntity).setId(maxId);
-        abstractUnitWrappersProperty.put(((AbstractUnitWrapper) changedEntity).getKey(),
+        abstractUnitWrappersProperty.put(changedEntity.getId(),
             ((AbstractUnitWrapper) changedEntity));
         abstractUnitRepository.save(((AbstractUnitWrapper) changedEntity).getAbstractUnit());
         break;
@@ -163,7 +163,7 @@ public class DataService {
         maxId = unitRepository.getMaxId() + 1;
         ((UnitWrapper) changedEntity).getUnit().setId(maxId);
         ((UnitWrapper) changedEntity).setId(maxId);
-        unitWrappersProperty.put(((UnitWrapper) changedEntity).getKey(),
+        unitWrappersProperty.put(changedEntity.getId(),
             ((UnitWrapper) changedEntity));
         unitRepository.save(((UnitWrapper) changedEntity).getUnit());
         break;
@@ -171,7 +171,7 @@ public class DataService {
         maxId = groupRepository.getMaxId() + 1;
         ((GroupWrapper) changedEntity).getGroup().setId(maxId);
         ((GroupWrapper) changedEntity).setId(maxId);
-        groupWrappersProperty.put(String.valueOf(changedEntity.getId()),
+        groupWrappersProperty.put(changedEntity.getId(),
             ((GroupWrapper) changedEntity));
         groupRepository.save(((GroupWrapper) changedEntity).getGroup());
         break;
@@ -179,7 +179,7 @@ public class DataService {
         maxId = sessionRepository.getMaxId() + 1;
         ((SessionWrapper) changedEntity).getSession().setId(maxId);
         ((SessionWrapper) changedEntity).setId(maxId);
-        sessionWrappersProperty.put(String.valueOf(changedEntity.getId()),
+        sessionWrappersProperty.put(changedEntity.getId(),
             ((SessionWrapper) changedEntity));
         sessionRepository.save(((SessionWrapper) changedEntity).getSession());
         break;
@@ -248,7 +248,7 @@ public class DataService {
       moduleRepository.insertModuleLevel(mod.getId(), lvl.getId(), course.getId(),
           mod.getTitle(), false);
     }
-    moduleWrappersProperty.put(mod.getKey(), moduleWrapper);
+    moduleWrappersProperty.put(mod.getId(), moduleWrapper);
   }
 
   private void saveCourse(final CourseWrapper courseWrapper) {
@@ -266,7 +266,7 @@ public class DataService {
     final int maxId = courseRepository.getMaxId();
     courseWrapper.getCourse().setId(maxId + 1);
     courseWrapper.setId(maxId + 1);
-    courseWrappersProperty.put(courseWrapper.getKey(), courseWrapper);
+    courseWrappersProperty.put(courseWrapper.getId(), courseWrapper);
     final Course co = courseWrapper.getCourse();
     courseRepository.deleteMinor(co.getId());
     courseRepository.insertSimpleCourse(co.getId(), co.getKey(), co.getDegree(), co.getShortName(),
@@ -333,7 +333,7 @@ public class DataService {
   private void initializeEntitiesFlat() {
     courseRepository.findAll().forEach(course -> {
       final CourseWrapper courseWrapper = new CourseWrapper(course);
-      courseWrappersProperty.put(course.getKey(), courseWrapper);
+      courseWrappersProperty.put(course.getId(), courseWrapper);
       if (course.isMajor()) {
         majorCourseWrappersProperty.add(courseWrapper);
       } else {
@@ -344,19 +344,19 @@ public class DataService {
         levelWrappersProperty.put(level.getId(),
             new LevelWrapper(level)));
     moduleRepository.findAll().forEach(module ->
-        moduleWrappersProperty.put(module.getKey(),
+        moduleWrappersProperty.put(module.getId(),
             new ModuleWrapper(module)));
     abstractUnitRepository.findAll().forEach(abstractUnit ->
-        abstractUnitWrappersProperty.put(abstractUnit.getKey(),
+        abstractUnitWrappersProperty.put(abstractUnit.getId(),
             new AbstractUnitWrapper(abstractUnit)));
     unitRepository.findAll().forEach(unit ->
-        unitWrappersProperty.put(unit.getKey(),
+        unitWrappersProperty.put(unit.getId(),
             new UnitWrapper(unit)));
     groupRepository.findAll().forEach(group ->
-        groupWrappersProperty.put(String.valueOf(group.getId()),
+        groupWrappersProperty.put(group.getId(),
             new GroupWrapper(group)));
     sessionRepository.findAll().forEach(session ->
-        sessionWrappersProperty.put(String.valueOf(session.getId()),
+        sessionWrappersProperty.put(session.getId(),
             new SessionWrapper(session)));
   }
 
@@ -369,41 +369,41 @@ public class DataService {
     abstractUnitWrappersProperty.values().forEach(abstractUnitWrapper -> {
       abstractUnitWrapper.modulesProperty().addAll(
           abstractUnitWrapper.getAbstractUnit().getModules().stream()
-              .map(module -> moduleWrappersProperty.get(module.getKey()))
+              .map(module -> moduleWrappersProperty.get(module.getId()))
               .collect(Collectors.toSet()));
       abstractUnitWrapper.unitsProperty().addAll(
           abstractUnitWrapper.getAbstractUnit().getUnits().stream()
-              .map(unit -> unitWrappersProperty.get(unit.getKey())).collect(Collectors.toSet()));
+              .map(unit -> unitWrappersProperty.get(unit.getId())).collect(Collectors.toSet()));
     });
     moduleWrappersProperty.values().forEach(moduleWrapper -> {
       moduleWrapper.abstractUnitsProperty().addAll(
           moduleWrapper.getModule().getAbstractUnits().stream()
-              .map(abstractUnit -> abstractUnitWrappersProperty.get(abstractUnit.getKey()))
+              .map(abstractUnit -> abstractUnitWrappersProperty.get(abstractUnit.getId()))
               .collect(Collectors.toSet()));
       moduleWrapper.coursesProperty().addAll(
           moduleWrapper.getModule().getCourses().stream()
-              .map(course -> courseWrappersProperty.get(course.getKey()))
+              .map(course -> courseWrappersProperty.get(course.getId()))
               .collect(Collectors.toSet()));
     });
     unitWrappersProperty.values().forEach(unitWrapper -> {
       unitWrapper.abstractUnitsProperty().addAll(
           unitWrapper.getUnit().getAbstractUnits().stream()
-              .map(abstractUnit -> abstractUnitWrappersProperty.get(abstractUnit.getKey()))
+              .map(abstractUnit -> abstractUnitWrappersProperty.get(abstractUnit.getId()))
               .collect(Collectors.toSet()));
       unitWrapper.groupsProperty().addAll(
           unitWrapper.getUnit().getGroups().stream()
-              .map(group -> groupWrappersProperty.get(String.valueOf(group.getId())))
+              .map(group -> groupWrappersProperty.get(group.getId()))
               .collect(Collectors.toSet()));
     });
     // add majors and minors to course wrappers
     courseWrappersProperty.values().forEach(courseWrapper -> {
       courseWrapper.majorCourseWrapperProperty().addAll(
           courseWrapper.getCourse().getMajorCourses().stream()
-              .map(course -> courseWrappersProperty().get(course.getKey()))
+              .map(course -> courseWrappersProperty().get(course.getId()))
               .collect(Collectors.toSet()));
       courseWrapper.minorCourseWrapperProperty().addAll(
           courseWrapper.getCourse().getMinorCourses().stream()
-              .map(course -> courseWrappersProperty().get(course.getKey()))
+              .map(course -> courseWrappersProperty().get(course.getId()))
               .collect(Collectors.toSet()));
     });
     levelWrappersProperty.values().forEach(levelWrapper -> {
@@ -413,14 +413,14 @@ public class DataService {
       }
       if (levelWrapper.getLevel().getCourse() != null) {
         levelWrapper.setCourseProperty(courseWrappersProperty().get(levelWrapper.getLevel()
-            .getCourse().getKey()));
+            .getCourse().getId()));
       }
     });
     groupWrappersProperty.values().forEach(groupWrapper -> {
-      groupWrapper.setUnit(unitWrappersProperty.get(groupWrapper.getGroup().getUnit().getKey()));
+      groupWrapper.setUnit(unitWrappersProperty.get(groupWrapper.getGroup().getUnit().getId()));
       groupWrapper.sessionsProperty().addAll(
           groupWrapper.getGroup().getSessions().stream()
-              .map(session -> sessionWrappersProperty.get(String.valueOf(session.getId())))
+              .map(session -> sessionWrappersProperty.get(session.getId()))
               .collect(Collectors.toSet()));
     });
   }
@@ -437,19 +437,19 @@ public class DataService {
     groupWrappersProperty.clear();
   }
 
-  public ObservableMap<String, CourseWrapper> getCourseWrappers() {
+  public ObservableMap<Integer, CourseWrapper> getCourseWrappers() {
     return courseWrappersProperty.get();
   }
 
-  public MapProperty<String, CourseWrapper> courseWrappersProperty() {
+  public MapProperty<Integer, CourseWrapper> courseWrappersProperty() {
     return courseWrappersProperty;
   }
 
-  public MapProperty<String, GroupWrapper> groupWrappersProperty() {
+  public MapProperty<Integer, GroupWrapper> groupWrappersProperty() {
     return groupWrappersProperty;
   }
 
-  public ObservableMap<String, GroupWrapper> getGroupWrappers() {
+  public ObservableMap<Integer, GroupWrapper> getGroupWrappers() {
     return groupWrappersProperty.get();
   }
 
@@ -469,35 +469,35 @@ public class DataService {
     return levelWrappersProperty;
   }
 
-  public ObservableMap<String, ModuleWrapper> getModuleWrappers() {
+  public ObservableMap<Integer, ModuleWrapper> getModuleWrappers() {
     return moduleWrappersProperty.get();
   }
 
-  public MapProperty<String, ModuleWrapper> moduleWrappersProperty() {
+  public MapProperty<Integer, ModuleWrapper> moduleWrappersProperty() {
     return moduleWrappersProperty;
   }
 
-  public ObservableMap<String, AbstractUnitWrapper> getAbstractUnitWrappers() {
+  public ObservableMap<Integer, AbstractUnitWrapper> getAbstractUnitWrappers() {
     return abstractUnitWrappersProperty.get();
   }
 
-  public MapProperty<String, AbstractUnitWrapper> abstractUnitWrappersProperty() {
+  public MapProperty<Integer, AbstractUnitWrapper> abstractUnitWrappersProperty() {
     return abstractUnitWrappersProperty;
   }
 
-  public ObservableMap<String, UnitWrapper> getUnitWrappers() {
+  public ObservableMap<Integer, UnitWrapper> getUnitWrappers() {
     return unitWrappersProperty.get();
   }
 
-  public MapProperty<String, UnitWrapper> unitWrappersProperty() {
+  public MapProperty<Integer, UnitWrapper> unitWrappersProperty() {
     return unitWrappersProperty;
   }
 
-  public ObservableMap<String, SessionWrapper> getSessionWrappers() {
+  public ObservableMap<Integer, SessionWrapper> getSessionWrappers() {
     return sessionWrappersProperty.get();
   }
 
-  public MapProperty<String, SessionWrapper> sessionWrappersProperty() {
+  public MapProperty<Integer, SessionWrapper> sessionWrappersProperty() {
     return sessionWrappersProperty;
   }
 

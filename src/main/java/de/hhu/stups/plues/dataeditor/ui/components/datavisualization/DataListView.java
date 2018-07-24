@@ -103,6 +103,8 @@ public class DataListView extends VBox implements Initializable {
       case DELETE_ENTITY:
         listView.getItems().remove(dataChangeEvent.getChangedEntity());
         break;
+      default:
+        break;
     }
   }
 
