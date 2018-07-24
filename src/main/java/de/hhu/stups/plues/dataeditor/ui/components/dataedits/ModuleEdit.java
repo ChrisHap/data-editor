@@ -100,6 +100,7 @@ public class ModuleEdit extends GridPane implements Initializable {
     listViewAbstractUnits.setOnDragDropped(event -> {
       event.setDropCompleted(true);
       final EntityWrapper draggedWrapper = dataService.draggedEntityProperty().get();
+      //noinspection SuspiciousMethodCalls
       if (EntityType.ABSTRACT_UNIT.equals(draggedWrapper.getEntityType())
             && (!listViewAbstractUnits.getItems().contains(draggedWrapper))) {
         listViewAbstractUnits.getItems().add(((AbstractUnitWrapper) draggedWrapper));
@@ -144,12 +145,10 @@ public class ModuleEdit extends GridPane implements Initializable {
     moduleLevels.add(moduleLevel);
     moduleWrapper.getModule().setModuleLevels(moduleLevels);
 
-    boolean isNew = moduleWrapper.getModule().getId() == 0;
+    boolean isNew = moduleWrapper.getId() == 0;
 
     dataService.dataChangeEventSource().push(
           new DataChangeEvent(DataChangeType.STORE_ENTITY, moduleWrapper));
-
-    moduleWrapper.setId(moduleWrapper.getModule().getId());
 
     if (isNew) {
       dataService.dataChangeEventSource().push(
