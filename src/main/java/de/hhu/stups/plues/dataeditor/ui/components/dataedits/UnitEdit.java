@@ -135,19 +135,17 @@ public class UnitEdit extends GridPane implements Initializable {
   @FXML
   @SuppressWarnings("unused")
   public void persistChanges() {
-    unitWrapper.getUnit().setTitle(txtUnit.textProperty().get());
+    unitWrapper.setTitle(txtUnit.textProperty().get());
     listViewAbstractUnits.getItems().forEach(parent -> {
-      unitWrapper.getUnit().getAbstractUnits().add(
-            parent.getAbstractUnit());
-      parent.getAbstractUnit().getUnits().add(unitWrapper.getUnit());
+      unitWrapper.getAbstractUnits().add(parent);
+      parent.getUnits().add(unitWrapper);
       dataService.dataChangeEventSource().push(
             new DataChangeEvent(DataChangeType.STORE_ENTITY, parent));
     });
 
-    boolean isNew = unitWrapper.getUnit().getId() == 0;
+    boolean isNew = unitWrapper.getId() == 0;
     dataService.dataChangeEventSource().push(
         new DataChangeEvent(DataChangeType.STORE_ENTITY, unitWrapper));
-    unitWrapper.setId(unitWrapper.getUnit().getId());
 
     if (isNew) {
       dataService.dataChangeEventSource().push(

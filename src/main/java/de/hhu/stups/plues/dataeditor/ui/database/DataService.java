@@ -160,7 +160,6 @@ public class DataService {
         break;
       case UNIT:
         maxId = unitRepository.getMaxId() + 1;
-        ((UnitWrapper) changedEntity).getUnit().setId(maxId);
         ((UnitWrapper) changedEntity).setId(maxId);
         unitWrappersProperty.put(changedEntity.getId(),
             ((UnitWrapper) changedEntity));
