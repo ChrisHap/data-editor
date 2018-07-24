@@ -197,13 +197,13 @@ public class AbstractUnitEdit extends GridPane implements Initializable {
 
   private void setUnits() {
     listViewUnits.getItems().addAll(abstractUnitWrapper.getAbstractUnit()
-          .getUnits().stream().map(unit -> dataService.getUnitWrappers().get(unit.getKey()))
+          .getUnits().stream().map(unit -> dataService.getUnitWrappers().get(unit.getId()))
           .collect(Collectors.toSet()));
   }
 
   private void setModules() {
     listViewModules.getItems().addAll(abstractUnitWrapper.getAbstractUnit()
-          .getModules().stream().map(module -> dataService.getModuleWrappers().get(module.getKey()))
+          .getModules().stream().map(module -> dataService.getModuleWrappers().get(module.getId()))
           .collect(Collectors.toSet()));
   }
 
