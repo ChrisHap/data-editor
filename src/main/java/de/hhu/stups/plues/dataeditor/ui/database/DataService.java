@@ -256,7 +256,7 @@ public class DataService {
     courseRepository.deleteMinor(courseWrapper.getId());
     Course co = courseWrapper.getCourse();
     courseRepository.updateSimpleCourse(co.getId(), co.getKey(), co.getDegree(),
-        co.getShortName(), co.getFullName(), co.getKzfa(), co.getPo(), co.getCreditPoints());
+        co.getShortName(), co.getLongName(), co.getKzfa(), co.getPo(), co.getCreditPoints());
     if (co.isMinor()) {
       co.getMajorCourses().forEach(course ->
           courseRepository.insertMinor(co.getId(), course.getId()));
