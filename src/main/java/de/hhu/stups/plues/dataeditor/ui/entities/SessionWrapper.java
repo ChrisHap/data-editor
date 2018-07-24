@@ -33,6 +33,31 @@ public class SessionWrapper implements EntityWrapper {
     groupProperty = new SimpleObjectProperty<>(session.getGroup());
     sessionProperty = new SimpleObjectProperty<>(session);
     idProperty = new SimpleIntegerProperty(session.getId());
+    setPropertyListener();
+  }
+
+  private void setPropertyListener() {
+    dayProperty.addListener((observable, oldValue, newValue) ->
+          sessionProperty.get().setDay(newValue));
+    timeProperty.addListener((observable, oldValue, newValue) ->
+          sessionProperty.get().setTime(newValue.intValue()));
+    rhythmProperty.addListener((observable, oldValue, newValue) ->
+          sessionProperty.get().setRhythm(newValue.intValue()));
+    durationProperty.addListener((observable, oldValue, newValue) ->
+          sessionProperty.get().setDuration(newValue.intValue()));
+    tentativeProperty.addListener((observable, oldValue, newValue) ->
+          sessionProperty.get().setTentative(newValue));
+    groupProperty.addListener((observable, oldValue, newValue) ->
+          sessionProperty.get().setGroup(newValue));
+
+    idProperty.addListener((observable, oldValue, newValue) -> {
+      final Session session = sessionProperty.get();
+      if (newValue != null) {
+        session.setId(newValue.intValue());
+        return;
+      }
+      session.setId(-1);
+    });
   }
 
   public int getId() {

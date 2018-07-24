@@ -137,7 +137,7 @@ public class SessionEdit extends GridPane implements Initializable {
     final Group group = sessionWrapper.getGroup();
     if (group != null) {
       cbGroup.getSelectionModel().select(dataService.getGroupWrappers()
-            .get(String.valueOf(group.getId())));
+            .get(group.getId()));
     }
   }
 
@@ -160,17 +160,17 @@ public class SessionEdit extends GridPane implements Initializable {
       return;
     }
 
-    sessionWrapper.getSession().setDay(txtDay.textProperty().get());
+    sessionWrapper.setDayProperty(txtDay.textProperty().get());
     try {
-      sessionWrapper.getSession().setDuration(Integer.parseInt(txtDuration.textProperty().get()));
-      sessionWrapper.getSession().setRhythm(Integer.parseInt(txtRhythm.textProperty().get()));
-      sessionWrapper.getSession().setTime(Integer.parseInt(txtTime.textProperty().get()));
+      sessionWrapper.setDurationProperty(Integer.parseInt(txtDuration.textProperty().get()));
+      sessionWrapper.setRhythmProperty(Integer.parseInt(txtRhythm.textProperty().get()));
+      sessionWrapper.setTimeProperty(Integer.parseInt(txtTime.textProperty().get()));
     } catch (NumberFormatException exception) {
       new Alert(Alert.AlertType.ERROR, resources.getString("numberFormatError"), ButtonType.OK);
     }
 
-    sessionWrapper.getSession().setGroup(cbGroup.getValue().getGroup());
-    cbGroup.getValue().getGroup().getSessions().add(sessionWrapper.getSession());
+    sessionWrapper.setGroup(cbGroup.getValue().getGroup());
+    cbGroup.getValue().getSessions().add(sessionWrapper);
     dataService.dataChangeEventSource().push(
           new DataChangeEvent(DataChangeType.STORE_ENTITY, cbGroup.getValue()));
 
@@ -178,7 +178,6 @@ public class SessionEdit extends GridPane implements Initializable {
 
     dataService.dataChangeEventSource().push(
           new DataChangeEvent(DataChangeType.STORE_ENTITY, sessionWrapper));
-    sessionWrapper.setId(sessionWrapper.getSession().getId());
 
     if (isNew) {
       dataService.dataChangeEventSource().push(

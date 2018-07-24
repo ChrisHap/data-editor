@@ -174,7 +174,6 @@ public class DataService {
         break;
       case SESSION:
         maxId = sessionRepository.getMaxId() + 1;
-        ((SessionWrapper) changedEntity).getSession().setId(maxId);
         ((SessionWrapper) changedEntity).setId(maxId);
         sessionWrappersProperty.put(changedEntity.getId(),
             ((SessionWrapper) changedEntity));

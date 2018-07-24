@@ -106,6 +106,10 @@ public class Session extends ModelEntity implements Serializable {
     return tentative;
   }
 
+  public void setTentative(boolean tentative) {
+    this.tentative = tentative;
+  }
+
   public Map<String, DayOfWeek> getDayOfWeekMap() {
     return dayOfWeekMap;
   }
