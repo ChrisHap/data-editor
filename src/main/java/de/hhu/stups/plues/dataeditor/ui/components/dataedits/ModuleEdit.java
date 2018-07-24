@@ -7,7 +7,6 @@ import de.hhu.stups.plues.dataeditor.ui.database.events.DataChangeType;
 import de.hhu.stups.plues.dataeditor.ui.entities.AbstractUnitWrapper;
 import de.hhu.stups.plues.dataeditor.ui.entities.EntityType;
 import de.hhu.stups.plues.dataeditor.ui.entities.EntityWrapper;
-import de.hhu.stups.plues.dataeditor.ui.entities.Level;
 import de.hhu.stups.plues.dataeditor.ui.entities.LevelWrapper;
 import de.hhu.stups.plues.dataeditor.ui.entities.ModuleLevel;
 import de.hhu.stups.plues.dataeditor.ui.entities.ModuleWrapper;
@@ -67,7 +66,7 @@ public class ModuleEdit extends GridPane implements Initializable {
 
   @FXML
   @SuppressWarnings("unused")
-  private ComboBox<EntityWrapper> cbParentLevel;
+  private ComboBox<LevelWrapper> cbParentLevel;
 
   /**
    * Initialize module edit.
@@ -117,9 +116,9 @@ public class ModuleEdit extends GridPane implements Initializable {
   @FXML
   @SuppressWarnings("unused")
   public void persistChanges() {
-    moduleWrapper.getModule().setTitle(txtModule.textProperty().get());
+    moduleWrapper.setTitleProperty(txtModule.textProperty().get());
     try {
-      moduleWrapper.getModule().setPordnr(Integer.parseInt(txtPordnr.textProperty().get()));
+      moduleWrapper.setPordnrProperty(Integer.parseInt(txtPordnr.textProperty().get()));
     } catch (NumberFormatException exception) {
       new Alert(Alert.AlertType.ERROR,
             resources.getString("pordnrError"), ButtonType.OK).showAndWait();
@@ -130,20 +129,17 @@ public class ModuleEdit extends GridPane implements Initializable {
             resources.getString("parentLevelError"), ButtonType.OK).showAndWait();
       return;
     }
-    Level parentLevel =
-          ((LevelWrapper) cbParentLevel.getSelectionModel().getSelectedItem()).getLevel();
-    moduleWrapper.getModule().setLevel(parentLevel);
+    LevelWrapper parentLevel = cbParentLevel.getSelectionModel().getSelectedItem();
     moduleWrapper.setLevel(parentLevel);
 
-    ((LevelWrapper) cbParentLevel.getValue()).getLevel().getModules().add(
-          moduleWrapper.getModule());
+    cbParentLevel.getValue().getLevel().getModules().add(moduleWrapper.getModule());
     moduleWrapper.setKeyProperty(txtKey.textProperty().get().toUpperCase());
     moduleWrapper.getModule().setKey(txtKey.textProperty().get().toUpperCase());
 
     ModuleLevel moduleLevel = new ModuleLevel();
-    moduleLevel.setLevel(parentLevel);
+    moduleLevel.setLevel(parentLevel.getLevel());
     moduleLevel.setModule(moduleWrapper.getModule());
-    moduleLevel.setCourse(parentLevel.getCourse());
+    moduleLevel.setCourse(parentLevel.getCourseWrapper().getCourse());
     Set<ModuleLevel> moduleLevels = new HashSet<>();
     moduleLevels.add(moduleLevel);
     moduleWrapper.getModule().setModuleLevels(moduleLevels);
@@ -204,7 +200,7 @@ public class ModuleEdit extends GridPane implements Initializable {
   private void setParentLevels() {
     cbParentLevel.getItems().clear();
     cbParentLevel.getItems().addAll(dataService.getLevelWrappers().values());
-    cbParentLevel.getSelectionModel().select(moduleWrapper);
+    cbParentLevel.getSelectionModel().select(moduleWrapper.getLevel());
   }
 
   private void setBundled() {

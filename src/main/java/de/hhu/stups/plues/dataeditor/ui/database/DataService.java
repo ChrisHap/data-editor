@@ -231,7 +231,6 @@ public class DataService {
 
   private void saveNewModule(final ModuleWrapper moduleWrapper) {
     final int maxId = levelRepository.getMaxId();
-    moduleWrapper.getModule().setId(maxId + 1);
     moduleWrapper.setId(maxId + 1);
     final Module mod = moduleWrapper.getModule();
     moduleRepository.insertSimpleModule(mod.getId(), mod.getKey(), mod.getTitle(), mod.getPordnr(),
@@ -383,6 +382,10 @@ public class DataService {
           moduleWrapper.getModule().getCourses().stream()
               .map(course -> courseWrappersProperty.get(course.getId()))
               .collect(Collectors.toSet()));
+      if (moduleWrapper.getModule().getLevel() != null) {
+        moduleWrapper.setLevel(levelWrappersProperty.get(
+              moduleWrapper.getModule().getLevel().getId()));
+      }
     });
     unitWrappersProperty.values().forEach(unitWrapper -> {
       unitWrapper.abstractUnitsProperty().addAll(

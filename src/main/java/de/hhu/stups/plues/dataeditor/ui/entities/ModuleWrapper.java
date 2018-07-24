@@ -13,6 +13,9 @@ import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableSet;
 
+import java.util.Set;
+import java.util.stream.Collectors;
+
 public class ModuleWrapper implements EntityWrapper {
 
   private final IntegerProperty idProperty;
@@ -24,7 +27,7 @@ public class ModuleWrapper implements EntityWrapper {
   private final SetProperty<AbstractUnitWrapper> abstractUnitsProperty;
   private final SetProperty<CourseWrapper> coursesProperty;
   private final ObjectProperty<Module> moduleProperty;
-  private final ObjectProperty<Level> levelProperty;
+  private final ObjectProperty<LevelWrapper> levelProperty;
 
   /**
    * Initialize the property bindings according to the given {@link Module}.
@@ -38,9 +41,71 @@ public class ModuleWrapper implements EntityWrapper {
     electiveUnitsProperty = new SimpleIntegerProperty(module.getElectiveUnits());
     abstractUnitsProperty = new SimpleSetProperty<>(FXCollections.observableSet());
     coursesProperty = new SimpleSetProperty<>(FXCollections.observableSet());
-    levelProperty = new SimpleObjectProperty<>(module.getLevel());
+    levelProperty = new SimpleObjectProperty<>();
     moduleProperty = new SimpleObjectProperty<>(module);
     idProperty = new SimpleIntegerProperty(module.getId());
+    setPropertyListener();
+  }
+
+  private void setPropertyListener() {
+    keyProperty.addListener((observable, oldValue, newValue) ->
+          moduleProperty.get().setKey(newValue));
+    titleProperty.addListener((observable, oldValue, newValue) ->
+          moduleProperty.get().setTitle(newValue));
+    pordnrProperty.addListener((observable, oldValue, newValue) ->
+          moduleProperty.get().setPordnr(newValue.intValue()));
+    bundledProperty.addListener((observable, oldValue, newValue) ->
+          moduleProperty.get().setBundled(newValue));
+    electiveUnitsProperty.addListener((observable, oldValue, newValue) ->
+          moduleProperty.get().setElectiveUnits(newValue.intValue()));
+    levelProperty.addListener((observable, oldValue, newValue) ->
+          moduleProperty.get().setLevel(newValue.getLevel()));
+    coursesProperty.addListener((observable, oldValue, newValue) ->
+          addOrRemoveCourse(coursesProperty.get().stream().map(
+                CourseWrapper::getCourse).collect(Collectors.toSet()), oldValue, newValue));
+    abstractUnitsProperty.addListener((observable, oldValue, newValue) ->
+          addOrRemoveAbstractUnit(abstractUnitsProperty.get().stream().map(
+          AbstractUnitWrapper::getAbstractUnit).collect(Collectors.toSet()),
+                oldValue, newValue));
+    idProperty.addListener((observable, oldValue, newValue) -> {
+      final Module module = moduleProperty.get();
+      if (newValue != null) {
+        module.setId(newValue.intValue());
+        return;
+      }
+      module.setId(-1);
+    });
+  }
+
+  private void addOrRemoveAbstractUnit(final Set<AbstractUnit> abstractUnits,
+                                       final ObservableSet<AbstractUnitWrapper> oldValue,
+                                       final ObservableSet<AbstractUnitWrapper> newValue) {
+    if (newValue.size() > oldValue.size()) {
+      newValue.removeAll(oldValue);
+      abstractUnits.addAll(newValue.stream().map(AbstractUnitWrapper::getAbstractUnit).collect(
+            Collectors.toSet()));
+      return;
+    }
+    if (newValue.size() < oldValue.size()) {
+      oldValue.removeAll(newValue);
+      abstractUnits.removeAll(
+          oldValue.stream().map(AbstractUnitWrapper::getAbstractUnit).collect(Collectors.toSet()));
+    }
+  }
+
+  private void addOrRemoveCourse(final Set<Course> courses,
+                                 final ObservableSet<CourseWrapper> oldValue,
+                                 final ObservableSet<CourseWrapper> newValue) {
+    if (newValue.size() > oldValue.size()) {
+      newValue.removeAll(oldValue);
+      courses.addAll(newValue.stream().map(CourseWrapper::getCourse).collect(Collectors.toSet()));
+      return;
+    }
+    if (newValue.size() < oldValue.size()) {
+      oldValue.removeAll(newValue);
+      courses.removeAll(
+            oldValue.stream().map(CourseWrapper::getCourse).collect(Collectors.toSet()));
+    }
   }
 
   public int getId() {
@@ -164,11 +229,11 @@ public class ModuleWrapper implements EntityWrapper {
     return new ModuleWrapper(module);
   }
 
-  public Level getLevel() {
+  public LevelWrapper getLevel() {
     return levelProperty.get();
   }
 
-  public void setLevel(Level level) {
+  public void setLevel(LevelWrapper level) {
     levelProperty.set(level);
   }
 }

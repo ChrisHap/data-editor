@@ -77,17 +77,17 @@ public class LevelWrapper implements EntityWrapper {
     });
   }
 
-  private void addOrRemoveLevel(final Set<Level> courses,
+  private void addOrRemoveLevel(final Set<Level> levels,
                                  final ObservableSet<LevelWrapper> oldValue,
                                  final ObservableSet<LevelWrapper> newValue) {
     if (newValue.size() > oldValue.size()) {
       newValue.removeAll(oldValue);
-      courses.addAll(newValue.stream().map(LevelWrapper::getLevel).collect(Collectors.toSet()));
+      levels.addAll(newValue.stream().map(LevelWrapper::getLevel).collect(Collectors.toSet()));
       return;
     }
     if (newValue.size() < oldValue.size()) {
       oldValue.removeAll(newValue);
-      courses.removeAll(
+      levels.removeAll(
             oldValue.stream().map(LevelWrapper::getLevel).collect(Collectors.toSet()));
     }
   }
