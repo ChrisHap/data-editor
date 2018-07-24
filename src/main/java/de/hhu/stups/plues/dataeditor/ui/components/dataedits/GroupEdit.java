@@ -163,8 +163,8 @@ public class GroupEdit extends GridPane implements Initializable {
       return;
 
     }
-    groupWrapper.getGroup().setUnit(cbParentUnit.getValue().getUnit());
-    cbParentUnit.getValue().getUnit().getGroups().add(groupWrapper.getGroup());
+    groupWrapper.setUnit(cbParentUnit.getValue());
+    cbParentUnit.getValue().getGroups().add(groupWrapper);
 
 
     boolean isNew = groupWrapper.getGroup().getId() == 0;

@@ -167,7 +167,6 @@ public class DataService {
         break;
       case GROUP:
         maxId = groupRepository.getMaxId() + 1;
-        ((GroupWrapper) changedEntity).getGroup().setId(maxId);
         ((GroupWrapper) changedEntity).setId(maxId);
         groupWrappersProperty.put(changedEntity.getId(),
             ((GroupWrapper) changedEntity));

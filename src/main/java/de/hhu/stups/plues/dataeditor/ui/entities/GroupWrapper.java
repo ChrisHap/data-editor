@@ -10,6 +10,8 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableSet;
 
 import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class GroupWrapper implements EntityWrapper {
 
@@ -29,6 +31,40 @@ public class GroupWrapper implements EntityWrapper {
     sessionsProperty = new SimpleSetProperty<>(FXCollections.observableSet());
     unitProperty = new SimpleObjectProperty<>();
     groupProperty = new SimpleObjectProperty<>(group);
+    setPropertyListener();
+  }
+
+  private void setPropertyListener() {
+    halfSemesterProperty.addListener((observable, oldValue, newValue) ->
+          groupProperty.get().setHalfSemester(newValue.intValue()));
+    sessionsProperty.addListener((observable, oldValue, newValue) ->
+          addOrRemoveSession(groupProperty.get().getSessions(), oldValue, newValue));
+    unitProperty.addListener((observable, oldValue, newValue) ->
+          groupProperty.get().setUnit(newValue.getUnit()));
+
+    idProperty.addListener((observable, oldValue, newValue) -> {
+      final Group group = groupProperty.get();
+      if (newValue != null) {
+        group.setId(newValue.intValue());
+        return;
+      }
+      group.setId(-1);
+    });
+  }
+
+  private void addOrRemoveSession(final Set<Session> groups,
+                                final ObservableSet<SessionWrapper> oldValue,
+                                final ObservableSet<SessionWrapper> newValue) {
+    if (newValue.size() > oldValue.size()) {
+      newValue.removeAll(oldValue);
+      groups.addAll(newValue.stream().map(SessionWrapper::getSession).collect(Collectors.toSet()));
+      return;
+    }
+    if (newValue.size() < oldValue.size()) {
+      oldValue.removeAll(newValue);
+      groups.removeAll(
+            oldValue.stream().map(SessionWrapper::getSession).collect(Collectors.toSet()));
+    }
   }
 
   public int getId() {
