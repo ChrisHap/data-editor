@@ -443,49 +443,82 @@ public class DataTreeView extends VBox implements Initializable {
       child = getTreeItemForEntityWrapperRecursive(changedEntity,
           treeTableRoot.getChildren());
     }
-    final TreeItem<EntityWrapper> bestChild = current;
-    TreeItem<EntityWrapper> parent;
     switch (changedEntity.getEntityType()) {
       case COURSE:
-        addSimpleCourse((CourseWrapper) changedEntity, bestChild);
+        addSimpleCourse((CourseWrapper) changedEntity, current);
         break;
       case LEVEL:
-        addSimpleLevel((LevelWrapper) changedEntity, bestChild);
+        addSimpleLevel((LevelWrapper) changedEntity, current);
         break;
       case MODULE:
-        getTreeItemForEntityWrapperRecursive(dataService.getLevelWrappers().get(
-            ((ModuleWrapper) changedEntity).getLevel().getId()),
-            treeTableRoot.getChildren()).getChildren().add(bestChild);
+        addSimpleModule((ModuleWrapper)changedEntity, current);
         break;
       case ABSTRACT_UNIT:
-        ((AbstractUnitWrapper) changedEntity).getModules().forEach(moduleWrapper ->
-            getTreeItemForEntityWrapperRecursive(moduleWrapper,
-                treeTableRoot.getChildren()).getChildren().add(bestChild));
+        addSimpleAbstractUnit((AbstractUnitWrapper) changedEntity, current);
         break;
       case UNIT:
-        ((UnitWrapper) changedEntity).getAbstractUnits().forEach(abstractUnitWrapper ->
-            getTreeItemForEntityWrapperRecursive(abstractUnitWrapper,
-                treeTableRoot.getChildren()).getChildren().add(bestChild));
+        addSimpleUnit((UnitWrapper) changedEntity, current);
         break;
       case SESSION:
-        parent = getTreeItemForEntityWrapperRecursive(
-              dataService.getGroupWrappers().get(
-            ((SessionWrapper) changedEntity).getGroup().getId()),
-            treeTableRoot.getChildren());
-        if (parent != null) {
-          parent.getChildren().add(bestChild);
-        }
+        addSimpleSession((SessionWrapper)changedEntity, current);
         break;
       case GROUP:
-        parent = getTreeItemForEntityWrapperRecursive(
-            dataService.getGroupWrappers().get(((GroupWrapper) changedEntity).getUnit().getId()),
-            treeTableRoot.getChildren());
-        if (parent != null) {
-          parent.getChildren().add(bestChild);
-        }
+        addSimpleGroup((GroupWrapper)changedEntity, current);
         break;
       default:
         break;
+    }
+  }
+
+  private void addSimpleModule(ModuleWrapper moduleWrapper, TreeItem<EntityWrapper> bestChild) {
+    TreeItem<EntityWrapper> parent =
+          getTreeItemForEntityWrapperRecursive(dataService.getLevelWrappers().get(
+          moduleWrapper.getLevel().getId()),
+          treeTableRoot.getChildren());
+    if (parent != null) {
+      parent.getChildren().add(bestChild);
+    }
+  }
+
+  private void addSimpleAbstractUnit(AbstractUnitWrapper abstractUnitWrapper,
+                                     TreeItem<EntityWrapper> bestChild) {
+    abstractUnitWrapper.getModules().forEach(moduleWrapper -> {
+      final TreeItem<EntityWrapper> auparent =
+            getTreeItemForEntityWrapperRecursive(moduleWrapper,
+                  treeTableRoot.getChildren());
+      if (auparent != null) {
+        auparent.getChildren().add(bestChild);
+      }
+    });
+  }
+
+  private void addSimpleUnit(UnitWrapper unitWrapper, TreeItem<EntityWrapper> bestChild) {
+    unitWrapper.getAbstractUnits().forEach(abstractUnitWrapper -> {
+      final TreeItem<EntityWrapper> uparent =
+            getTreeItemForEntityWrapperRecursive(abstractUnitWrapper,
+                  treeTableRoot.getChildren());
+      if (uparent != null) {
+        uparent.getChildren().add(bestChild);
+      }
+    });
+  }
+
+  private void addSimpleSession(SessionWrapper sessionWrapper, TreeItem<EntityWrapper> bestChild) {
+    TreeItem<EntityWrapper> parent = getTreeItemForEntityWrapperRecursive(
+          dataService.getGroupWrappers().get(
+                sessionWrapper.getGroup().getId()),
+          treeTableRoot.getChildren());
+    if (parent != null) {
+      parent.getChildren().add(bestChild);
+    }
+  }
+
+  private void addSimpleGroup(GroupWrapper groupWrapper, TreeItem<EntityWrapper> bestChild) {
+    TreeItem<EntityWrapper> parent = getTreeItemForEntityWrapperRecursive(
+          dataService.getGroupWrappers().get(groupWrapper.getUnit().getId()),
+          treeTableRoot.getChildren());
+    if (parent != null) {
+      parent.getChildren().add(bestChild);
     }
   }
 
