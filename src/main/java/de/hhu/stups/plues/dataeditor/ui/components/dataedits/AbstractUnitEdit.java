@@ -168,18 +168,16 @@ public class AbstractUnitEdit extends GridPane implements Initializable {
   @FXML
   @SuppressWarnings("unused")
   public void persistChanges() {
-    abstractUnitWrapper.getAbstractUnit().setTitle(txtAbstractUnit.textProperty().get());
+    abstractUnitWrapper.setTitle(txtAbstractUnit.textProperty().get());
     listViewModules.getItems().forEach(moduleWrapper -> {
-      abstractUnitWrapper.getAbstractUnit().getModules().add(moduleWrapper.getModule());
-      moduleWrapper.getModule().getAbstractUnits().add(abstractUnitWrapper.getAbstractUnit());
+      abstractUnitWrapper.getModules().add(moduleWrapper);
+      moduleWrapper.getAbstractUnits().add(abstractUnitWrapper);
     });
 
-    boolean isNew = abstractUnitWrapper.getAbstractUnit().getId() == 0;
+    boolean isNew = abstractUnitWrapper.getId() == 0;
 
     dataService.dataChangeEventSource().push(
           new DataChangeEvent(DataChangeType.STORE_ENTITY, abstractUnitWrapper));
-    abstractUnitWrapper.setId(abstractUnitWrapper.getAbstractUnit().getId());
-
 
     if (isNew) {
       dataService.dataChangeEventSource().push(

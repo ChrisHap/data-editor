@@ -153,7 +153,6 @@ public class DataService {
         break;
       case ABSTRACT_UNIT:
         maxId = abstractUnitRepository.getMaxId() + 1;
-        ((AbstractUnitWrapper) changedEntity).getAbstractUnit().setId(maxId);
         ((AbstractUnitWrapper) changedEntity).setId(maxId);
         abstractUnitWrappersProperty.put(changedEntity.getId(),
             ((AbstractUnitWrapper) changedEntity));
