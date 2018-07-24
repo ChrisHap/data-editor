@@ -22,10 +22,8 @@ class BasicDataContextMenu extends ContextMenu {
   final ObjectProperty<EntityWrapper> entityWrapperProperty;
   final DataService dataService;
 
-  // TODO: add this menu to the list views in data edits
-
   /**
-   * A basic context menu to delete or edit an entity.
+   * A basic context menu to delete or edit an entity with database connection.
    */
   BasicDataContextMenu(final DataService dataService) {
     this.dataService = dataService;
@@ -68,4 +66,5 @@ class BasicDataContextMenu extends ContextMenu {
   void setEntityWrapper(final EntityWrapper entityWrapper) {
     entityWrapperProperty.set(entityWrapper);
   }
+
 }

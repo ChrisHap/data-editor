@@ -260,4 +260,7 @@ public class Course extends ModelEntity implements Serializable {
     return this.getFullName();
   }
 
+  public void setMajorCourses(final Set<Course> majorCourses) {
+    this.majorCourses = majorCourses;
+  }
 }
