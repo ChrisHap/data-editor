@@ -6,7 +6,6 @@ import de.hhu.stups.plues.dataeditor.ui.entities.CourseWrapper;
 import de.hhu.stups.plues.dataeditor.ui.entities.GroupWrapper;
 import de.hhu.stups.plues.dataeditor.ui.entities.LevelWrapper;
 import de.hhu.stups.plues.dataeditor.ui.entities.ModuleWrapper;
-import de.hhu.stups.plues.dataeditor.ui.entities.Session;
 import de.hhu.stups.plues.dataeditor.ui.entities.SessionWrapper;
 import de.hhu.stups.plues.dataeditor.ui.entities.UnitWrapper;
 import de.hhu.stups.plues.dataeditor.ui.layout.Inflater;

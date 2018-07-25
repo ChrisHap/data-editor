@@ -434,6 +434,9 @@ public class DataTreeView extends VBox implements Initializable {
   private void updateSingleEntity(final EntityWrapper changedEntity) {
     TreeItem<EntityWrapper> current = getTreeItemForEntityWrapperRecursive(changedEntity,
         treeTableRoot.getChildren());
+    if (current == null) {
+      return;
+    }
     TreeItem<EntityWrapper> child = current;
     while (child != null) {
       if (child.getChildren().size() > current.getChildren().size()) {

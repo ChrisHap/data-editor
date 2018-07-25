@@ -74,7 +74,6 @@ public class DbService {
         new Thread(loadDbTask).start();
         break;
       case UPDATE_DB:
-        // TODO: update entity using ((UpdateDbEvent) dbEvent).getEntityWrapper()
         break;
       case CLOSE_DB:
         break;

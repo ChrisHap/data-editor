@@ -105,8 +105,6 @@ class ExtendedDataContextMenu extends BasicDataContextMenu {
             (event -> dataService.dataChangeEventSource().push(
                 new DataChangeEvent(DataChangeType.NEW_ENTITY,
                     SessionWrapper.createEmptySessionWrapper()))));
-        //MenuItem menuItemCopy = new MenuItem(resources.getString("copy"));
-        //getItems().add(menuItemCopy);
         break;
       default:
     }
