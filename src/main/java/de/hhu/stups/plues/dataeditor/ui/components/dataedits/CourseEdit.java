@@ -233,6 +233,11 @@ public class CourseEdit extends GridPane implements Initializable {
   @FXML
   @SuppressWarnings("unused")
   public void persistChanges() {
+    if (txtShortName.textProperty().getValue() == null || txtFullName.textProperty().get() == null) {
+      new Alert(Alert.AlertType.ERROR,
+            resources.getString("nameError"), ButtonType.OK).showAndWait();
+      return;
+    }
     if (cbCourseDegree.getValue() == null) {
       new Alert(Alert.AlertType.ERROR,
           resources.getString("degreeError"), ButtonType.OK).showAndWait();
@@ -290,7 +295,7 @@ public class CourseEdit extends GridPane implements Initializable {
   private String createCourseKey(final CourseWrapper courseWrapper,
                                  final LabeledTextField txtShortName) {
     return courseWrapper.getDegree().toString() + "-"
-        + txtShortName.textProperty().get().toUpperCase() + "-"
+        + txtShortName.textProperty().getValue().toUpperCase() + "-"
         + CourseKzfa.toString(courseWrapper.getKzfa()) + "-"
         + courseWrapper.getPo();
   }
