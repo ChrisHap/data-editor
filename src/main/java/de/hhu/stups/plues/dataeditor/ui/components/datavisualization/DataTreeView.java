@@ -303,7 +303,9 @@ public class DataTreeView extends VBox implements Initializable {
   private void deleteEntity(EntityWrapper wrapper) {
     List<TreeItem<EntityWrapper>> list = getTreeItemForEntityWrapperRecursive(wrapper);
     for (TreeItem<EntityWrapper> child : list) {
-      child.getParent().getChildren().remove(child);
+      if (child.getParent() != null && child.getParent().getChildren() != null) {
+        child.getParent().getChildren().remove(child);
+      }
     }
   }
 
