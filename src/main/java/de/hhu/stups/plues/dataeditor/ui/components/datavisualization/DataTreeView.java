@@ -62,6 +62,8 @@ public class DataTreeView extends VBox implements Initializable {
 
   private TreeItem<EntityWrapper> treeTableRoot;
 
+  private static final String MINORS = "minors";
+
   /**
    * Initialize the {@link DataService} and context menu provider.
    */
@@ -133,7 +135,7 @@ public class DataTreeView extends VBox implements Initializable {
     currentNode.getChildren().forEach(child -> {
       if (child.getValue().getEntityType() == null) {
         TreeItem<EntityWrapper> minorsSubRoot = new TreeItem<>(
-              new SubRootWrapper(resources.getString("minors")));
+              new SubRootWrapper(resources.getString(MINORS)));
         child.getChildren().forEach(minor ->
               childAdded.set(addFilteredCourse(filter,
                     ((CourseWrapper) minor.getValue()), minorsSubRoot, minor)
@@ -531,7 +533,7 @@ public class DataTreeView extends VBox implements Initializable {
     treeTableRoot.getChildren().add(treeItemCourse);
     if (course.isMajor()) {
       final TreeItem<EntityWrapper> minorsSubRoot =
-            new TreeItem<>(new SubRootWrapper(resources.getString("minors")));
+            new TreeItem<>(new SubRootWrapper(resources.getString(MINORS)));
       treeItemCourse.getChildren().add(minorsSubRoot);
       course.getMinorCourses().forEach(minorCourse ->
             minorsSubRoot.getChildren().add(new TreeItem<>(dataService.courseWrappersProperty()
@@ -583,7 +585,7 @@ public class DataTreeView extends VBox implements Initializable {
     treeTableRoot.getChildren().add(treeItemCourse);
     if (course.isMajor()) {
       final TreeItem<EntityWrapper> minorsSubRoot =
-            new TreeItem<>(new SubRootWrapper(resources.getString("minors")));
+            new TreeItem<>(new SubRootWrapper(resources.getString(MINORS)));
       treeItemCourse.getChildren().add(minorsSubRoot);
       course.getMinorCourses().forEach(minorCourse ->
             minorsSubRoot.getChildren().add(new TreeItem<>(dataService.courseWrappersProperty()
