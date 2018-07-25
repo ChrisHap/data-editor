@@ -12,7 +12,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableSet;
 
 import java.util.HashSet;
-import java.util.Set;
 import java.util.stream.Collectors;
 import javax.persistence.Transient;
 
@@ -41,7 +40,7 @@ public class CourseWrapper implements EntityWrapper {
     shortNameProperty = new SimpleStringProperty(course.getShortName());
     longNameProperty = new SimpleStringProperty(course.getLongName());
     degreeProperty = new SimpleObjectProperty<>(
-        CourseDegree.getDegreeFromString(course.getDegree()));
+          CourseDegree.getDegreeFromString(course.getDegree()));
     kzfaProperty = new SimpleObjectProperty<>(CourseKzfa.getKzfaFromString(course.getKzfa()));
     courseProperty = new SimpleObjectProperty<>(course);
     idProperty = new SimpleIntegerProperty(course.getId());
@@ -67,11 +66,11 @@ public class CourseWrapper implements EntityWrapper {
 
   private void setPropertyListener() {
     creditPointsProperty.addListener((observable, oldValue, newValue) ->
-        courseProperty.get().setCreditPoints(newValue.intValue()));
+          courseProperty.get().setCreditPoints(newValue.intValue()));
     shortNameProperty.addListener((observable, oldValue, newValue) ->
-        courseProperty.get().setShortName(newValue));
+          courseProperty.get().setShortName(newValue));
     keyProperty.addListener((observable, oldValue, newValue) ->
-        courseProperty.get().setKey(newValue));
+          courseProperty.get().setKey(newValue));
     kzfaProperty.addListener((observable, oldValue, newValue) -> {
       final Course course = courseProperty.get();
       if (newValue != null) {
@@ -96,7 +95,7 @@ public class CourseWrapper implements EntityWrapper {
       course.setDegree("");
     });
     longNameProperty.addListener((observable, oldValue, newValue) ->
-        courseProperty.get().setLongName(newValue));
+          courseProperty.get().setLongName(newValue));
     idProperty.addListener((observable, oldValue, newValue) -> {
       final Course course = courseProperty.get();
       if (newValue != null) {
@@ -106,32 +105,19 @@ public class CourseWrapper implements EntityWrapper {
       course.setId(-1);
     });
     majorCourseWrapperProperty.addListener((observable, oldValue, newValue) ->
-        addOrRemoveCourse(courseProperty.get().getMajorCourses(), oldValue, newValue));
+          addOrRemoveMajorCourse(newValue));
     minorCourseWrapperProperty.addListener((observable, oldValue, newValue) ->
-        addOrRemoveCourse(courseProperty.get().getMinorCourses(), oldValue, newValue));
+          addOrRemoveMinorCourse(newValue));
   }
 
-  /**
-   * Add or remove a major or minor course from the underlying course entity.
-   *
-   * @param courses  The set of major or minor courses from the underlying
-   * {@link this#courseProperty course entity}.
-   * @param oldValue The old value of the major or minor course property.
-   * @param newValue The new value of the major or minor course property.
-   */
-  private void addOrRemoveCourse(final Set<Course> courses,
-                                 final ObservableSet<CourseWrapper> oldValue,
-                                 final ObservableSet<CourseWrapper> newValue) {
-    if (newValue.size() > oldValue.size()) {
-      newValue.removeAll(oldValue);
-      courses.addAll(newValue.stream().map(CourseWrapper::getCourse).collect(Collectors.toSet()));
-      return;
-    }
-    if (newValue.size() < oldValue.size()) {
-      oldValue.removeAll(newValue);
-      courses.removeAll(
-          oldValue.stream().map(CourseWrapper::getCourse).collect(Collectors.toSet()));
-    }
+  private void addOrRemoveMajorCourse(ObservableSet<CourseWrapper> newValue) {
+    courseProperty.get().setMajorCourses(newValue.stream().map(
+          CourseWrapper::getCourse).collect(Collectors.toSet()));
+  }
+
+  private void addOrRemoveMinorCourse(ObservableSet<CourseWrapper> newValue) {
+    courseProperty.get().setMinorCourses(newValue.stream().map(
+          CourseWrapper::getCourse).collect(Collectors.toSet()));
   }
 
   public int getId() {
