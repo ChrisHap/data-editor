@@ -233,7 +233,8 @@ public class CourseEdit extends GridPane implements Initializable {
   @FXML
   @SuppressWarnings("unused")
   public void persistChanges() {
-    if (txtShortName.textProperty().getValue() == null || txtFullName.textProperty().get() == null) {
+    if (txtShortName.textProperty().getValue() == null
+          || txtFullName.textProperty().get() == null) {
       new Alert(Alert.AlertType.ERROR,
             resources.getString("nameError"), ButtonType.OK).showAndWait();
       return;
