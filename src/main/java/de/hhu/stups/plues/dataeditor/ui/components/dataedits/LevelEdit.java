@@ -137,18 +137,16 @@ public class LevelEdit extends GridPane implements Initializable {
       levelWrapper.setMaxCredits(Integer.parseInt(txtMaxCp.textProperty().get()));
       levelWrapper.setMinCredits(Integer.parseInt(txtMinCp.textProperty().get()));
     } catch (NumberFormatException exception) {
-      new Alert(Alert.AlertType.ERROR, resources.getString("creditsError"), ButtonType.OK);
+      new Alert(Alert.AlertType.ERROR, resources.getString("creditsError"),
+            ButtonType.OK).showAndWait();
+      return;
     }
     if (rbParentLevel.isSelected()) {
       levelWrapper.setParent((LevelWrapper)cbParentLevel.getValue());
       levelWrapper.setCourseProperty(null);
-      dataService.dataChangeEventSource().push(
-            new DataChangeEvent(DataChangeType.STORE_ENTITY, cbParentLevel.getValue()));
     } else {
       levelWrapper.setCourseProperty((CourseWrapper)cbParentCourse.getValue());
       levelWrapper.setParent(null);
-      dataService.dataChangeEventSource().push(
-            new DataChangeEvent(DataChangeType.STORE_ENTITY, cbParentCourse.getValue()));
     }
 
     boolean isNew = levelWrapper.getLevel().getId() == 0;
