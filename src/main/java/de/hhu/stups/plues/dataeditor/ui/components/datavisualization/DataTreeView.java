@@ -550,18 +550,62 @@ public class DataTreeView extends VBox implements Initializable {
     addCourseNested(wrapper);
   }
 
-  private void addCourseNested(final CourseWrapper wrapper) {
-    wrapper.getMajorCourseWrappers().forEach(courseWrapper -> {
-      List<TreeItem<EntityWrapper>> parentCourseList = getTreeItemForEntityWrapperRecursive(
-            courseWrapper);
-      for (TreeItem<EntityWrapper> parentCourse : parentCourseList) {
-        parentCourse.getChildren().forEach(courseChild -> {
-          if (courseChild.getValue().getEntityType() == null) {
-            courseChild.getChildren().add(new TreeItem<>(wrapper));
-          }
-        });
+  private TreeItem<EntityWrapper> getTreeItemWithMostChildren(EntityWrapper wrapper) {
+    List<TreeItem<EntityWrapper>> allTreeItems = getTreeItemForEntityWrapperRecursive(wrapper);
+    if (allTreeItems.isEmpty()) {
+      return null;
+    }
+    TreeItem<EntityWrapper> bestTreeItem = allTreeItems.get(0);
+    for (TreeItem<EntityWrapper> treeItem : allTreeItems) {
+      if (treeItem.getChildren().size() > bestTreeItem.getChildren().size()) {
+        bestTreeItem = treeItem;
       }
-    });
+    }
+    return bestTreeItem;
+  }
+
+  private TreeItem<EntityWrapper> getMinorSubRoot(TreeItem<EntityWrapper> treeItem) {
+    for (TreeItem<EntityWrapper> item : treeItem.getChildren()) {
+      if (item.getValue().getEntityType() == null) {
+        return item;
+      }
+    }
+    return null;
+  }
+
+
+  /**
+   * Adds or updates all Major / Minor courses for given CourseWrapper.
+   */
+  private void addCourseNested(final CourseWrapper wrapper) {
+
+    final TreeItem<EntityWrapper> courseWrapperTree = getTreeItemWithMostChildren(wrapper);
+    if (courseWrapperTree == null) {
+      return;
+    }
+    TreeItem<EntityWrapper> minorSubRoot = getMinorSubRoot(courseWrapperTree);
+    if (wrapper.getCourse().isMinor()) {
+      courseWrapperTree.getChildren().remove(minorSubRoot);
+
+      wrapper.getMajorCourseWrappers().forEach(courseWrapper -> {
+        TreeItem<EntityWrapper> parentTreeItem = getTreeItemWithMostChildren(courseWrapper);
+        if (parentTreeItem != null) {
+          TreeItem<EntityWrapper> parentMinorSubRoot = getMinorSubRoot(parentTreeItem);
+          if (parentMinorSubRoot != null) {
+            parentMinorSubRoot.getChildren().add(new TreeItem<>(wrapper));
+          }
+        }
+      });
+    } else {
+      if (minorSubRoot == null) {
+        minorSubRoot = new TreeItem<>(new SubRootWrapper(resources.getString(MINORS)));
+        courseWrapperTree.getChildren().add(minorSubRoot);
+      }
+      minorSubRoot.getChildren().clear();
+      for (CourseWrapper courseWrapper : wrapper.getMinorCourseWrappers()) {
+        minorSubRoot.getChildren().add(new TreeItem<>(courseWrapper));
+      }
+    }
   }
 
   private void addSimpleLevel(LevelWrapper wrapper, TreeItem<EntityWrapper> bestChild) {

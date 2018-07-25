@@ -255,6 +255,9 @@ public class DataService {
     if (co.isMinor()) {
       co.getMajorCourses().forEach(course ->
           courseRepository.insertMinor(co.getId(), course.getId()));
+    } else {
+      co.getMinorCourses().forEach(course ->
+          courseRepository.insertMinor(course.getId(), co.getId()));
     }
   }
 
