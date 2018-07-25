@@ -75,7 +75,7 @@ public class CourseWrapper implements EntityWrapper {
     kzfaProperty.addListener((observable, oldValue, newValue) -> {
       final Course course = courseProperty.get();
       if (newValue != null) {
-        course.setKzfa(newValue.toString());
+        course.setKzfa(CourseKzfa.toString(newValue));
         return;
       }
       course.setKzfa("");
