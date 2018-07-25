@@ -260,16 +260,16 @@ public class DataService {
 
   private void saveNewCourse(final CourseWrapper courseWrapper) {
     final int maxId = courseRepository.getMaxId();
-    courseWrapper.getCourse().setId(maxId + 1);
     courseWrapper.setId(maxId + 1);
     courseWrappersProperty.put(courseWrapper.getId(), courseWrapper);
     final Course co = courseWrapper.getCourse();
-    courseRepository.deleteMinor(co.getId());
     courseRepository.insertSimpleCourse(co.getId(), co.getKey(), co.getDegree(), co.getShortName(),
         co.getLongName(), CourseKzfa.toString(courseWrapper.getKzfa()), co.getPo(),
           co.getCreditPoints());
     if (courseWrapper.getCourse().isMajor()) {
       majorCourseWrappersProperty.add(courseWrapper);
+      co.getMinorCourses().forEach(course ->
+          courseRepository.insertMinor(course.getId(), co.getId()));
     } else {
       minorCourseWrappersProperty.add(courseWrapper);
       co.getMajorCourses().forEach(course ->
