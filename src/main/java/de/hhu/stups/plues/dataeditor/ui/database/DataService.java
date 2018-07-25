@@ -2,7 +2,19 @@ package de.hhu.stups.plues.dataeditor.ui.database;
 
 import de.hhu.stups.plues.dataeditor.ui.database.events.DataChangeEvent;
 import de.hhu.stups.plues.dataeditor.ui.database.events.DataChangeType;
-import de.hhu.stups.plues.dataeditor.ui.entities.*;
+import de.hhu.stups.plues.dataeditor.ui.entities.AbstractUnitWrapper;
+import de.hhu.stups.plues.dataeditor.ui.entities.Course;
+import de.hhu.stups.plues.dataeditor.ui.entities.CourseKzfa;
+import de.hhu.stups.plues.dataeditor.ui.entities.CourseWrapper;
+import de.hhu.stups.plues.dataeditor.ui.entities.EntityType;
+import de.hhu.stups.plues.dataeditor.ui.entities.EntityWrapper;
+import de.hhu.stups.plues.dataeditor.ui.entities.GroupWrapper;
+import de.hhu.stups.plues.dataeditor.ui.entities.Level;
+import de.hhu.stups.plues.dataeditor.ui.entities.LevelWrapper;
+import de.hhu.stups.plues.dataeditor.ui.entities.Module;
+import de.hhu.stups.plues.dataeditor.ui.entities.ModuleWrapper;
+import de.hhu.stups.plues.dataeditor.ui.entities.SessionWrapper;
+import de.hhu.stups.plues.dataeditor.ui.entities.UnitWrapper;
 import de.hhu.stups.plues.dataeditor.ui.entities.repositories.AbstractUnitRepository;
 import de.hhu.stups.plues.dataeditor.ui.entities.repositories.CourseRepository;
 import de.hhu.stups.plues.dataeditor.ui.entities.repositories.GroupRepository;
@@ -254,7 +266,7 @@ public class DataService {
     final Course co = courseWrapper.getCourse();
     courseRepository.deleteMinor(co.getId());
     courseRepository.insertSimpleCourse(co.getId(), co.getKey(), co.getDegree(), co.getShortName(),
-        co.getFullName(), CourseKzfa.toString(courseWrapper.getKzfa()), co.getPo(),
+        co.getLongName(), CourseKzfa.toString(courseWrapper.getKzfa()), co.getPo(),
           co.getCreditPoints());
     if (courseWrapper.getCourse().isMajor()) {
       majorCourseWrappersProperty.add(courseWrapper);
