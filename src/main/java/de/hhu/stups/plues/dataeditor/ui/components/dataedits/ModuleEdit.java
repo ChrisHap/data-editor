@@ -140,7 +140,16 @@ public class ModuleEdit extends GridPane implements Initializable {
     ModuleLevel moduleLevel = new ModuleLevel();
     moduleLevel.setLevel(parentLevel.getLevel());
     moduleLevel.setModule(moduleWrapper.getModule());
-    moduleLevel.setCourse(parentLevel.getCourseWrapper().getCourse());
+    LevelWrapper topParent = parentLevel;
+    while (topParent.getParent() != null) {
+      topParent = parentLevel.getParent();
+    }
+    if (topParent.getCourseWrapper() == null) {
+      new Alert(Alert.AlertType.ERROR,
+            resources.getString("parentLevelCourseError"), ButtonType.OK).showAndWait();
+      return;
+    }
+    moduleLevel.setCourse(topParent.getCourseWrapper().getCourse());
     Set<ModuleLevel> moduleLevels = new HashSet<>();
     moduleLevels.add(moduleLevel);
     moduleWrapper.getModule().setModuleLevels(moduleLevels);

@@ -12,7 +12,7 @@ public interface ModuleRepository extends CrudRepository<Module,Integer> {
   int getMaxId();
 
   @Transactional
-  @Query(value = "insert into modules (id, key, title, pornr, elective_units, bundled) "
+  @Query(value = "insert into modules (id, key, title, pordnr, elective_units, bundled) "
         + "VALUES (?1, ?2, ?3, ?4, ?5, ?6)",
         nativeQuery = true)
   @Modifying

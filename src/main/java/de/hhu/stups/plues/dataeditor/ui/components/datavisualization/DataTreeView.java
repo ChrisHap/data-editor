@@ -356,14 +356,12 @@ public class DataTreeView extends VBox implements Initializable {
   }
 
   private void insertNewModule(ModuleWrapper newEntity) {
-    newEntity.getModule().getModuleLevels().forEach(ml -> {
-      LevelWrapper lv = new LevelWrapper(ml.getLevel());
-      List<TreeItem<EntityWrapper>> levelTreeItemList =
+    LevelWrapper lv = newEntity.getLevel();
+    List<TreeItem<EntityWrapper>> levelTreeItemList =
             getTreeItemForEntityWrapperRecursive(lv);
-      for (TreeItem<EntityWrapper> levelTreeItem : levelTreeItemList) {
-        levelTreeItem.getChildren().add(new TreeItem<>(newEntity));
-      }
-    });
+    for (TreeItem<EntityWrapper> levelTreeItem : levelTreeItemList) {
+      levelTreeItem.getChildren().add(new TreeItem<>(newEntity));
+    }
   }
 
   private void insertNewAbstractUnit(AbstractUnitWrapper newEntity) {
