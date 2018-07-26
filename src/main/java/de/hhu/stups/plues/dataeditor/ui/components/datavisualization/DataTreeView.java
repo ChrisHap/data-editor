@@ -449,34 +449,34 @@ public class DataTreeView extends VBox implements Initializable {
     if (current == null || current.isEmpty()) {
       return;
     }
-    TreeItem<EntityWrapper> bestchild = current.get(0);
+    TreeItem<EntityWrapper> bestChild = current.get(0);
     for (TreeItem<EntityWrapper> child : current) {
-      if (child.getChildren().size() > bestchild.getChildren().size()) {
-        bestchild = child;
+      if (child.getChildren().size() > bestChild.getChildren().size()) {
+        bestChild = child;
       }
       child.getParent().getChildren().remove(child);
     }
     switch (changedEntity.getEntityType()) {
       case COURSE:
-        addSimpleCourse((CourseWrapper) changedEntity, bestchild);
+        addSimpleCourse((CourseWrapper) changedEntity, bestChild);
         break;
       case LEVEL:
-        addSimpleLevel((LevelWrapper) changedEntity, bestchild);
+        addSimpleLevel((LevelWrapper) changedEntity, bestChild);
         break;
       case MODULE:
-        addSimpleModule((ModuleWrapper) changedEntity, bestchild);
+        addSimpleModule((ModuleWrapper) changedEntity, bestChild);
         break;
       case ABSTRACT_UNIT:
-        addSimpleAbstractUnit((AbstractUnitWrapper) changedEntity, bestchild);
+        addSimpleAbstractUnit((AbstractUnitWrapper) changedEntity, bestChild);
         break;
       case UNIT:
-        addSimpleUnit((UnitWrapper) changedEntity, bestchild);
+        addSimpleUnit((UnitWrapper) changedEntity, bestChild);
         break;
       case SESSION:
-        addSimpleSession((SessionWrapper) changedEntity, bestchild);
+        addSimpleSession((SessionWrapper) changedEntity, bestChild);
         break;
       case GROUP:
-        addSimpleGroup((GroupWrapper) changedEntity, bestchild);
+        addSimpleGroup((GroupWrapper) changedEntity, bestChild);
         break;
       default:
         break;

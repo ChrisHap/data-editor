@@ -44,9 +44,9 @@ public class AbstractUnitWrapper implements EntityWrapper {
     titleProperty.addListener((observable, oldValue, newValue) ->
           abstractUnitProperty.get().setTitle(newValue));
     unitsProperty.addListener((observable, oldValue, newValue) ->
-          addOrRemoveUnit(abstractUnitProperty.get().getUnits(), oldValue, newValue));
+          addOrRemoveUnit(newValue));
     modulesProperty.addListener((observable, oldValue, newValue) ->
-          addOrRemoveModule(abstractUnitProperty.get().getModules(), oldValue, newValue));
+          addOrRemoveModule(newValue));
 
     idProperty.addListener((observable, oldValue, newValue) -> {
       final AbstractUnit abstractUnit = abstractUnitProperty.get();
@@ -58,34 +58,14 @@ public class AbstractUnitWrapper implements EntityWrapper {
     });
   }
 
-  private void addOrRemoveUnit(final Set<Unit> units,
-                               final ObservableSet<UnitWrapper> oldValue,
-                               final ObservableSet<UnitWrapper> newValue) {
-    if (newValue.size() > oldValue.size()) {
-      newValue.removeAll(oldValue);
-      units.addAll(newValue.stream().map(UnitWrapper::getUnit).collect(Collectors.toSet()));
-      return;
-    }
-    if (newValue.size() < oldValue.size()) {
-      oldValue.removeAll(newValue);
-      units.removeAll(
-            oldValue.stream().map(UnitWrapper::getUnit).collect(Collectors.toSet()));
-    }
+  private void addOrRemoveUnit(final ObservableSet<UnitWrapper> newValue) {
+    abstractUnitProperty.get().setUnits(newValue.stream().map(
+          UnitWrapper::getUnit).collect(Collectors.toSet()));
   }
 
-  private void addOrRemoveModule(final Set<Module> modules,
-                               final ObservableSet<ModuleWrapper> oldValue,
-                               final ObservableSet<ModuleWrapper> newValue) {
-    if (newValue.size() > oldValue.size()) {
-      newValue.removeAll(oldValue);
-      modules.addAll(newValue.stream().map(ModuleWrapper::getModule).collect(Collectors.toSet()));
-      return;
-    }
-    if (newValue.size() < oldValue.size()) {
-      oldValue.removeAll(newValue);
-      modules.removeAll(
-            oldValue.stream().map(ModuleWrapper::getModule).collect(Collectors.toSet()));
-    }
+  private void addOrRemoveModule(final ObservableSet<ModuleWrapper> newValue) {
+    abstractUnitProperty.get().setModules(newValue.stream().map(
+          ModuleWrapper::getModule).collect(Collectors.toSet()));
   }
 
   public int getId() {

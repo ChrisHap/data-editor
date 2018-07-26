@@ -61,12 +61,9 @@ public class ModuleWrapper implements EntityWrapper {
     levelProperty.addListener((observable, oldValue, newValue) ->
           moduleProperty.get().setLevel(newValue.getLevel()));
     coursesProperty.addListener((observable, oldValue, newValue) ->
-          addOrRemoveCourse(coursesProperty.get().stream().map(
-                CourseWrapper::getCourse).collect(Collectors.toSet()), oldValue, newValue));
+          addOrRemoveCourse(newValue));
     abstractUnitsProperty.addListener((observable, oldValue, newValue) ->
-          addOrRemoveAbstractUnit(abstractUnitsProperty.get().stream().map(
-          AbstractUnitWrapper::getAbstractUnit).collect(Collectors.toSet()),
-                oldValue, newValue));
+          addOrRemoveAbstractUnit(newValue));
     idProperty.addListener((observable, oldValue, newValue) -> {
       final Module module = moduleProperty.get();
       if (newValue != null) {
@@ -77,35 +74,14 @@ public class ModuleWrapper implements EntityWrapper {
     });
   }
 
-  private void addOrRemoveAbstractUnit(final Set<AbstractUnit> abstractUnits,
-                                       final ObservableSet<AbstractUnitWrapper> oldValue,
-                                       final ObservableSet<AbstractUnitWrapper> newValue) {
-    if (newValue.size() > oldValue.size()) {
-      newValue.removeAll(oldValue);
-      abstractUnits.addAll(newValue.stream().map(AbstractUnitWrapper::getAbstractUnit).collect(
-            Collectors.toSet()));
-      return;
-    }
-    if (newValue.size() < oldValue.size()) {
-      oldValue.removeAll(newValue);
-      abstractUnits.removeAll(
-          oldValue.stream().map(AbstractUnitWrapper::getAbstractUnit).collect(Collectors.toSet()));
-    }
+  private void addOrRemoveAbstractUnit(final ObservableSet<AbstractUnitWrapper> newValue) {
+    moduleProperty.get().setAbstractUnits(newValue.stream().map(
+          AbstractUnitWrapper::getAbstractUnit).collect(Collectors.toSet()));
   }
 
-  private void addOrRemoveCourse(final Set<Course> courses,
-                                 final ObservableSet<CourseWrapper> oldValue,
-                                 final ObservableSet<CourseWrapper> newValue) {
-    if (newValue.size() > oldValue.size()) {
-      newValue.removeAll(oldValue);
-      courses.addAll(newValue.stream().map(CourseWrapper::getCourse).collect(Collectors.toSet()));
-      return;
-    }
-    if (newValue.size() < oldValue.size()) {
-      oldValue.removeAll(newValue);
-      courses.removeAll(
-            oldValue.stream().map(CourseWrapper::getCourse).collect(Collectors.toSet()));
-    }
+  private void addOrRemoveCourse(final ObservableSet<CourseWrapper> newValue) {
+    moduleProperty.get().setCourses(newValue.stream().map(
+          CourseWrapper::getCourse).collect(Collectors.toSet()));
   }
 
   public int getId() {

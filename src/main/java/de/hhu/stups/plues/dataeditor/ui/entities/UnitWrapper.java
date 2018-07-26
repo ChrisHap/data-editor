@@ -46,11 +46,11 @@ public class UnitWrapper implements EntityWrapper {
     titleProperty.addListener((observable, oldValue, newValue) ->
           unitProperty.get().setTitle(newValue));
     semestersProperty.addListener((observable, oldValue, newValue) ->
-          addOrRemoveSemester(unitProperty.get().getSemesters(), oldValue, newValue));
+          addOrRemoveSemester(newValue));
     abstractUnitsProperty.addListener((observable, oldValue, newValue) ->
-          addOrRemoveAbstractUnit(unitProperty.get().getAbstractUnits(), oldValue, newValue));
+          addOrRemoveAbstractUnit(newValue));
     groupsProperty.addListener((observable, oldValue, newValue) ->
-          addOrRemoveGroup(unitProperty.get().getGroups(), oldValue, newValue));
+          addOrRemoveGroup(newValue));
 
     idProperty.addListener((observable, oldValue, newValue) -> {
       final Unit unit = unitProperty.get();
@@ -62,50 +62,18 @@ public class UnitWrapper implements EntityWrapper {
     });
   }
 
-  private void addOrRemoveSemester(final Set<Integer> semesters,
-                               final ObservableSet<Integer> oldValue,
-                               final ObservableSet<Integer> newValue) {
-    if (newValue.size() > oldValue.size()) {
-      newValue.removeAll(oldValue);
-      semesters.addAll(newValue);
-      return;
-    }
-    if (newValue.size() < oldValue.size()) {
-      oldValue.removeAll(newValue);
-      semesters.removeAll(oldValue);
-    }
+  private void addOrRemoveSemester(final ObservableSet<Integer> newValue) {
+    unitProperty.get().setSemesters(newValue);
   }
 
-  private void addOrRemoveAbstractUnit(final Set<AbstractUnit> abstractUnits,
-                               final ObservableSet<AbstractUnitWrapper> oldValue,
-                               final ObservableSet<AbstractUnitWrapper> newValue) {
-    if (newValue.size() > oldValue.size()) {
-      newValue.removeAll(oldValue);
-      abstractUnits.addAll(newValue.stream().map(
-            AbstractUnitWrapper::getAbstractUnit).collect(Collectors.toSet()));
-      return;
-    }
-    if (newValue.size() < oldValue.size()) {
-      oldValue.removeAll(newValue);
-      abstractUnits.removeAll(
-            oldValue.stream().map(
-                  AbstractUnitWrapper::getAbstractUnit).collect(Collectors.toSet()));
-    }
+  private void addOrRemoveAbstractUnit(final ObservableSet<AbstractUnitWrapper> newValue) {
+    unitProperty.get().setAbstractUnits(newValue.stream().map(
+          AbstractUnitWrapper::getAbstractUnit).collect(Collectors.toSet()));
   }
 
-  private void addOrRemoveGroup(final Set<Group> groups,
-                               final ObservableSet<GroupWrapper> oldValue,
-                               final ObservableSet<GroupWrapper> newValue) {
-    if (newValue.size() > oldValue.size()) {
-      newValue.removeAll(oldValue);
-      groups.addAll(newValue.stream().map(GroupWrapper::getGroup).collect(Collectors.toSet()));
-      return;
-    }
-    if (newValue.size() < oldValue.size()) {
-      oldValue.removeAll(newValue);
-      groups.removeAll(
-            oldValue.stream().map(GroupWrapper::getGroup).collect(Collectors.toSet()));
-    }
+  private void addOrRemoveGroup(final ObservableSet<GroupWrapper> newValue) {
+    unitProperty.get().setGroups(newValue.stream().map(
+          GroupWrapper::getGroup).collect(Collectors.toSet()));
   }
 
   public ObservableSet<GroupWrapper> getGroups() {
