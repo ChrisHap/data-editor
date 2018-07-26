@@ -224,6 +224,19 @@ public class DataService {
       moduleRepository.insertModuleLevel(mod.getId(), lvl.getId(), course.getId(),
           mod.getTitle(), false);
     }
+
+    abstractUnitRepository.deleteModuleAbstractUnitSemesterByModule(mod.getId());
+    abstractUnitRepository.deleteModuleAbstractUnitTypeByModule(mod.getId());
+    moduleWrapper.getAbstractUnits().forEach(abstractUnitWrapper -> {
+      abstractUnitRepository.deleteModuleAbstractUnitSemesterByAbstractUnit(
+            abstractUnitWrapper.getId());
+      abstractUnitRepository.insertSimpleModuleAbstractUnitSemester(
+            mod.getId(), abstractUnitWrapper.getId());
+      abstractUnitRepository.deleteModuleAbstractUnitTypeByAbstractUnit(
+            abstractUnitWrapper.getId());
+      abstractUnitRepository.insertSimpleModuleAbstractUnitType(
+            mod.getId(), abstractUnitWrapper.getId());
+    });
   }
 
   private void saveNewModule(final ModuleWrapper moduleWrapper) {
@@ -243,6 +256,17 @@ public class DataService {
       moduleRepository.insertModuleLevel(mod.getId(), lvl.getId(), course.getId(),
           mod.getTitle(), false);
     }
+    moduleWrapper.getAbstractUnits().forEach(abstractUnitWrapper -> {
+      abstractUnitRepository.deleteModuleAbstractUnitSemesterByAbstractUnit(
+            abstractUnitWrapper.getId());
+      abstractUnitRepository.insertSimpleModuleAbstractUnitSemester(
+            mod.getId(), abstractUnitWrapper.getId());
+      abstractUnitRepository.deleteModuleAbstractUnitTypeByAbstractUnit(
+            abstractUnitWrapper.getId());
+      abstractUnitRepository.insertSimpleModuleAbstractUnitType(
+            mod.getId(), abstractUnitWrapper.getId());
+    });
+
     moduleWrappersProperty.put(mod.getId(), moduleWrapper);
   }
 

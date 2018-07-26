@@ -40,6 +40,6 @@ public interface ModuleRepository extends CrudRepository<Module,Integer> {
   @Transactional
   @Modifying
   @Query(value = "delete from module_levels where module_id = ?1", nativeQuery = true)
-  void deleteModuleLevel(int levelId);
+  void deleteModuleLevel(int moduleId);
 
 }

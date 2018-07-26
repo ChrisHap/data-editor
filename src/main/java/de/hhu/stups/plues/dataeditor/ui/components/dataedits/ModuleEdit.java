@@ -154,6 +154,14 @@ public class ModuleEdit extends GridPane implements Initializable {
     moduleLevels.add(moduleLevel);
     moduleWrapper.getModule().setModuleLevels(moduleLevels);
 
+    moduleWrapper.getAbstractUnits().clear();
+    listViewAbstractUnits.getItems().forEach(abstractUnitWrapper -> {
+      Set<ModuleWrapper> modules = abstractUnitWrapper.getModules();
+      modules.clear();
+      modules.add(moduleWrapper);
+      moduleWrapper.getAbstractUnits().add(abstractUnitWrapper);
+    });
+
     boolean isNew = moduleWrapper.getId() == 0;
 
     dataService.dataChangeEventSource().push(
