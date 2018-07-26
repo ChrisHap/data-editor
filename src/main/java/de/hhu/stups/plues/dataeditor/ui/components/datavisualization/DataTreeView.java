@@ -357,11 +357,22 @@ public class DataTreeView extends VBox implements Initializable {
 
   private void insertNewModule(ModuleWrapper newEntity) {
     LevelWrapper lv = newEntity.getLevel();
+    TreeItem<EntityWrapper> moduleTreeItem = new TreeItem<>(newEntity);
     List<TreeItem<EntityWrapper>> levelTreeItemList =
             getTreeItemForEntityWrapperRecursive(lv);
     for (TreeItem<EntityWrapper> levelTreeItem : levelTreeItemList) {
-      levelTreeItem.getChildren().add(new TreeItem<>(newEntity));
+      levelTreeItem.getChildren().add(moduleTreeItem);
     }
+    newEntity.getAbstractUnits().forEach(auw -> {
+      TreeItem<EntityWrapper> auTreeItem =
+            getTreeItemWithMostChildren(auw);
+      if (auTreeItem != null) {
+        auTreeItem.getParent().getChildren().remove(auTreeItem);
+      } else {
+        auTreeItem = new TreeItem<>(auw);
+      }
+      moduleTreeItem.getChildren().add(auTreeItem);
+    });
   }
 
   private void insertNewAbstractUnit(AbstractUnitWrapper newEntity) {
@@ -488,6 +499,19 @@ public class DataTreeView extends VBox implements Initializable {
     for (TreeItem<EntityWrapper> parent : parentList) {
       parent.getChildren().add(bestChild);
     }
+
+    bestChild.getChildren().clear();
+
+    moduleWrapper.getAbstractUnits().forEach(auw -> {
+      TreeItem<EntityWrapper> auTreeItem =
+            getTreeItemWithMostChildren(auw);
+      if (auTreeItem != null) {
+        auTreeItem.getParent().getChildren().remove(auTreeItem);
+      } else {
+        auTreeItem = new TreeItem<>(auw);
+      }
+      bestChild.getChildren().add(auTreeItem);
+    });
   }
 
   private void addSimpleAbstractUnit(AbstractUnitWrapper abstractUnitWrapper,
