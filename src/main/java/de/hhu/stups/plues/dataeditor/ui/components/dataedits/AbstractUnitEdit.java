@@ -10,6 +10,7 @@ import de.hhu.stups.plues.dataeditor.ui.entities.EntityWrapper;
 import de.hhu.stups.plues.dataeditor.ui.entities.ModuleWrapper;
 import de.hhu.stups.plues.dataeditor.ui.entities.UnitWrapper;
 import de.hhu.stups.plues.dataeditor.ui.layout.Inflater;
+import javafx.beans.InvalidationListener;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
@@ -17,6 +18,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ToggleButton;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
@@ -31,6 +33,8 @@ public class AbstractUnitEdit extends GridPane implements Initializable {
   private final DataService dataService;
   private final AbstractUnitWrapper abstractUnitWrapper;
   private final BooleanProperty dataChangedProperty;
+  private final EntityListViewContextMenu moduleListViewContextMenu;
+  private final EntityListViewContextMenu unitListViewContextMenu;
 
   private ResourceBundle resources;
 
@@ -71,17 +75,46 @@ public class AbstractUnitEdit extends GridPane implements Initializable {
     this.dataService = dataService;
     this.abstractUnitWrapper = abstractUnitWrapper;
     dataChangedProperty = new SimpleBooleanProperty(false);
+    this.moduleListViewContextMenu = new EntityListViewContextMenu();
+    this.unitListViewContextMenu = new EntityListViewContextMenu();
     inflater.inflate("components/dataedits/abstract_unit_edit", this, this, "abstract_unit_edit");
   }
 
   @Override
   public void initialize(final URL location, final ResourceBundle resources) {
     this.resources = resources;
+    this.moduleListViewContextMenu.setParent(listViewModules);
+    this.unitListViewContextMenu.setParent(listViewUnits);
     referencedEntitiesBox.getChildren().remove(listViewUnits);
     initializeInputFields();
     loadAbstractUnitData();
     setDataListener();
     btPersistChanges.disableProperty().bind(dataChangedProperty.not());
+
+    listViewModules.getItems().addListener((InvalidationListener) observable ->
+          dataChangedProperty.set(true));
+    listViewModules.setOnMouseClicked(event -> {
+      moduleListViewContextMenu.hide();
+      final ModuleWrapper selectedItem =
+            listViewModules.getSelectionModel().getSelectedItem();
+      if (selectedItem != null && MouseButton.SECONDARY.equals(event.getButton())) {
+        moduleListViewContextMenu.show(listViewModules,
+              event.getScreenX(), event.getScreenY());
+      }
+    });
+
+    listViewUnits.getItems().addListener((InvalidationListener) observable ->
+          dataChangedProperty.set(true));
+    listViewUnits.setOnMouseClicked(event -> {
+      unitListViewContextMenu.hide();
+      final UnitWrapper selectedItem =
+            listViewUnits.getSelectionModel().getSelectedItem();
+      if (selectedItem != null && MouseButton.SECONDARY.equals(event.getButton())) {
+        unitListViewContextMenu.show(listViewUnits,
+              event.getScreenX(), event.getScreenY());
+      }
+    });
+
     setListViewDragListeners();
   }
 

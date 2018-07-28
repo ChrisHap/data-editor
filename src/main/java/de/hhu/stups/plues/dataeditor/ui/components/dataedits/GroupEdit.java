@@ -10,6 +10,7 @@ import de.hhu.stups.plues.dataeditor.ui.entities.GroupWrapper;
 import de.hhu.stups.plues.dataeditor.ui.entities.SessionWrapper;
 import de.hhu.stups.plues.dataeditor.ui.entities.UnitWrapper;
 import de.hhu.stups.plues.dataeditor.ui.layout.Inflater;
+import javafx.beans.InvalidationListener;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
@@ -20,6 +21,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListView;
 import javafx.scene.control.RadioButton;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.GridPane;
 import org.fxmisc.easybind.EasyBind;
@@ -32,6 +34,8 @@ public class GroupEdit extends GridPane implements Initializable {
   private final GroupWrapper groupWrapper;
   private final BooleanProperty dataChangedProperty;
   private final DataService dataService;
+  private final EntityListViewContextMenu entityListViewContextMenu;
+
 
   @FXML
   @SuppressWarnings("unused")
@@ -66,16 +70,32 @@ public class GroupEdit extends GridPane implements Initializable {
     this.groupWrapper = groupWrapper;
     this.dataService = dataService;
     dataChangedProperty = new SimpleBooleanProperty(false);
+    this.entityListViewContextMenu = new EntityListViewContextMenu();
     inflater.inflate("components/dataedits/group_edit", this, this, "group_edit");
   }
 
   @Override
   public void initialize(final URL location, final ResourceBundle resources) {
     this.resources = resources;
+    this.entityListViewContextMenu.setParent(listViewSessions);
     btPersistChanges.disableProperty().bind(dataChangedProperty.not());
     txtUnit.setLabelText(resources.getString("unit"));
     loadGroupData();
     setDataListener();
+
+    listViewSessions.getItems().addListener((InvalidationListener) observable ->
+          dataChangedProperty.set(true));
+    listViewSessions.setOnMouseClicked(event -> {
+      entityListViewContextMenu.hide();
+      final SessionWrapper selectedItem =
+            listViewSessions.getSelectionModel().getSelectedItem();
+      if (selectedItem != null && MouseButton.SECONDARY.equals(event.getButton())) {
+        entityListViewContextMenu.show(listViewSessions,
+              event.getScreenX(), event.getScreenY());
+      }
+    });
+    setListViewDragListeners();
+
     setListViewDragListeners();
   }
 

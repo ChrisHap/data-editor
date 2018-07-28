@@ -10,12 +10,14 @@ import de.hhu.stups.plues.dataeditor.ui.entities.EntityWrapper;
 import de.hhu.stups.plues.dataeditor.ui.entities.GroupWrapper;
 import de.hhu.stups.plues.dataeditor.ui.entities.UnitWrapper;
 import de.hhu.stups.plues.dataeditor.ui.layout.Inflater;
+import javafx.beans.InvalidationListener;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.GridPane;
 import org.fxmisc.easybind.EasyBind;
@@ -28,6 +30,8 @@ public class UnitEdit extends GridPane implements Initializable {
   private final UnitWrapper unitWrapper;
   private final BooleanProperty dataChangedProperty;
   private final DataService dataService;
+  private final EntityListViewContextMenu abstractUnitListViewContextMenu;
+  private final EntityListViewContextMenu groupListViewContextMenu;
 
   private ResourceBundle resources;
 
@@ -59,16 +63,45 @@ public class UnitEdit extends GridPane implements Initializable {
     this.dataService = dataService;
     this.unitWrapper = unitWrapper;
     dataChangedProperty = new SimpleBooleanProperty(false);
+    this.abstractUnitListViewContextMenu = new EntityListViewContextMenu();
+    this.groupListViewContextMenu = new EntityListViewContextMenu();
     inflater.inflate("components/dataedits/unit_edit", this, this, "unit_edit");
   }
 
   @Override
   public void initialize(final URL location, final ResourceBundle resources) {
     this.resources = resources;
+    this.abstractUnitListViewContextMenu.setParent(listViewAbstractUnits);
+    this.groupListViewContextMenu.setParent(listViewGroups);
     btPersistChanges.disableProperty().bind(dataChangedProperty.not());
     initializeInputFields();
     setDataListener();
     loadUnitData();
+
+    listViewAbstractUnits.getItems().addListener((InvalidationListener) observable ->
+          dataChangedProperty.set(true));
+    listViewAbstractUnits.setOnMouseClicked(event -> {
+      abstractUnitListViewContextMenu.hide();
+      final AbstractUnitWrapper selectedItem =
+            listViewAbstractUnits.getSelectionModel().getSelectedItem();
+      if (selectedItem != null && MouseButton.SECONDARY.equals(event.getButton())) {
+        abstractUnitListViewContextMenu.show(listViewAbstractUnits,
+              event.getScreenX(), event.getScreenY());
+      }
+    });
+
+    listViewGroups.getItems().addListener((InvalidationListener) observable ->
+          dataChangedProperty.set(true));
+    listViewGroups.setOnMouseClicked(event -> {
+      groupListViewContextMenu.hide();
+      final GroupWrapper selectedItem =
+            listViewGroups.getSelectionModel().getSelectedItem();
+      if (selectedItem != null && MouseButton.SECONDARY.equals(event.getButton())) {
+        groupListViewContextMenu.show(listViewGroups,
+              event.getScreenX(), event.getScreenY());
+      }
+    });
+
     setListViewDragListeners();
   }
 

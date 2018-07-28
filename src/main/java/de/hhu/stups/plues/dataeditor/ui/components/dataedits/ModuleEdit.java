@@ -11,6 +11,7 @@ import de.hhu.stups.plues.dataeditor.ui.entities.LevelWrapper;
 import de.hhu.stups.plues.dataeditor.ui.entities.ModuleLevel;
 import de.hhu.stups.plues.dataeditor.ui.entities.ModuleWrapper;
 import de.hhu.stups.plues.dataeditor.ui.layout.Inflater;
+import javafx.beans.InvalidationListener;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
@@ -21,6 +22,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListView;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
@@ -36,6 +38,7 @@ public class ModuleEdit extends GridPane implements Initializable {
   private final ModuleWrapper moduleWrapper;
   private final BooleanProperty dataChangedProperty;
   private final DataService dataService;
+  private final EntityListViewContextMenu entityListViewContextMenu;
 
   private ResourceBundle resources;
 
@@ -77,16 +80,31 @@ public class ModuleEdit extends GridPane implements Initializable {
     this.dataService = dataService;
     this.moduleWrapper = moduleWrapper;
     dataChangedProperty = new SimpleBooleanProperty(false);
+    this.entityListViewContextMenu = new EntityListViewContextMenu();
     inflater.inflate("components/dataedits/module_edit", this, this, "module_edit");
   }
 
   @Override
   public void initialize(final URL location, final ResourceBundle resources) {
     this.resources = resources;
+    this.entityListViewContextMenu.setParent(listViewAbstractUnits);
     btPersistChanges.disableProperty().bind(dataChangedProperty.not());
     initializeInputFields();
     setDataListener();
     loadModuleData();
+
+    listViewAbstractUnits.getItems().addListener((InvalidationListener) observable ->
+          dataChangedProperty.set(true));
+    listViewAbstractUnits.setOnMouseClicked(event -> {
+      entityListViewContextMenu.hide();
+      final AbstractUnitWrapper selectedItem =
+            listViewAbstractUnits.getSelectionModel().getSelectedItem();
+      if (selectedItem != null && MouseButton.SECONDARY.equals(event.getButton())) {
+        entityListViewContextMenu.show(listViewAbstractUnits,
+              event.getScreenX(), event.getScreenY());
+      }
+    });
+
     setListViewDragListeners();
   }
 
