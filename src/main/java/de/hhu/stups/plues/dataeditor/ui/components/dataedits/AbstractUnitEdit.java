@@ -169,6 +169,7 @@ public class AbstractUnitEdit extends GridPane implements Initializable {
   @SuppressWarnings("unused")
   public void persistChanges() {
     abstractUnitWrapper.setTitle(txtAbstractUnit.textProperty().get());
+    abstractUnitWrapper.setKey(txtId.textProperty().get());
     abstractUnitWrapper.getModules().clear();
     listViewModules.getItems().forEach(moduleWrapper -> {
       abstractUnitWrapper.getModules().add(moduleWrapper);

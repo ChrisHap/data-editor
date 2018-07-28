@@ -125,7 +125,7 @@ public class DataService {
         saveModule((ModuleWrapper) changedEntity);
         break;
       case ABSTRACT_UNIT:
-        abstractUnitRepository.save(((AbstractUnitWrapper) changedEntity).getAbstractUnit());
+        saveAbstractUnit((AbstractUnitWrapper) changedEntity);
         break;
       case UNIT:
         unitRepository.save(((UnitWrapper) changedEntity).getUnit());
@@ -138,6 +138,25 @@ public class DataService {
         break;
       default:
     }
+  }
+
+  private void saveAbstractUnit(AbstractUnitWrapper abstractUnitWrapper) {
+    abstractUnitRepository.save(abstractUnitWrapper.getAbstractUnit());
+    abstractUnitRepository.deleteModuleAbstractUnitTypeByAbstractUnit(
+          abstractUnitWrapper.getId());
+    abstractUnitRepository.deleteModuleAbstractUnitSemesterByAbstractUnit(
+          abstractUnitWrapper.getId());
+
+    abstractUnitWrapper.getModules().forEach(moduleWrapper -> {
+      abstractUnitRepository.insertSimpleModuleAbstractUnitType(
+            moduleWrapper.getId(), abstractUnitWrapper.getId());
+      abstractUnitRepository.insertSimpleModuleAbstractUnitSemester(
+            moduleWrapper.getId(), abstractUnitWrapper.getId());
+    });
+    abstractUnitRepository.deleteUnitAbstractUnitByAbstractUnit(abstractUnitWrapper.getId());
+    abstractUnitWrapper.getUnits().forEach(unitWrapper ->
+          abstractUnitRepository.insertSimpleUnitAbstractUnit(unitWrapper.getId(),
+                abstractUnitWrapper.getId()));
   }
 
   private void saveNewEntity(EntityType changedType, EntityWrapper changedEntity) {
@@ -153,11 +172,7 @@ public class DataService {
         saveNewModule((ModuleWrapper) changedEntity);
         break;
       case ABSTRACT_UNIT:
-        maxId = abstractUnitRepository.getMaxId() + 1;
-        ((AbstractUnitWrapper) changedEntity).setId(maxId);
-        abstractUnitWrappersProperty.put(changedEntity.getId(),
-            ((AbstractUnitWrapper) changedEntity));
-        abstractUnitRepository.save(((AbstractUnitWrapper) changedEntity).getAbstractUnit());
+        saveNewAbstractUnit((AbstractUnitWrapper) changedEntity);
         break;
       case UNIT:
         maxId = unitRepository.getMaxId() + 1;
@@ -195,6 +210,21 @@ public class DataService {
       levelRepository.insertCourseLevel(lvl.getCourse().getId(), lvl.getId());
     }
     levelWrappersProperty.put(levelWrapper.getId(), levelWrapper);
+  }
+
+  private void saveNewAbstractUnit(AbstractUnitWrapper abstractUnitWrapper) {
+    abstractUnitWrapper.setId(abstractUnitRepository.getMaxId() + 1);
+    abstractUnitWrappersProperty.put(abstractUnitWrapper.getId(), abstractUnitWrapper);
+    abstractUnitRepository.save(abstractUnitWrapper.getAbstractUnit());
+    abstractUnitWrapper.getModules().forEach(moduleWrapper -> {
+      abstractUnitRepository.insertSimpleModuleAbstractUnitType(
+            moduleWrapper.getId(), abstractUnitWrapper.getId());
+      abstractUnitRepository.insertSimpleModuleAbstractUnitSemester(
+            moduleWrapper.getId(), abstractUnitWrapper.getId());
+    });
+    abstractUnitWrapper.getUnits().forEach(unitWrapper ->
+          abstractUnitRepository.insertSimpleUnitAbstractUnit(unitWrapper.getId(),
+          abstractUnitWrapper.getId()));
   }
 
   private void saveLevel(final LevelWrapper levelWrapper) {
