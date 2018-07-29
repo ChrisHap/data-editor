@@ -406,7 +406,8 @@ public class DataTreeView extends VBox implements Initializable {
 
   private List<TreeItem<EntityWrapper>> getTreeItemForEntityWrapperRecursive(
         final EntityWrapper entityWrapper) {
-    return getTreeItemForEntityWrapperRecursive(entityWrapper, treeTableRoot.getChildren());
+    return getTreeItemForEntityWrapperRecursive(entityWrapper,
+          treeTableRoot.getChildren(), new ArrayList<>());
   }
 
   private List<TreeItem<EntityWrapper>> getTreeItemForEntityWrapperRecursive(
@@ -428,13 +429,6 @@ public class DataTreeView extends VBox implements Initializable {
       }
     }
     return result;
-  }
-
-  private List<TreeItem<EntityWrapper>> getTreeItemForEntityWrapperRecursive(
-        final EntityWrapper entityWrapper,
-        final List<TreeItem<EntityWrapper>> nodes) {
-    return getTreeItemForEntityWrapperRecursive(entityWrapper, nodes,
-          new ArrayList<>());
   }
 
   private void reloadData() {
