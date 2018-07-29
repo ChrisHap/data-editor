@@ -83,13 +83,19 @@ public class AbstractUnitEdit extends GridPane implements Initializable {
   @Override
   public void initialize(final URL location, final ResourceBundle resources) {
     this.resources = resources;
-    this.moduleListViewContextMenu.setParent(listViewModules);
-    this.unitListViewContextMenu.setParent(listViewUnits);
     referencedEntitiesBox.getChildren().remove(listViewUnits);
     initializeInputFields();
     loadAbstractUnitData();
     setDataListener();
     btPersistChanges.disableProperty().bind(dataChangedProperty.not());
+
+    setListViewContextMenus();
+    setListViewDragListeners();
+  }
+
+  private void setListViewContextMenus() {
+    this.moduleListViewContextMenu.setParent(listViewModules);
+    this.unitListViewContextMenu.setParent(listViewUnits);
 
     listViewModules.getItems().addListener((InvalidationListener) observable ->
           dataChangedProperty.set(true));
@@ -114,10 +120,7 @@ public class AbstractUnitEdit extends GridPane implements Initializable {
               event.getScreenX(), event.getScreenY());
       }
     });
-
-    setListViewDragListeners();
   }
-
 
   private void setListViewDragListeners() {
     dataService.draggedEntityProperty().addListener((observable, oldValue, newValue) ->
@@ -194,6 +197,34 @@ public class AbstractUnitEdit extends GridPane implements Initializable {
     referencedEntitiesBox.getChildren().add(listViewUnits);
   }
 
+  private void loadAbstractUnitData() {
+    setTitle();
+    setId();
+    setModules();
+    setUnits();
+    dataChangedProperty.set(false);
+  }
+
+  private void setTitle() {
+    txtAbstractUnit.setText(abstractUnitWrapper.getTitle());
+  }
+
+  private void setId() {
+    txtId.setText(abstractUnitWrapper.getKey());
+  }
+
+  private void setModules() {
+    listViewModules.getItems().addAll(abstractUnitWrapper.getAbstractUnit()
+          .getModules().stream().map(module -> dataService.getModuleWrappers().get(module.getId()))
+          .collect(Collectors.toSet()));
+  }
+
+  private void setUnits() {
+    listViewUnits.getItems().addAll(abstractUnitWrapper.getAbstractUnit()
+          .getUnits().stream().map(unit -> dataService.getUnitWrappers().get(unit.getId()))
+          .collect(Collectors.toSet()));
+  }
+
   /**
    * Push the {@link #abstractUnitWrapper} to the {@link #dataService} and set
    * {@link #dataChangedProperty} to false.
@@ -225,33 +256,5 @@ public class AbstractUnitEdit extends GridPane implements Initializable {
     }
 
     dataChangedProperty.set(false);
-  }
-
-  private void loadAbstractUnitData() {
-    setTitle();
-    setId();
-    setModules();
-    setUnits();
-    dataChangedProperty.set(false);
-  }
-
-  private void setUnits() {
-    listViewUnits.getItems().addAll(abstractUnitWrapper.getAbstractUnit()
-          .getUnits().stream().map(unit -> dataService.getUnitWrappers().get(unit.getId()))
-          .collect(Collectors.toSet()));
-  }
-
-  private void setModules() {
-    listViewModules.getItems().addAll(abstractUnitWrapper.getAbstractUnit()
-          .getModules().stream().map(module -> dataService.getModuleWrappers().get(module.getId()))
-          .collect(Collectors.toSet()));
-  }
-
-  private void setId() {
-    txtId.setText(abstractUnitWrapper.getKey());
-  }
-
-  private void setTitle() {
-    txtAbstractUnit.setText(abstractUnitWrapper.getTitle());
   }
 }

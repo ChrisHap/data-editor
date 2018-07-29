@@ -35,11 +35,11 @@ import java.util.ResourceBundle;
 
 public class CourseEdit extends GridPane implements Initializable {
 
+  private final CourseWrapper courseWrapper;
   private final DataService dataService;
   private final BooleanProperty dataChangedProperty;
   private final EntityListViewContextMenu entityListViewContextMenu;
 
-  private CourseWrapper courseWrapper;
   private ResourceBundle resources;
 
   @FXML
@@ -89,7 +89,6 @@ public class CourseEdit extends GridPane implements Initializable {
   @Override
   public void initialize(final URL location, final ResourceBundle resources) {
     this.resources = resources;
-    this.entityListViewContextMenu.setParent(listViewMajorsOrMinors);
     btPersistChanges.disableProperty().bind(dataChangedProperty.not());
     initializeCbDegree();
     initializeInputFields();
@@ -99,17 +98,7 @@ public class CourseEdit extends GridPane implements Initializable {
     loadCourseData();
     dataService.dataChangeEventSource().subscribe(this::updateData);
 
-    listViewMajorsOrMinors.getItems().addListener((InvalidationListener) observable ->
-        dataChangedProperty.set(true));
-    listViewMajorsOrMinors.setOnMouseClicked(event -> {
-      entityListViewContextMenu.hide();
-      final CourseWrapper selectedItem =
-          listViewMajorsOrMinors.getSelectionModel().getSelectedItem();
-      if (selectedItem != null && MouseButton.SECONDARY.equals(event.getButton())) {
-        entityListViewContextMenu.show(listViewMajorsOrMinors,
-            event.getScreenX(), event.getScreenY());
-      }
-    });
+    setListViewContextMenu();
     setListViewDragListeners();
   }
 
@@ -125,6 +114,22 @@ public class CourseEdit extends GridPane implements Initializable {
         courseWrapper.majorCourseWrapperProperty().get().remove(changedCourseWrapper);
       }
     }
+  }
+
+  private void setListViewContextMenu() {
+    this.entityListViewContextMenu.setParent(listViewMajorsOrMinors);
+
+    listViewMajorsOrMinors.getItems().addListener((InvalidationListener) observable ->
+          dataChangedProperty.set(true));
+    listViewMajorsOrMinors.setOnMouseClicked(event -> {
+      entityListViewContextMenu.hide();
+      final CourseWrapper selectedItem =
+            listViewMajorsOrMinors.getSelectionModel().getSelectedItem();
+      if (selectedItem != null && MouseButton.SECONDARY.equals(event.getButton())) {
+        entityListViewContextMenu.show(listViewMajorsOrMinors,
+              event.getScreenX(), event.getScreenY());
+      }
+    });
   }
 
   private void setListViewDragListeners() {
