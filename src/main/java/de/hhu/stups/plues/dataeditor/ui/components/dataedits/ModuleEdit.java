@@ -87,12 +87,17 @@ public class ModuleEdit extends GridPane implements Initializable {
   @Override
   public void initialize(final URL location, final ResourceBundle resources) {
     this.resources = resources;
-    this.entityListViewContextMenu.setParent(listViewAbstractUnits);
     btPersistChanges.disableProperty().bind(dataChangedProperty.not());
     initializeInputFields();
     setDataListener();
     loadModuleData();
 
+    setListViewContextMenu();
+    setListViewDragListeners();
+  }
+
+  private void setListViewContextMenu() {
+    this.entityListViewContextMenu.setParent(listViewAbstractUnits);
     listViewAbstractUnits.getItems().addListener((InvalidationListener) observable ->
           dataChangedProperty.set(true));
     listViewAbstractUnits.setOnMouseClicked(event -> {
@@ -104,8 +109,6 @@ public class ModuleEdit extends GridPane implements Initializable {
               event.getScreenX(), event.getScreenY());
       }
     });
-
-    setListViewDragListeners();
   }
 
   private void setListViewDragListeners() {
@@ -126,6 +129,70 @@ public class ModuleEdit extends GridPane implements Initializable {
       }
       event.consume();
     });
+  }
+
+  private void updateDataChanged() {
+    EasyBind.subscribe(txtModule.textProperty(), s -> dataChangedProperty.set(true));
+    EasyBind.subscribe(txtKey.textProperty(), s -> dataChangedProperty.set(true));
+    EasyBind.subscribe(txtPordnr.textProperty(), s -> dataChangedProperty.set(true));
+    EasyBind.subscribe(listViewAbstractUnits.itemsProperty(), s -> dataChangedProperty.set(true));
+    EasyBind.subscribe(cbBundled.selectedProperty(), s -> dataChangedProperty.set(true));
+    EasyBind.subscribe(cbParentLevel.getSelectionModel().selectedItemProperty(), entityWrapper ->
+          dataChangedProperty.set(true));
+  }
+
+  /**
+   * Update data if the wrapper has changed.
+   */
+  private void setDataListener() {
+    EasyBind.subscribe(moduleWrapper.moduleProperty(), module -> setModule());
+    EasyBind.subscribe(moduleWrapper.keyProperty(), module -> setKey());
+    EasyBind.subscribe(moduleWrapper.pordnrProperty(), module -> setPordnr());
+    EasyBind.subscribe(moduleWrapper.abstractUnitsProperty(), module -> setAbstractUnits());
+    EasyBind.subscribe(moduleWrapper.bundledProperty(), module -> setBundled());
+    updateDataChanged();
+  }
+
+  private void initializeInputFields() {
+    txtModule.setLabelText(resources.getString("module"));
+    txtKey.setLabelText(resources.getString("id"));
+    txtPordnr.setLabelText(resources.getString("pordnr"));
+  }
+
+  private void loadModuleData() {
+    setModule();
+    setKey();
+    setPordnr();
+    setAbstractUnits();
+    setBundled();
+    setParentLevels();
+    dataChangedProperty.set(false);
+  }
+
+  private void setParentLevels() {
+    cbParentLevel.getItems().clear();
+    cbParentLevel.getItems().addAll(dataService.getLevelWrappers().values());
+    cbParentLevel.getSelectionModel().select(moduleWrapper.getLevel());
+  }
+
+  private void setBundled() {
+    cbBundled.setSelected(moduleWrapper.bundledProperty().get());
+  }
+
+  private void setAbstractUnits() {
+    listViewAbstractUnits.getItems().addAll(moduleWrapper.getAbstractUnits());
+  }
+
+  private void setPordnr() {
+    txtPordnr.setText(String.valueOf(moduleWrapper.pordnrProperty().get()));
+  }
+
+  private void setKey() {
+    txtKey.setText(String.valueOf(moduleWrapper.keyProperty().get()));
+  }
+
+  private void setModule() {
+    txtModule.setText(moduleWrapper.getTitle());
   }
 
   /**
@@ -191,69 +258,5 @@ public class ModuleEdit extends GridPane implements Initializable {
     }
 
     dataChangedProperty.set(false);
-  }
-
-  /**
-   * Update data if the wrapper has changed.
-   */
-  private void setDataListener() {
-    EasyBind.subscribe(moduleWrapper.moduleProperty(), module -> setModule());
-    EasyBind.subscribe(moduleWrapper.keyProperty(), module -> setKey());
-    EasyBind.subscribe(moduleWrapper.pordnrProperty(), module -> setPordnr());
-    EasyBind.subscribe(moduleWrapper.abstractUnitsProperty(), module -> setAbstractUnits());
-    EasyBind.subscribe(moduleWrapper.bundledProperty(), module -> setBundled());
-    updateDataChanged();
-  }
-
-  private void updateDataChanged() {
-    EasyBind.subscribe(txtModule.textProperty(), s -> dataChangedProperty.set(true));
-    EasyBind.subscribe(txtKey.textProperty(), s -> dataChangedProperty.set(true));
-    EasyBind.subscribe(txtPordnr.textProperty(), s -> dataChangedProperty.set(true));
-    EasyBind.subscribe(listViewAbstractUnits.itemsProperty(), s -> dataChangedProperty.set(true));
-    EasyBind.subscribe(cbBundled.selectedProperty(), s -> dataChangedProperty.set(true));
-    EasyBind.subscribe(cbParentLevel.getSelectionModel().selectedItemProperty(), entityWrapper ->
-          dataChangedProperty.set(true));
-  }
-
-  private void initializeInputFields() {
-    txtModule.setLabelText(resources.getString("module"));
-    txtKey.setLabelText(resources.getString("id"));
-    txtPordnr.setLabelText(resources.getString("pordnr"));
-  }
-
-  private void loadModuleData() {
-    setModule();
-    setKey();
-    setPordnr();
-    setAbstractUnits();
-    setBundled();
-    setParentLevels();
-    dataChangedProperty.set(false);
-  }
-
-  private void setParentLevels() {
-    cbParentLevel.getItems().clear();
-    cbParentLevel.getItems().addAll(dataService.getLevelWrappers().values());
-    cbParentLevel.getSelectionModel().select(moduleWrapper.getLevel());
-  }
-
-  private void setBundled() {
-    cbBundled.setSelected(moduleWrapper.bundledProperty().get());
-  }
-
-  private void setAbstractUnits() {
-    listViewAbstractUnits.getItems().addAll(moduleWrapper.getAbstractUnits());
-  }
-
-  private void setPordnr() {
-    txtPordnr.setText(String.valueOf(moduleWrapper.pordnrProperty().get()));
-  }
-
-  private void setKey() {
-    txtKey.setText(String.valueOf(moduleWrapper.keyProperty().get()));
-  }
-
-  private void setModule() {
-    txtModule.setText(moduleWrapper.getTitle());
   }
 }

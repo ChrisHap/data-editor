@@ -84,10 +84,10 @@ public class AbstractUnitEdit extends GridPane implements Initializable {
   public void initialize(final URL location, final ResourceBundle resources) {
     this.resources = resources;
     referencedEntitiesBox.getChildren().remove(listViewUnits);
+    btPersistChanges.disableProperty().bind(dataChangedProperty.not());
     initializeInputFields();
     loadAbstractUnitData();
     setDataListener();
-    btPersistChanges.disableProperty().bind(dataChangedProperty.not());
 
     setListViewContextMenus();
     setListViewDragListeners();

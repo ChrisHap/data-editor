@@ -36,6 +36,7 @@ public class GroupEdit extends GridPane implements Initializable {
   private final DataService dataService;
   private final EntityListViewContextMenu entityListViewContextMenu;
 
+  private ResourceBundle resources;
 
   @FXML
   @SuppressWarnings("unused")
@@ -59,8 +60,6 @@ public class GroupEdit extends GridPane implements Initializable {
   @SuppressWarnings("unused")
   private ComboBox<UnitWrapper> cbParentUnit;
 
-  private ResourceBundle resources;
-
   /**
    * Initialize group edit.
    */
@@ -77,12 +76,17 @@ public class GroupEdit extends GridPane implements Initializable {
   @Override
   public void initialize(final URL location, final ResourceBundle resources) {
     this.resources = resources;
-    this.entityListViewContextMenu.setParent(listViewSessions);
     btPersistChanges.disableProperty().bind(dataChangedProperty.not());
     txtUnit.setLabelText(resources.getString("unit"));
     loadGroupData();
     setDataListener();
 
+    setListViewContextMenu();
+    setListViewDragListeners();
+  }
+
+  private void setListViewContextMenu() {
+    this.entityListViewContextMenu.setParent(listViewSessions);
     listViewSessions.getItems().addListener((InvalidationListener) observable ->
           dataChangedProperty.set(true));
     listViewSessions.setOnMouseClicked(event -> {
@@ -94,15 +98,6 @@ public class GroupEdit extends GridPane implements Initializable {
               event.getScreenX(), event.getScreenY());
       }
     });
-    setListViewDragListeners();
-
-    setListViewDragListeners();
-  }
-
-  private void setParenUnits() {
-    cbParentUnit.getItems().clear();
-    cbParentUnit.getItems().addAll(dataService.getUnitWrappers().values());
-    cbParentUnit.getSelectionModel().select(groupWrapper.getUnit());
   }
 
   private void setListViewDragListeners() {
@@ -125,6 +120,28 @@ public class GroupEdit extends GridPane implements Initializable {
     });
   }
 
+  private void updateDataChanged() {
+    EasyBind.subscribe(txtUnit.textProperty(), s -> dataChangedProperty.set(true));
+    EasyBind.subscribe(listViewSessions.itemsProperty(), s -> dataChangedProperty.set(true));
+    EasyBind.subscribe(rbFirstHalf.selectedProperty(), s -> dataChangedProperty.set(true));
+    EasyBind.subscribe(rbSecondHalf.selectedProperty(), s -> dataChangedProperty.set(true));
+    EasyBind.subscribe(rbWholeSemester.selectedProperty(), s -> dataChangedProperty.set(true));
+  }
+
+  private void setDataListener() {
+    EasyBind.subscribe(groupWrapper.unitProperty(), unitWrapper -> setUnit());
+    EasyBind.subscribe(groupWrapper.sessionsProperty(), sessionWrappers ->
+          loadSessions());
+    EasyBind.subscribe(groupWrapper.halfSemesterProperty(), number -> selectSemesterType());
+    updateDataChanged();
+  }
+
+  private void setParenUnits() {
+    cbParentUnit.getItems().clear();
+    cbParentUnit.getItems().addAll(dataService.getUnitWrappers().values());
+    cbParentUnit.getSelectionModel().select(groupWrapper.getUnit());
+  }
+
   private void loadGroupData() {
     setUnit();
     selectSemesterType();
@@ -145,21 +162,6 @@ public class GroupEdit extends GridPane implements Initializable {
     rbWholeSemester.setSelected(true);
   }
 
-  private void setDataListener() {
-    EasyBind.subscribe(groupWrapper.unitProperty(), unitWrapper -> setUnit());
-    EasyBind.subscribe(groupWrapper.sessionsProperty(), sessionWrappers ->
-          loadSessions());
-    EasyBind.subscribe(groupWrapper.halfSemesterProperty(), number -> selectSemesterType());
-    updateDataChanged();
-  }
-
-  private void updateDataChanged() {
-    EasyBind.subscribe(txtUnit.textProperty(), s -> dataChangedProperty.set(true));
-    EasyBind.subscribe(listViewSessions.itemsProperty(), s -> dataChangedProperty.set(true));
-    EasyBind.subscribe(rbFirstHalf.selectedProperty(), s -> dataChangedProperty.set(true));
-    EasyBind.subscribe(rbSecondHalf.selectedProperty(), s -> dataChangedProperty.set(true));
-    EasyBind.subscribe(rbWholeSemester.selectedProperty(), s -> dataChangedProperty.set(true));
-  }
 
   private void setUnit() {
     txtUnit.setText(groupWrapper.getUnit().getTitle());
@@ -200,5 +202,4 @@ public class GroupEdit extends GridPane implements Initializable {
 
     dataChangedProperty.set(false);
   }
-
 }

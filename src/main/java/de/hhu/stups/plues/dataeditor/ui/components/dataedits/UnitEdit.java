@@ -71,12 +71,18 @@ public class UnitEdit extends GridPane implements Initializable {
   @Override
   public void initialize(final URL location, final ResourceBundle resources) {
     this.resources = resources;
-    this.abstractUnitListViewContextMenu.setParent(listViewAbstractUnits);
-    this.groupListViewContextMenu.setParent(listViewGroups);
     btPersistChanges.disableProperty().bind(dataChangedProperty.not());
     initializeInputFields();
     setDataListener();
     loadUnitData();
+
+    setListViewContextMenus();
+    setListViewDragListeners();
+  }
+
+  private void setListViewContextMenus() {
+    this.abstractUnitListViewContextMenu.setParent(listViewAbstractUnits);
+    this.groupListViewContextMenu.setParent(listViewGroups);
 
     listViewAbstractUnits.getItems().addListener((InvalidationListener) observable ->
           dataChangedProperty.set(true));
@@ -101,8 +107,6 @@ public class UnitEdit extends GridPane implements Initializable {
               event.getScreenX(), event.getScreenY());
       }
     });
-
-    setListViewDragListeners();
   }
 
   private void setListViewDragListeners() {
@@ -151,50 +155,6 @@ public class UnitEdit extends GridPane implements Initializable {
     EasyBind.subscribe(listViewGroups.itemsProperty(), s -> dataChangedProperty.set(true));
   }
 
-  private void loadGroups() {
-    listViewGroups.getItems().clear();
-    listViewGroups.getItems().addAll(unitWrapper.getGroups());
-  }
-
-  private void loadAbstractUnits() {
-    listViewAbstractUnits.getItems().clear();
-    listViewAbstractUnits.getItems().addAll(unitWrapper.getAbstractUnits());
-  }
-
-  /**
-   * Push the {@link #unitWrapper} to the {@link #dataService} and set
-   * {@link #dataChangedProperty} to false.
-   */
-  @FXML
-  @SuppressWarnings("unused")
-  public void persistChanges() {
-    unitWrapper.setTitle(txtUnit.textProperty().get());
-    listViewAbstractUnits.getItems().forEach(parent -> {
-      unitWrapper.getAbstractUnits().add(parent);
-      parent.getUnits().add(unitWrapper);
-      dataService.dataChangeEventSource().push(
-            new DataChangeEvent(DataChangeType.STORE_ENTITY, parent));
-    });
-
-    boolean isNew = unitWrapper.getId() == 0;
-    dataService.dataChangeEventSource().push(
-        new DataChangeEvent(DataChangeType.STORE_ENTITY, unitWrapper));
-
-    if (isNew) {
-      dataService.dataChangeEventSource().push(
-            new DataChangeEvent(DataChangeType.INSERT_NEW_ENTITY, unitWrapper));
-    }
-
-    dataChangedProperty.set(false);
-  }
-
-
-  private void initializeInputFields() {
-    txtUnit.setLabelText(resources.getString("unit"));
-    txtId.setLabelText(resources.getString("id"));
-    txtSemester.setLabelText(resources.getString("semester"));
-  }
-
   /**
    * Update data if the wrapper has changed.
    */
@@ -208,6 +168,23 @@ public class UnitEdit extends GridPane implements Initializable {
     EasyBind.subscribe(unitWrapper.abstractUnitsProperty(),
         abstractUnitWrapperMap -> loadAbstractUnits());
     updateDataChanged();
+  }
+
+  private void loadGroups() {
+    listViewGroups.getItems().clear();
+    listViewGroups.getItems().addAll(unitWrapper.getGroups());
+  }
+
+  private void loadAbstractUnits() {
+    listViewAbstractUnits.getItems().clear();
+    listViewAbstractUnits.getItems().addAll(unitWrapper.getAbstractUnits());
+  }
+
+
+  private void initializeInputFields() {
+    txtUnit.setLabelText(resources.getString("unit"));
+    txtId.setLabelText(resources.getString("id"));
+    txtSemester.setLabelText(resources.getString("semester"));
   }
 
   private void loadUnitData() {
@@ -229,5 +206,32 @@ public class UnitEdit extends GridPane implements Initializable {
 
   private void setUnit() {
     txtUnit.setText(unitWrapper.getTitle());
+  }
+
+  /**
+   * Push the {@link #unitWrapper} to the {@link #dataService} and set
+   * {@link #dataChangedProperty} to false.
+   */
+  @FXML
+  @SuppressWarnings("unused")
+  public void persistChanges() {
+    unitWrapper.setTitle(txtUnit.textProperty().get());
+    listViewAbstractUnits.getItems().forEach(parent -> {
+      unitWrapper.getAbstractUnits().add(parent);
+      parent.getUnits().add(unitWrapper);
+      dataService.dataChangeEventSource().push(
+            new DataChangeEvent(DataChangeType.STORE_ENTITY, parent));
+    });
+
+    boolean isNew = unitWrapper.getId() == 0;
+    dataService.dataChangeEventSource().push(
+          new DataChangeEvent(DataChangeType.STORE_ENTITY, unitWrapper));
+
+    if (isNew) {
+      dataService.dataChangeEventSource().push(
+            new DataChangeEvent(DataChangeType.INSERT_NEW_ENTITY, unitWrapper));
+    }
+
+    dataChangedProperty.set(false);
   }
 }

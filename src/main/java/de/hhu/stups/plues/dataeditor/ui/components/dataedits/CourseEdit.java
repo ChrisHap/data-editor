@@ -92,8 +92,6 @@ public class CourseEdit extends GridPane implements Initializable {
     btPersistChanges.disableProperty().bind(dataChangedProperty.not());
     initializeCbDegree();
     initializeInputFields();
-    lbMajorsOrMinors.textProperty().bind(Bindings.when(rbMajorCourse.selectedProperty())
-        .then(resources.getString("minors")).otherwise(resources.getString("majors")));
     setDataListener();
     loadCourseData();
     dataService.dataChangeEventSource().subscribe(this::updateData);
@@ -152,6 +150,18 @@ public class CourseEdit extends GridPane implements Initializable {
     });
   }
 
+  private void updateDataChanged() {
+    EasyBind.subscribe(txtFullName.textProperty(), s -> dataChangedProperty.set(true));
+    EasyBind.subscribe(txtShortName.textProperty(), s -> dataChangedProperty.set(true));
+    EasyBind.subscribe(txtPVersion.textProperty(), s -> dataChangedProperty.set(true));
+    EasyBind.subscribe(txtCreditPoints.textProperty(), s -> dataChangedProperty.set(true));
+    EasyBind.subscribe(listViewMajorsOrMinors.itemsProperty(), s -> dataChangedProperty.set(true));
+    EasyBind.subscribe(rbMajorCourse.selectedProperty(), s -> dataChangedProperty.set(true));
+    EasyBind.subscribe(rbMinorCourse.selectedProperty(), s -> dataChangedProperty.set(true));
+    EasyBind.subscribe(cbCourseDegree.getSelectionModel().selectedIndexProperty(),
+        s -> dataChangedProperty.set(true));
+  }
+
   /**
    * Update data if the wrapper has changed.
    */
@@ -165,6 +175,28 @@ public class CourseEdit extends GridPane implements Initializable {
     EasyBind.subscribe(rbMajorCourse.selectedProperty(), aBoolean -> loadMajorsOrMinors());
     EasyBind.subscribe(rbMinorCourse.selectedProperty(), aBoolean -> loadMajorsOrMinors());
     updateDataChanged();
+  }
+
+  private void initializeInputFields() {
+    lbMajorsOrMinors.textProperty().bind(Bindings.when(rbMajorCourse.selectedProperty())
+          .then(resources.getString("minors")).otherwise(resources.getString("majors")));
+    txtFullName.setLabelText(resources.getString("course"));
+    txtShortName.setLabelText(resources.getString("stg"));
+    txtCreditPoints.setLabelText(resources.getString("credits"));
+    txtPVersion.setLabelText(resources.getString("pversion"));
+    listViewMajorsOrMinors.setCellFactory(
+        param -> new ListCell<CourseWrapper>() {
+          @Override
+          protected void updateItem(final CourseWrapper item, final boolean empty) {
+            super.updateItem(item, empty);
+            if (item != null && !empty) {
+              setText(item.toString());
+            } else {
+              setText("");
+              setGraphic(null);
+            }
+          }
+        });
   }
 
   private void selectCourseDegree() {
@@ -183,18 +215,6 @@ public class CourseEdit extends GridPane implements Initializable {
       listViewMajorsOrMinors.getItems()
           .addAll(courseWrapper.getMajorCourseWrappers());
     }
-  }
-
-  private void updateDataChanged() {
-    EasyBind.subscribe(txtFullName.textProperty(), s -> dataChangedProperty.set(true));
-    EasyBind.subscribe(txtShortName.textProperty(), s -> dataChangedProperty.set(true));
-    EasyBind.subscribe(txtPVersion.textProperty(), s -> dataChangedProperty.set(true));
-    EasyBind.subscribe(txtCreditPoints.textProperty(), s -> dataChangedProperty.set(true));
-    EasyBind.subscribe(listViewMajorsOrMinors.itemsProperty(), s -> dataChangedProperty.set(true));
-    EasyBind.subscribe(rbMajorCourse.selectedProperty(), s -> dataChangedProperty.set(true));
-    EasyBind.subscribe(rbMinorCourse.selectedProperty(), s -> dataChangedProperty.set(true));
-    EasyBind.subscribe(cbCourseDegree.getSelectionModel().selectedIndexProperty(),
-        s -> dataChangedProperty.set(true));
   }
 
   private void loadCourseData() {
@@ -231,6 +251,31 @@ public class CourseEdit extends GridPane implements Initializable {
     txtFullName.setText(courseWrapper.getLongName());
   }
 
+
+
+  private String createCourseKey(final CourseWrapper courseWrapper,
+                                 final LabeledTextField txtShortName) {
+    return courseWrapper.getDegree().toString() + "-"
+        + txtShortName.textProperty().getValue().toUpperCase() + "-"
+        + CourseKzfa.toString(courseWrapper.getKzfa()) + "-"
+        + courseWrapper.getPo();
+  }
+
+  private void initializeCbDegree() {
+    cbCourseDegree.setConverter(new StringConverter<CourseDegree>() {
+      @Override
+      public String toString(final CourseDegree courseDegree) {
+        return resources.getString(courseDegree.toString().toLowerCase());
+      }
+
+      @Override
+      public CourseDegree fromString(final String string) {
+        return null;
+      }
+    });
+    cbCourseDegree.getSelectionModel().selectFirst();
+  }
+
   /**
    * Push the {@link #courseWrapper} to the {@link #dataService} and set
    * {@link #dataChangedProperty} to false.
@@ -246,22 +291,22 @@ public class CourseEdit extends GridPane implements Initializable {
     }
     if (cbCourseDegree.getValue() == null) {
       new Alert(Alert.AlertType.ERROR,
-          resources.getString("degreeError"), ButtonType.OK).showAndWait();
+            resources.getString("degreeError"), ButtonType.OK).showAndWait();
       return;
     }
     try {
       courseWrapper.setCreditPoints(Integer.parseInt(
-          txtCreditPoints.textProperty().getValue()));
+            txtCreditPoints.textProperty().getValue()));
     } catch (NumberFormatException exeption) {
       new Alert(Alert.AlertType.ERROR,
-          resources.getString("creditsError"), ButtonType.OK).showAndWait();
+            resources.getString("creditsError"), ButtonType.OK).showAndWait();
       return;
     }
     try {
       courseWrapper.setPo(Integer.parseInt(txtPVersion.textProperty().getValue()));
     } catch (NumberFormatException exeption) {
       new Alert(Alert.AlertType.ERROR,
-          resources.getString("poError"), ButtonType.OK).showAndWait();
+            resources.getString("poError"), ButtonType.OK).showAndWait();
       return;
     }
     courseWrapper.setDegree(cbCourseDegree.getValue());
@@ -292,52 +337,9 @@ public class CourseEdit extends GridPane implements Initializable {
 
     if (isNew) {
       dataService.dataChangeEventSource().push(
-          new DataChangeEvent(DataChangeType.INSERT_NEW_ENTITY, courseWrapper));
+            new DataChangeEvent(DataChangeType.INSERT_NEW_ENTITY, courseWrapper));
     }
 
     dataChangedProperty.set(false);
-  }
-
-  private String createCourseKey(final CourseWrapper courseWrapper,
-                                 final LabeledTextField txtShortName) {
-    return courseWrapper.getDegree().toString() + "-"
-        + txtShortName.textProperty().getValue().toUpperCase() + "-"
-        + CourseKzfa.toString(courseWrapper.getKzfa()) + "-"
-        + courseWrapper.getPo();
-  }
-
-  private void initializeInputFields() {
-    txtFullName.setLabelText(resources.getString("course"));
-    txtShortName.setLabelText(resources.getString("stg"));
-    txtCreditPoints.setLabelText(resources.getString("credits"));
-    txtPVersion.setLabelText(resources.getString("pversion"));
-    listViewMajorsOrMinors.setCellFactory(
-        param -> new ListCell<CourseWrapper>() {
-          @Override
-          protected void updateItem(final CourseWrapper item, final boolean empty) {
-            super.updateItem(item, empty);
-            if (item != null && !empty) {
-              setText(item.toString());
-            } else {
-              setText("");
-              setGraphic(null);
-            }
-          }
-        });
-  }
-
-  private void initializeCbDegree() {
-    cbCourseDegree.setConverter(new StringConverter<CourseDegree>() {
-      @Override
-      public String toString(final CourseDegree courseDegree) {
-        return resources.getString(courseDegree.toString().toLowerCase());
-      }
-
-      @Override
-      public CourseDegree fromString(final String string) {
-        return null;
-      }
-    });
-    cbCourseDegree.getSelectionModel().selectFirst();
   }
 }

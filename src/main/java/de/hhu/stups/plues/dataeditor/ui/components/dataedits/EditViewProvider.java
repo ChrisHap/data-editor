@@ -37,6 +37,20 @@ public class EditViewProvider {
   }
 
   /**
+   * Provides a LevelEdit view.
+   */
+  public LevelEdit getLevelEditView(LevelWrapper levelWrapper) {
+    return new LevelEdit(springContext.getBean(Inflater.class),dataService,levelWrapper);
+  }
+
+  /**
+   * Provides a ModuleEdit view.
+   */
+  public ModuleEdit getModuleEditView(ModuleWrapper moduleWrapper) {
+    return new ModuleEdit(springContext.getBean(Inflater.class),dataService,moduleWrapper);
+  }
+
+  /**
    * Provides a AbstractUnitEdit view.
    */
   public AbstractUnitEdit getAbstractUnitEditView(AbstractUnitWrapper abstractUnitWrapper) {
@@ -52,30 +66,16 @@ public class EditViewProvider {
   }
 
   /**
-   * Provides a SessionEdit view.
-   */
-  public SessionEdit getSessionEditView(SessionWrapper sessionWrapper) {
-    return new SessionEdit(springContext.getBean(Inflater.class),dataService,sessionWrapper);
-  }
-
-  /**
-   * Provides a ModuleEdit view.
-   */
-  public ModuleEdit getModuleEditView(ModuleWrapper moduleWrapper) {
-    return new ModuleEdit(springContext.getBean(Inflater.class),dataService,moduleWrapper);
-  }
-
-  /**
-   * Provides a LevelEdit view.
-   */
-  public LevelEdit getLevelEditView(LevelWrapper levelWrapper) {
-    return new LevelEdit(springContext.getBean(Inflater.class),dataService,levelWrapper);
-  }
-
-  /**
    * Provides a GroupEdit view.
    */
   public GroupEdit getGroupEditView(GroupWrapper groupWrapper) {
     return new GroupEdit(springContext.getBean(Inflater.class),dataService,groupWrapper);
+  }
+
+  /**
+   * Provides a SessionEdit view.
+   */
+  public SessionEdit getSessionEditView(SessionWrapper sessionWrapper) {
+    return new SessionEdit(springContext.getBean(Inflater.class),dataService,sessionWrapper);
   }
 }

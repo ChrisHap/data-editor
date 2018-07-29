@@ -28,8 +28,8 @@ public class LevelEdit extends GridPane implements Initializable {
 
   private final DataService dataService;
   private final BooleanProperty dataChangedProperty;
+  private final LevelWrapper levelWrapper;
 
-  private LevelWrapper levelWrapper;
   private ResourceBundle resources;
 
   @FXML
@@ -82,6 +82,19 @@ public class LevelEdit extends GridPane implements Initializable {
     loadLevelData();
   }
 
+  private void updateDataChanged() {
+    EasyBind.subscribe(txtLevel.textProperty(), s -> dataChangedProperty.set(true));
+    EasyBind.subscribe(txtMaxCp.textProperty(), s -> dataChangedProperty.set(true));
+    EasyBind.subscribe(txtMinCp.textProperty(), s -> dataChangedProperty.set(true));
+    EasyBind.subscribe(rbParentLevel.selectedProperty(), aBoolean -> dataChangedProperty.set(true));
+    EasyBind.subscribe(rbParentCourse.selectedProperty(), aBoolean ->
+          dataChangedProperty.set(true));
+    EasyBind.subscribe(cbParentLevel.getSelectionModel().selectedItemProperty(), entityWrapper ->
+          dataChangedProperty.set(true));
+    EasyBind.subscribe(cbParentCourse.getSelectionModel().selectedItemProperty(), entityWrapper ->
+          dataChangedProperty.set(true));
+  }
+
   /**
    * Update data if the wrapper has changed.
    */
@@ -94,19 +107,6 @@ public class LevelEdit extends GridPane implements Initializable {
     EasyBind.subscribe(rbParentLevel.selectedProperty(), this::showParentLevels);
     EasyBind.subscribe(rbParentCourse.selectedProperty(), this::showParentCourses);
     updateDataChanged();
-  }
-
-  private void updateDataChanged() {
-    EasyBind.subscribe(txtLevel.textProperty(), s -> dataChangedProperty.set(true));
-    EasyBind.subscribe(txtMaxCp.textProperty(), s -> dataChangedProperty.set(true));
-    EasyBind.subscribe(txtMinCp.textProperty(), s -> dataChangedProperty.set(true));
-    EasyBind.subscribe(rbParentLevel.selectedProperty(), aBoolean -> dataChangedProperty.set(true));
-    EasyBind.subscribe(rbParentCourse.selectedProperty(), aBoolean ->
-        dataChangedProperty.set(true));
-    EasyBind.subscribe(cbParentLevel.getSelectionModel().selectedItemProperty(), entityWrapper ->
-        dataChangedProperty.set(true));
-    EasyBind.subscribe(cbParentCourse.getSelectionModel().selectedItemProperty(), entityWrapper ->
-        dataChangedProperty.set(true));
   }
 
   private void showParentCourses(final boolean show) {
@@ -123,43 +123,6 @@ public class LevelEdit extends GridPane implements Initializable {
     }
     cbBox.getChildren().remove(cbParentCourse);
     cbBox.getChildren().add(cbParentLevel);
-  }
-
-  /**
-   * Push the {@link #levelWrapper} to the {@link #dataService} and set
-   * {@link #dataChangedProperty} to false.
-   */
-  @FXML
-  @SuppressWarnings("unused")
-  public void persistChanges() {
-    levelWrapper.setNameProperty(txtLevel.textProperty().get());
-    try {
-      levelWrapper.setMaxCredits(Integer.parseInt(txtMaxCp.textProperty().get()));
-      levelWrapper.setMinCredits(Integer.parseInt(txtMinCp.textProperty().get()));
-    } catch (NumberFormatException exception) {
-      new Alert(Alert.AlertType.ERROR, resources.getString("creditsError"),
-            ButtonType.OK).showAndWait();
-      return;
-    }
-    if (rbParentLevel.isSelected()) {
-      levelWrapper.setParent((LevelWrapper)cbParentLevel.getValue());
-      levelWrapper.setCourseProperty(null);
-    } else {
-      levelWrapper.setCourseProperty((CourseWrapper)cbParentCourse.getValue());
-      levelWrapper.setParent(null);
-    }
-
-    boolean isNew = levelWrapper.getLevel().getId() == 0;
-    //Insert Level in Database.
-    dataService.dataChangeEventSource().push(
-          new DataChangeEvent(DataChangeType.STORE_ENTITY, levelWrapper));
-
-    //Insert Level in DataTreeView and DataListView.
-    if (isNew) {
-      dataService.dataChangeEventSource().push(
-            new DataChangeEvent(DataChangeType.INSERT_NEW_ENTITY, levelWrapper));
-    }
-    dataChangedProperty.set(false);
   }
 
   private void initializeInputFields() {
@@ -208,5 +171,42 @@ public class LevelEdit extends GridPane implements Initializable {
 
   private void setLevel() {
     txtLevel.setText(levelWrapper.getNameProperty());
+  }
+
+  /**
+   * Push the {@link #levelWrapper} to the {@link #dataService} and set
+   * {@link #dataChangedProperty} to false.
+   */
+  @FXML
+  @SuppressWarnings("unused")
+  public void persistChanges() {
+    levelWrapper.setNameProperty(txtLevel.textProperty().get());
+    try {
+      levelWrapper.setMaxCredits(Integer.parseInt(txtMaxCp.textProperty().get()));
+      levelWrapper.setMinCredits(Integer.parseInt(txtMinCp.textProperty().get()));
+    } catch (NumberFormatException exception) {
+      new Alert(Alert.AlertType.ERROR, resources.getString("creditsError"),
+            ButtonType.OK).showAndWait();
+      return;
+    }
+    if (rbParentLevel.isSelected()) {
+      levelWrapper.setParent((LevelWrapper)cbParentLevel.getValue());
+      levelWrapper.setCourseProperty(null);
+    } else {
+      levelWrapper.setCourseProperty((CourseWrapper)cbParentCourse.getValue());
+      levelWrapper.setParent(null);
+    }
+
+    boolean isNew = levelWrapper.getLevel().getId() == 0;
+    //Insert Level in Database.
+    dataService.dataChangeEventSource().push(
+          new DataChangeEvent(DataChangeType.STORE_ENTITY, levelWrapper));
+
+    //Insert Level in DataTreeView and DataListView.
+    if (isNew) {
+      dataService.dataChangeEventSource().push(
+            new DataChangeEvent(DataChangeType.INSERT_NEW_ENTITY, levelWrapper));
+    }
+    dataChangedProperty.set(false);
   }
 }

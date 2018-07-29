@@ -31,6 +31,7 @@ public class SessionEdit extends GridPane implements Initializable {
   private final BooleanProperty dataChangedProperty;
 
   private ResourceBundle resources;
+  private HashSet<String> validDays;
 
   @FXML
   @SuppressWarnings("unused")
@@ -53,8 +54,6 @@ public class SessionEdit extends GridPane implements Initializable {
   @FXML
   @SuppressWarnings("unused")
   private Button btPersistChanges;
-
-  private HashSet<String> validDays;
 
   /**
    * Initialize session edit.
@@ -86,16 +85,6 @@ public class SessionEdit extends GridPane implements Initializable {
     loadSessionData();
   }
 
-  private void loadSessionData() {
-    setDay();
-    setTime();
-    setRhythm();
-    setDuration();
-    cbTentative.setSelected(sessionWrapper.isTentative());
-    loadGroups();
-    dataChangedProperty.set(false);
-  }
-
   private void updateDataChanged() {
     EasyBind.subscribe(txtDay.textProperty(), s -> dataChangedProperty.set(true));
     EasyBind.subscribe(txtTime.textProperty(), s -> dataChangedProperty.set(true));
@@ -114,6 +103,17 @@ public class SessionEdit extends GridPane implements Initializable {
     EasyBind.subscribe(sessionWrapper.rhythmProperty(), s -> setRhythm());
     updateDataChanged();
   }
+
+  private void loadSessionData() {
+    setDay();
+    setTime();
+    setRhythm();
+    setDuration();
+    cbTentative.setSelected(sessionWrapper.isTentative());
+    loadGroups();
+    dataChangedProperty.set(false);
+  }
+
 
   private void setDuration() {
     txtDuration.setText(String.valueOf(sessionWrapper.getDuration()));
