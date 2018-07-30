@@ -64,7 +64,6 @@ public class DbService {
             dataSourceBuilder.driverClassName("org.sqlite.JDBC");
             dataSourceBuilder.url("jdbc:sqlite:" + dbFileProperty.get().getAbsolutePath());
             DataSource newDataSource = dataSourceBuilder.build();
-            //TODO DataSource ändern vielleich abstract routing datasource
             dataSourceProperty.set(newDataSource);
             dbTaskProperty.set(null);
             return null;

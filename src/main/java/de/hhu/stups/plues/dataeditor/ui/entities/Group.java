@@ -1,7 +1,5 @@
 package de.hhu.stups.plues.dataeditor.ui.entities;
 
-import org.hibernate.annotations.Immutable;
-
 import java.io.Serializable;
 import java.util.Objects;
 import java.util.Set;
@@ -9,7 +7,6 @@ import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
