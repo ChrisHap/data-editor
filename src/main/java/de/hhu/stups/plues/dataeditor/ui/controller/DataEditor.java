@@ -13,10 +13,15 @@ import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.concurrent.Task;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.SplitPane;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
@@ -68,6 +73,16 @@ public class DataEditor extends VBox implements Initializable {
           .subtract(btToggleDivider.widthProperty()));
     dataEditView.prefHeightProperty().bind(heightProperty().subtract(
           statusBar.heightProperty().add(50)));
+    dataEditView.addEventHandler(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
+      final KeyCombination combination = new KeyCodeCombination(KeyCode.W,
+            KeyCombination.CONTROL_DOWN);
+      public void handle(KeyEvent keyEvent) {
+        if (combination.match(keyEvent)) {
+          dataEditView.getTabs().remove(dataEditView.getSelectionModel().getSelectedItem());
+          keyEvent.consume();
+        }
+      }
+    });
     EasyBind.subscribe(dbService.dbTaskProperty(), this::setStatusBarProgress);
   }
 
