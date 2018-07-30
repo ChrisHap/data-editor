@@ -227,7 +227,7 @@ public class ModuleEdit extends GridPane implements Initializable {
     moduleLevel.setModule(moduleWrapper.getModule());
     LevelWrapper topParent = parentLevel;
     while (topParent.getParent() != null) {
-      topParent = parentLevel.getParent();
+      topParent = topParent.getParent();
     }
     if (topParent.getCourseWrapper() == null) {
       new Alert(Alert.AlertType.ERROR,
