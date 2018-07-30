@@ -1,6 +1,5 @@
 package de.hhu.stups.plues.dataeditor.ui.entities;
 
-import org.hibernate.annotations.Immutable;
 import org.springframework.lang.Nullable;
 
 import java.io.Serializable;
@@ -181,12 +180,20 @@ public class Level extends ModelEntity implements Serializable {
     return children;
   }
 
+  public void setChildren(Set<Level> children) {
+    this.children = children;
+  }
+
   public Set<ModuleLevel> getModuleLevels() {
     return moduleLevels;
   }
 
   public Set<Module> getModules() {
     return modules;
+  }
+
+  public void setModules(Set<Module> modules) {
+    this.modules = modules;
   }
 
   @Override

@@ -10,6 +10,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.ObservableSet;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -207,6 +208,8 @@ public class LevelWrapper implements EntityWrapper {
    */
   public static LevelWrapper createEmptyLevelWrapper() {
     Level level = new Level();
+    level.setModules(new HashSet<>());
+    level.setChildren(new HashSet<>());
     return new LevelWrapper(level);
   }
 }
