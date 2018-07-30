@@ -13,6 +13,7 @@ import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableSet;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -202,6 +203,7 @@ public class ModuleWrapper implements EntityWrapper {
     module.setPordnr(0);
     module.setBundled(false);
     module.setElectiveUnits(0);
+    module.setAbstractUnits(new HashSet<>());
     return new ModuleWrapper(module);
   }
 
