@@ -46,4 +46,9 @@ public interface LevelRepository extends CrudRepository<Level,Integer> {
   @Query(value = "delete from course_levels where level_id = ?1", nativeQuery = true)
   void deleteCourseLevel(int levelId);
 
+  @Transactional
+  @Modifying
+  @Query(value = "delete from module_levels where level_id = ?1", nativeQuery = true)
+  void deleteModuleLevel(int levelId);
+
 }

@@ -53,11 +53,17 @@ public interface AbstractUnitRepository extends CrudRepository<AbstractUnit,Inte
   @Query(value = "INSERT INTO unit_abstract_unit "
         + "(unit_id, abstract_unit_id)"
         + "VALUES (?1, ?2)", nativeQuery = true)
-  void insertSimpleUnitAbstractUnit(int unit, int abstractUnitId);
+  void insertSimpleUnitAbstractUnit(int unitId, int abstractUnitId);
 
   @Transactional
   @Modifying
   @Query(value = "DELETE FROM unit_abstract_unit WHERE abstract_unit_id = ?1",
         nativeQuery = true)
   void deleteUnitAbstractUnitByAbstractUnit(int abstractUnitId);
+
+  @Transactional
+  @Modifying
+  @Query(value = "DELETE FROM unit_abstract_unit WHERE unit_id = ?1",
+        nativeQuery = true)
+  void deleteUnitAbstractUnitByUnit(int unitId);
 }

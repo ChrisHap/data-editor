@@ -41,7 +41,7 @@ public class LabeledTextFieldTest extends ApplicationTest {
   }
 
   @Override
-  public void start(final Stage stage) throws Exception {
+  public void start(final Stage stage) {
     final Inflater inflater = new Inflater(new FXMLLoader(),bundle);
     labeledTextField = new LabeledTextField(inflater);
 

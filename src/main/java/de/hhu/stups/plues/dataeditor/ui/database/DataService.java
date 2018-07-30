@@ -128,7 +128,7 @@ public class DataService {
         saveAbstractUnit((AbstractUnitWrapper) changedEntity);
         break;
       case UNIT:
-        unitRepository.save(((UnitWrapper) changedEntity).getUnit());
+        saveUnit((UnitWrapper) changedEntity);
         break;
       case GROUP:
         groupRepository.save(((GroupWrapper) changedEntity).getGroup());
@@ -138,6 +138,14 @@ public class DataService {
         break;
       default:
     }
+  }
+
+  private void saveUnit(UnitWrapper unitWrapper) {
+    abstractUnitRepository.deleteUnitAbstractUnitByUnit(unitWrapper.getId());
+    unitRepository.save(unitWrapper.getUnit());
+    unitWrapper.getAbstractUnits().forEach(abstractUnitWrapper ->
+          abstractUnitRepository.insertSimpleUnitAbstractUnit(unitWrapper.getId(),
+                abstractUnitWrapper.getId()));
   }
 
   private void saveAbstractUnit(AbstractUnitWrapper abstractUnitWrapper) {
@@ -175,11 +183,7 @@ public class DataService {
         saveNewAbstractUnit((AbstractUnitWrapper) changedEntity);
         break;
       case UNIT:
-        maxId = unitRepository.getMaxId() + 1;
-        ((UnitWrapper) changedEntity).setId(maxId);
-        unitWrappersProperty.put(changedEntity.getId(),
-            ((UnitWrapper) changedEntity));
-        unitRepository.save(((UnitWrapper) changedEntity).getUnit());
+        saveNewUnit((UnitWrapper) changedEntity);
         break;
       case GROUP:
         maxId = groupRepository.getMaxId() + 1;
@@ -227,6 +231,15 @@ public class DataService {
           abstractUnitWrapper.getId()));
   }
 
+  private void saveNewUnit(UnitWrapper unitWrapper) {
+    unitWrapper.setId(unitRepository.getMaxId() + 1);
+    unitWrappersProperty.put(unitWrapper.getId(), unitWrapper);
+    unitRepository.save(unitWrapper.getUnit());
+    unitWrapper.getAbstractUnits().forEach(abstractUnit ->
+          abstractUnitRepository.insertSimpleUnitAbstractUnit(
+                unitWrapper.getId(), abstractUnit.getId()));
+  }
+
   private void saveLevel(final LevelWrapper levelWrapper) {
     levelRepository.deleteCourseLevel(levelWrapper.getId());
     final Level lvl = levelWrapper.getLevel();
@@ -249,6 +262,7 @@ public class DataService {
       dummyLevel = dummyLevel.getParent();
     }
     final Course course = dummyLevel.getCourse();
+
     //TODO mandatory einbauen
     if (course != null) {
       moduleRepository.insertModuleLevel(mod.getId(), lvl.getId(), course.getId(),
@@ -338,20 +352,31 @@ public class DataService {
     switch (changedType) {
       case COURSE:
         courseRepository.delete(((CourseWrapper) changedEntity).getCourse());
+        courseRepository.deleteMinor(changedEntity.getId());
+        courseRepository.deleteCourseLevel(changedEntity.getId());
         courseWrappersProperty.get().values().remove(changedEntity);
         majorCourseWrappersProperty.remove(changedEntity);
         minorCourseWrappersProperty.remove(changedEntity);
         break;
       case LEVEL:
         levelRepository.delete(((LevelWrapper) changedEntity).getLevel());
+        levelRepository.deleteCourseLevel(changedEntity.getId());
+        levelRepository.deleteModuleLevel(changedEntity.getId());
         levelWrappersProperty.get().values().remove(changedEntity);
         break;
       case MODULE:
         moduleRepository.delete(((ModuleWrapper) changedEntity).getModule());
+        moduleRepository.deleteModuleLevel(changedEntity.getId());
+        abstractUnitRepository.deleteModuleAbstractUnitTypeByModule(changedEntity.getId());
+        abstractUnitRepository.deleteModuleAbstractUnitSemesterByModule(changedEntity.getId());
         moduleWrappersProperty.get().values().remove(changedEntity);
         break;
       case ABSTRACT_UNIT:
         abstractUnitRepository.delete(((AbstractUnitWrapper) changedEntity).getAbstractUnit());
+        abstractUnitRepository.deleteModuleAbstractUnitTypeByAbstractUnit(changedEntity.getId());
+        abstractUnitRepository.deleteModuleAbstractUnitSemesterByAbstractUnit(
+              changedEntity.getId());
+        abstractUnitRepository.deleteUnitAbstractUnitByAbstractUnit(changedEntity.getId());
         abstractUnitWrappersProperty.get().values().remove(changedEntity);
         break;
       case UNIT:
