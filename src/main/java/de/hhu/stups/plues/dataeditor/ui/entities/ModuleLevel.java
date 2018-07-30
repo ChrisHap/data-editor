@@ -37,7 +37,7 @@ public class ModuleLevel extends ModelEntity implements Serializable {
 
   private String name;
 
-  private Boolean mandatory;
+  private boolean mandatory;
 
   @Column(name = "credit_points")
   private Integer creditPoints;
@@ -91,6 +91,10 @@ public class ModuleLevel extends ModelEntity implements Serializable {
 
   public String getName() {
     return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
   }
 
   @Override
