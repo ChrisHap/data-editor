@@ -140,12 +140,62 @@ public class DataService {
     }
   }
 
-  private void saveUnit(UnitWrapper unitWrapper) {
-    abstractUnitRepository.deleteUnitAbstractUnitByUnit(unitWrapper.getId());
-    unitRepository.save(unitWrapper.getUnit());
-    unitWrapper.getAbstractUnits().forEach(abstractUnitWrapper ->
-          abstractUnitRepository.insertSimpleUnitAbstractUnit(unitWrapper.getId(),
-                abstractUnitWrapper.getId()));
+  private void saveCourse(final CourseWrapper courseWrapper) {
+    courseRepository.deleteMinor(courseWrapper.getId());
+    final Course co = courseWrapper.getCourse();
+    courseRepository.updateSimpleCourse(co.getId(), co.getKey(), co.getDegree(),
+          co.getShortName(), co.getLongName(), CourseKzfa.toString(courseWrapper.getKzfa()),
+          co.getPo(), co.getCreditPoints());
+    if (co.isMinor()) {
+      co.getMajorCourses().forEach(course ->
+            courseRepository.insertMinor(co.getId(), course.getId()));
+    } else {
+      co.getMinorCourses().forEach(course ->
+            courseRepository.insertMinor(course.getId(), co.getId()));
+    }
+  }
+
+  private void saveLevel(final LevelWrapper levelWrapper) {
+    levelRepository.deleteCourseLevel(levelWrapper.getId());
+    final Level lvl = levelWrapper.getLevel();
+    levelRepository.updateSimpleLevel(lvl.getId(), lvl.getName(), lvl.getTm(), lvl.getArt(),
+          lvl.getMin(), lvl.getMax(), lvl.getMinCreditPoints(), lvl.getMaxCreditPoints(),
+          lvl.getParent() == null ? null : lvl.getParent().getId());
+    if (lvl.getParent() == null && lvl.getCourse() != null) {
+      levelRepository.insertCourseLevel(lvl.getCourse().getId(), lvl.getId());
+    }
+  }
+
+  private void saveModule(ModuleWrapper moduleWrapper) {
+    moduleRepository.deleteModuleLevel(moduleWrapper.getId());
+    final Module mod = moduleWrapper.getModule();
+    moduleRepository.updateSimpleModule(mod.getId(), mod.getKey(), mod.getTitle(),
+          mod.getPordnr(), mod.getElectiveUnits(), mod.getBundled());
+    final Level lvl = mod.getLevel();
+    Level dummyLevel = lvl;
+    while (dummyLevel.getParent() != null) {
+      dummyLevel = dummyLevel.getParent();
+    }
+    final Course course = dummyLevel.getCourse();
+
+    //TODO mandatory einbauen
+    if (course != null) {
+      moduleRepository.insertModuleLevel(mod.getId(), lvl.getId(), course.getId(),
+            mod.getTitle(), false);
+    }
+
+    abstractUnitRepository.deleteModuleAbstractUnitSemesterByModule(mod.getId());
+    abstractUnitRepository.deleteModuleAbstractUnitTypeByModule(mod.getId());
+    moduleWrapper.getAbstractUnits().forEach(abstractUnitWrapper -> {
+      abstractUnitRepository.deleteModuleAbstractUnitSemesterByAbstractUnit(
+            abstractUnitWrapper.getId());
+      abstractUnitRepository.insertSimpleModuleAbstractUnitSemester(
+            mod.getId(), abstractUnitWrapper.getId());
+      abstractUnitRepository.deleteModuleAbstractUnitTypeByAbstractUnit(
+            abstractUnitWrapper.getId());
+      abstractUnitRepository.insertSimpleModuleAbstractUnitType(
+            mod.getId(), abstractUnitWrapper.getId());
+    });
   }
 
   private void saveAbstractUnit(AbstractUnitWrapper abstractUnitWrapper) {
@@ -163,6 +213,14 @@ public class DataService {
     });
     abstractUnitRepository.deleteUnitAbstractUnitByAbstractUnit(abstractUnitWrapper.getId());
     abstractUnitWrapper.getUnits().forEach(unitWrapper ->
+          abstractUnitRepository.insertSimpleUnitAbstractUnit(unitWrapper.getId(),
+                abstractUnitWrapper.getId()));
+  }
+
+  private void saveUnit(UnitWrapper unitWrapper) {
+    abstractUnitRepository.deleteUnitAbstractUnitByUnit(unitWrapper.getId());
+    unitRepository.save(unitWrapper.getUnit());
+    unitWrapper.getAbstractUnits().forEach(abstractUnitWrapper ->
           abstractUnitRepository.insertSimpleUnitAbstractUnit(unitWrapper.getId(),
                 abstractUnitWrapper.getId()));
   }
@@ -203,6 +261,25 @@ public class DataService {
     }
   }
 
+  private void saveNewCourse(final CourseWrapper courseWrapper) {
+    final int maxId = courseRepository.getMaxId();
+    courseWrapper.setId(maxId + 1);
+    courseWrappersProperty.put(courseWrapper.getId(), courseWrapper);
+    final Course co = courseWrapper.getCourse();
+    courseRepository.insertSimpleCourse(co.getId(), co.getKey(), co.getDegree(), co.getShortName(),
+          co.getLongName(), CourseKzfa.toString(courseWrapper.getKzfa()), co.getPo(),
+          co.getCreditPoints());
+    if (courseWrapper.getCourse().isMajor()) {
+      majorCourseWrappersProperty.add(courseWrapper);
+      co.getMinorCourses().forEach(course ->
+            courseRepository.insertMinor(course.getId(), co.getId()));
+    } else {
+      minorCourseWrappersProperty.add(courseWrapper);
+      co.getMajorCourses().forEach(course ->
+            courseRepository.insertMinor(co.getId(), course.getId()));
+    }
+  }
+
   private void saveNewLevel(final LevelWrapper levelWrapper) {
     final int maxId = levelRepository.getMaxId();
     levelWrapper.setId(maxId + 1);
@@ -214,6 +291,37 @@ public class DataService {
       levelRepository.insertCourseLevel(lvl.getCourse().getId(), lvl.getId());
     }
     levelWrappersProperty.put(levelWrapper.getId(), levelWrapper);
+  }
+
+  private void saveNewModule(final ModuleWrapper moduleWrapper) {
+    final int maxId = moduleRepository.getMaxId();
+    moduleWrapper.setId(maxId + 1);
+    final Module mod = moduleWrapper.getModule();
+    moduleRepository.insertSimpleModule(mod.getId(), mod.getKey(), mod.getTitle(), mod.getPordnr(),
+          mod.getElectiveUnits(), mod.getBundled());
+    final Level lvl = mod.getLevel();
+    Level dummyLevel = lvl;
+    while (dummyLevel.getParent() != null) {
+      dummyLevel = dummyLevel.getParent();
+    }
+    final Course course = dummyLevel.getCourse();
+    //TODO mandatory einbauen
+    if (course != null) {
+      moduleRepository.insertModuleLevel(mod.getId(), lvl.getId(), course.getId(),
+            mod.getTitle(), false);
+    }
+    moduleWrapper.getAbstractUnits().forEach(abstractUnitWrapper -> {
+      abstractUnitRepository.deleteModuleAbstractUnitSemesterByAbstractUnit(
+            abstractUnitWrapper.getId());
+      abstractUnitRepository.insertSimpleModuleAbstractUnitSemester(
+            mod.getId(), abstractUnitWrapper.getId());
+      abstractUnitRepository.deleteModuleAbstractUnitTypeByAbstractUnit(
+            abstractUnitWrapper.getId());
+      abstractUnitRepository.insertSimpleModuleAbstractUnitType(
+            mod.getId(), abstractUnitWrapper.getId());
+    });
+
+    moduleWrappersProperty.put(mod.getId(), moduleWrapper);
   }
 
   private void saveNewAbstractUnit(AbstractUnitWrapper abstractUnitWrapper) {
@@ -238,114 +346,6 @@ public class DataService {
     unitWrapper.getAbstractUnits().forEach(abstractUnit ->
           abstractUnitRepository.insertSimpleUnitAbstractUnit(
                 unitWrapper.getId(), abstractUnit.getId()));
-  }
-
-  private void saveLevel(final LevelWrapper levelWrapper) {
-    levelRepository.deleteCourseLevel(levelWrapper.getId());
-    final Level lvl = levelWrapper.getLevel();
-    levelRepository.updateSimpleLevel(lvl.getId(), lvl.getName(), lvl.getTm(), lvl.getArt(),
-        lvl.getMin(), lvl.getMax(), lvl.getMinCreditPoints(), lvl.getMaxCreditPoints(),
-        lvl.getParent() == null ? null : lvl.getParent().getId());
-    if (lvl.getParent() == null && lvl.getCourse() != null) {
-      levelRepository.insertCourseLevel(lvl.getCourse().getId(), lvl.getId());
-    }
-  }
-
-  private void saveModule(ModuleWrapper moduleWrapper) {
-    moduleRepository.deleteModuleLevel(moduleWrapper.getId());
-    final Module mod = moduleWrapper.getModule();
-    moduleRepository.updateSimpleModule(mod.getId(), mod.getKey(), mod.getTitle(),
-        mod.getPordnr(), mod.getElectiveUnits(), mod.getBundled());
-    final Level lvl = mod.getLevel();
-    Level dummyLevel = lvl;
-    while (dummyLevel.getParent() != null) {
-      dummyLevel = dummyLevel.getParent();
-    }
-    final Course course = dummyLevel.getCourse();
-
-    //TODO mandatory einbauen
-    if (course != null) {
-      moduleRepository.insertModuleLevel(mod.getId(), lvl.getId(), course.getId(),
-          mod.getTitle(), false);
-    }
-
-    abstractUnitRepository.deleteModuleAbstractUnitSemesterByModule(mod.getId());
-    abstractUnitRepository.deleteModuleAbstractUnitTypeByModule(mod.getId());
-    moduleWrapper.getAbstractUnits().forEach(abstractUnitWrapper -> {
-      abstractUnitRepository.deleteModuleAbstractUnitSemesterByAbstractUnit(
-            abstractUnitWrapper.getId());
-      abstractUnitRepository.insertSimpleModuleAbstractUnitSemester(
-            mod.getId(), abstractUnitWrapper.getId());
-      abstractUnitRepository.deleteModuleAbstractUnitTypeByAbstractUnit(
-            abstractUnitWrapper.getId());
-      abstractUnitRepository.insertSimpleModuleAbstractUnitType(
-            mod.getId(), abstractUnitWrapper.getId());
-    });
-  }
-
-  private void saveNewModule(final ModuleWrapper moduleWrapper) {
-    final int maxId = moduleRepository.getMaxId();
-    moduleWrapper.setId(maxId + 1);
-    final Module mod = moduleWrapper.getModule();
-    moduleRepository.insertSimpleModule(mod.getId(), mod.getKey(), mod.getTitle(), mod.getPordnr(),
-        mod.getElectiveUnits(), mod.getBundled());
-    final Level lvl = mod.getLevel();
-    Level dummyLevel = lvl;
-    while (dummyLevel.getParent() != null) {
-      dummyLevel = dummyLevel.getParent();
-    }
-    final Course course = dummyLevel.getCourse();
-    //TODO mandatory einbauen
-    if (course != null) {
-      moduleRepository.insertModuleLevel(mod.getId(), lvl.getId(), course.getId(),
-          mod.getTitle(), false);
-    }
-    moduleWrapper.getAbstractUnits().forEach(abstractUnitWrapper -> {
-      abstractUnitRepository.deleteModuleAbstractUnitSemesterByAbstractUnit(
-            abstractUnitWrapper.getId());
-      abstractUnitRepository.insertSimpleModuleAbstractUnitSemester(
-            mod.getId(), abstractUnitWrapper.getId());
-      abstractUnitRepository.deleteModuleAbstractUnitTypeByAbstractUnit(
-            abstractUnitWrapper.getId());
-      abstractUnitRepository.insertSimpleModuleAbstractUnitType(
-            mod.getId(), abstractUnitWrapper.getId());
-    });
-
-    moduleWrappersProperty.put(mod.getId(), moduleWrapper);
-  }
-
-  private void saveCourse(final CourseWrapper courseWrapper) {
-    courseRepository.deleteMinor(courseWrapper.getId());
-    final Course co = courseWrapper.getCourse();
-    courseRepository.updateSimpleCourse(co.getId(), co.getKey(), co.getDegree(),
-        co.getShortName(), co.getLongName(), CourseKzfa.toString(courseWrapper.getKzfa()),
-          co.getPo(), co.getCreditPoints());
-    if (co.isMinor()) {
-      co.getMajorCourses().forEach(course ->
-          courseRepository.insertMinor(co.getId(), course.getId()));
-    } else {
-      co.getMinorCourses().forEach(course ->
-          courseRepository.insertMinor(course.getId(), co.getId()));
-    }
-  }
-
-  private void saveNewCourse(final CourseWrapper courseWrapper) {
-    final int maxId = courseRepository.getMaxId();
-    courseWrapper.setId(maxId + 1);
-    courseWrappersProperty.put(courseWrapper.getId(), courseWrapper);
-    final Course co = courseWrapper.getCourse();
-    courseRepository.insertSimpleCourse(co.getId(), co.getKey(), co.getDegree(), co.getShortName(),
-        co.getLongName(), CourseKzfa.toString(courseWrapper.getKzfa()), co.getPo(),
-          co.getCreditPoints());
-    if (courseWrapper.getCourse().isMajor()) {
-      majorCourseWrappersProperty.add(courseWrapper);
-      co.getMinorCourses().forEach(course ->
-          courseRepository.insertMinor(course.getId(), co.getId()));
-    } else {
-      minorCourseWrappersProperty.add(courseWrapper);
-      co.getMajorCourses().forEach(course ->
-          courseRepository.insertMinor(co.getId(), course.getId()));
-    }
   }
 
   private void deleteEntity(final EntityType changedType, final EntityWrapper changedEntity) {

@@ -663,7 +663,7 @@ public class DataTreeView extends VBox implements Initializable {
   private void addAbstractUnitToTreeItem(final TreeItem<EntityWrapper> treeItemParent,
                                          final AbstractUnit abstractUnit) {
     final TreeItem<EntityWrapper> abstractUnitTreeItem =
-          new TreeItem<>(dataService.getAbstractUnitWrappers().get(abstractUnit.getId()));
+          new TreeItem<>(dataService.abstractUnitWrappersProperty().get(abstractUnit.getId()));
     treeItemParent.getChildren().add(abstractUnitTreeItem);
     abstractUnit.getUnits().forEach(unit -> addUnitToTreeItem(abstractUnitTreeItem, unit));
   }
