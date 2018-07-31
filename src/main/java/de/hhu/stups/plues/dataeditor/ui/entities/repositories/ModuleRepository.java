@@ -4,7 +4,6 @@ import de.hhu.stups.plues.dataeditor.ui.entities.Module;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
-import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
 public interface ModuleRepository extends CrudRepository<Module,Integer> {
@@ -16,18 +15,16 @@ public interface ModuleRepository extends CrudRepository<Module,Integer> {
         + "VALUES (?1, ?2, ?3, ?4, ?5, ?6)",
         nativeQuery = true)
   @Modifying
-  void insertSimpleModule(@Param("id") int id, @Param("key") String key,
-                          @Param("title") String title, @Param("pordnr") int pordnr,
-                          @Param("elective") int elective, @Param("bundled") boolean bundled);
+  void insertSimpleModule(int id, String key, String title, int pordnr,
+                          int elective, boolean bundled);
 
   @Transactional
-  @Query(value = "update modules set key = :key, title = :title, pordnr = :pordnr, "
-        + "elective_units = :elective, bundled = :bundled where id = :id",
+  @Query(value = "update modules set key = ?2, title = ?3, pordnr = ?4, "
+        + "elective_units = ?5, bundled = ?6 where id = ?1",
         nativeQuery = true)
   @Modifying
-  void updateSimpleModule(@Param("id") int id, @Param("key") String key,
-                          @Param("title") String title, @Param("pordnr") int pordnr,
-                          @Param("elective") int elective, @Param("bundled") boolean bundled);
+  void updateSimpleModule(int id, String key, String title, int pordnr,
+                          int elective, boolean bundled);
 
 
   @Transactional
