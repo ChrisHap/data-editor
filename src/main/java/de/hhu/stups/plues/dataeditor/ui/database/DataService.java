@@ -284,7 +284,7 @@ public class DataService {
   }
 
   private void saveNewModule(final ModuleWrapper moduleWrapper) {
-    final int maxId = levelRepository.getMaxId();
+    final int maxId = moduleRepository.getMaxId();
     moduleWrapper.setId(maxId + 1);
     final Module mod = moduleWrapper.getModule();
     moduleRepository.insertSimpleModule(mod.getId(), mod.getKey(), mod.getTitle(), mod.getPordnr(),
