@@ -202,9 +202,9 @@ public class ModuleEdit extends GridPane implements Initializable {
   @FXML
   @SuppressWarnings("unused")
   public void persistChanges() {
-    moduleWrapper.setTitleProperty(txtModule.textProperty().get());
+    int pordNr;
     try {
-      moduleWrapper.setPordnrProperty(Integer.parseInt(txtPordnr.textProperty().get()));
+      pordNr = Integer.parseInt(txtPordnr.textProperty().get());
     } catch (NumberFormatException exception) {
       new Alert(Alert.AlertType.ERROR,
             resources.getString("pordnrError"), ButtonType.OK).showAndWait();
@@ -215,16 +215,7 @@ public class ModuleEdit extends GridPane implements Initializable {
             resources.getString("parentLevelError"), ButtonType.OK).showAndWait();
       return;
     }
-    LevelWrapper parentLevel = cbParentLevel.getSelectionModel().getSelectedItem();
-    moduleWrapper.setLevel(parentLevel);
-
-    cbParentLevel.getValue().getLevel().getModules().add(moduleWrapper.getModule());
-    moduleWrapper.setKeyProperty(txtKey.textProperty().get().toUpperCase());
-    moduleWrapper.getModule().setKey(txtKey.textProperty().get().toUpperCase());
-
-    ModuleLevel moduleLevel = new ModuleLevel();
-    moduleLevel.setLevel(parentLevel.getLevel());
-    moduleLevel.setModule(moduleWrapper.getModule());
+    LevelWrapper parentLevel = cbParentLevel.getValue();
     LevelWrapper topParent = parentLevel;
     while (topParent.getParent() != null) {
       topParent = topParent.getParent();
@@ -234,6 +225,17 @@ public class ModuleEdit extends GridPane implements Initializable {
             resources.getString("parentLevelCourseError"), ButtonType.OK).showAndWait();
       return;
     }
+    moduleWrapper.setTitleProperty(txtModule.textProperty().get());
+    moduleWrapper.setPordnrProperty(pordNr);
+
+    moduleWrapper.setLevel(parentLevel);
+    parentLevel.getLevel().getModules().add(moduleWrapper.getModule());
+    moduleWrapper.setKeyProperty(txtKey.textProperty().get().toUpperCase());
+    moduleWrapper.getModule().setKey(txtKey.textProperty().get().toUpperCase());
+
+    ModuleLevel moduleLevel = new ModuleLevel();
+    moduleLevel.setLevel(parentLevel.getLevel());
+    moduleLevel.setModule(moduleWrapper.getModule());
     moduleLevel.setCourse(topParent.getCourseWrapper().getCourse());
     Set<ModuleLevel> moduleLevels = new HashSet<>();
     moduleLevels.add(moduleLevel);

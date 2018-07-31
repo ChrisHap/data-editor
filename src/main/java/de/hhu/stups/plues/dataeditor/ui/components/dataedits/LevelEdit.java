@@ -180,15 +180,19 @@ public class LevelEdit extends GridPane implements Initializable {
   @FXML
   @SuppressWarnings("unused")
   public void persistChanges() {
-    levelWrapper.setNameProperty(txtLevel.textProperty().get());
+    int minCredits;
+    int maxCredits;
     try {
-      levelWrapper.setMaxCredits(Integer.parseInt(txtMaxCp.textProperty().get()));
-      levelWrapper.setMinCredits(Integer.parseInt(txtMinCp.textProperty().get()));
+      maxCredits = Integer.parseInt(txtMaxCp.textProperty().get());
+      minCredits = Integer.parseInt(txtMinCp.textProperty().get());
     } catch (NumberFormatException exception) {
       new Alert(Alert.AlertType.ERROR, resources.getString("creditsError"),
             ButtonType.OK).showAndWait();
       return;
     }
+    levelWrapper.setNameProperty(txtLevel.textProperty().get());
+    levelWrapper.setMaxCredits(maxCredits);
+    levelWrapper.setMinCredits(minCredits);
     if (rbParentLevel.isSelected()) {
       levelWrapper.setParent((LevelWrapper)cbParentLevel.getValue());
       levelWrapper.setCourseProperty(null);

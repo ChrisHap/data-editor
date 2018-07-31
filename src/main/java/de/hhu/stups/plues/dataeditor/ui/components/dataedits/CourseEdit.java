@@ -294,21 +294,23 @@ public class CourseEdit extends GridPane implements Initializable {
             resources.getString("degreeError"), ButtonType.OK).showAndWait();
       return;
     }
+    int creditPoints;
     try {
-      courseWrapper.setCreditPoints(Integer.parseInt(
-            txtCreditPoints.textProperty().getValue()));
-    } catch (NumberFormatException exeption) {
+      creditPoints = Integer.parseInt(
+            txtCreditPoints.textProperty().getValue());
+    } catch (NumberFormatException exception) {
       new Alert(Alert.AlertType.ERROR,
             resources.getString("creditsError"), ButtonType.OK).showAndWait();
       return;
     }
     try {
       courseWrapper.setPo(Integer.parseInt(txtPVersion.textProperty().getValue()));
-    } catch (NumberFormatException exeption) {
+    } catch (NumberFormatException exception) {
       new Alert(Alert.AlertType.ERROR,
             resources.getString("poError"), ButtonType.OK).showAndWait();
       return;
     }
+    courseWrapper.setCreditPoints(creditPoints);
     courseWrapper.setDegree(cbCourseDegree.getValue());
     courseWrapper.setLongName(txtFullName.textProperty().getValue());
     courseWrapper.setShortName(txtShortName.textProperty().getValue());
