@@ -197,16 +197,9 @@ public class LevelEdit extends GridPane implements Initializable {
       levelWrapper.setParent(null);
     }
 
-    boolean isNew = levelWrapper.getLevel().getId() == 0;
-    //Insert Level in Database.
     dataService.dataChangeEventSource().push(
           new DataChangeEvent(DataChangeType.STORE_ENTITY, levelWrapper));
 
-    //Insert Level in DataTreeView and DataListView.
-    if (isNew) {
-      dataService.dataChangeEventSource().push(
-            new DataChangeEvent(DataChangeType.INSERT_NEW_ENTITY, levelWrapper));
-    }
     dataChangedProperty.set(false);
   }
 }

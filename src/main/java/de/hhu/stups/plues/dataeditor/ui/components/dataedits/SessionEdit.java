@@ -171,18 +171,9 @@ public class SessionEdit extends GridPane implements Initializable {
 
     sessionWrapper.setGroup(cbGroup.getValue().getGroup());
     cbGroup.getValue().getSessions().add(sessionWrapper);
-    dataService.dataChangeEventSource().push(
-          new DataChangeEvent(DataChangeType.STORE_ENTITY, cbGroup.getValue()));
-
-    boolean isNew = sessionWrapper.getSession().getId() == 0;
 
     dataService.dataChangeEventSource().push(
           new DataChangeEvent(DataChangeType.STORE_ENTITY, sessionWrapper));
-
-    if (isNew) {
-      dataService.dataChangeEventSource().push(
-            new DataChangeEvent(DataChangeType.INSERT_NEW_ENTITY, sessionWrapper));
-    }
 
     dataChangedProperty.set(false);
   }

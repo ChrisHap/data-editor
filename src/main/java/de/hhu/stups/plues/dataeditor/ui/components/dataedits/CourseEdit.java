@@ -330,15 +330,8 @@ public class CourseEdit extends GridPane implements Initializable {
 
     courseWrapper.setKey(createCourseKey(courseWrapper, txtShortName));
 
-    boolean isNew = courseWrapper.getId() == 0;
-
     dataService.dataChangeEventSource().push(
           new DataChangeEvent(DataChangeType.STORE_ENTITY, courseWrapper));
-
-    if (isNew) {
-      dataService.dataChangeEventSource().push(
-            new DataChangeEvent(DataChangeType.INSERT_NEW_ENTITY, courseWrapper));
-    }
 
     dataChangedProperty.set(false);
   }

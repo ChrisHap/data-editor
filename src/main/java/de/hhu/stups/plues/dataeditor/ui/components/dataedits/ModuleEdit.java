@@ -247,15 +247,8 @@ public class ModuleEdit extends GridPane implements Initializable {
       moduleWrapper.getAbstractUnits().add(abstractUnitWrapper);
     });
 
-    boolean isNew = moduleWrapper.getId() == 0;
-
     dataService.dataChangeEventSource().push(
           new DataChangeEvent(DataChangeType.STORE_ENTITY, moduleWrapper));
-
-    if (isNew) {
-      dataService.dataChangeEventSource().push(
-            new DataChangeEvent(DataChangeType.INSERT_NEW_ENTITY, moduleWrapper));
-    }
 
     dataChangedProperty.set(false);
   }
