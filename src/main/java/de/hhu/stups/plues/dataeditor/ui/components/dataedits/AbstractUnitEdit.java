@@ -43,7 +43,7 @@ public class AbstractUnitEdit extends GridPane implements Initializable {
   private LabeledTextField txtAbstractUnit;
   @FXML
   @SuppressWarnings("unused")
-  private LabeledTextField txtId;
+  private LabeledTextField txtKey;
   @FXML
   @SuppressWarnings("unused")
   private Button persistChanges;
@@ -161,7 +161,7 @@ public class AbstractUnitEdit extends GridPane implements Initializable {
   }
 
   private void updateDataChanged() {
-    EasyBind.subscribe(txtId.textProperty(), s -> dataChangedProperty.set(true));
+    EasyBind.subscribe(txtKey.textProperty(), s -> dataChangedProperty.set(true));
     EasyBind.subscribe(txtAbstractUnit.textProperty(), s -> dataChangedProperty.set(true));
     EasyBind.subscribe(listViewUnits.itemsProperty(), s -> dataChangedProperty.set(true));
     EasyBind.subscribe(listViewModules.itemsProperty(), s -> dataChangedProperty.set(true));
@@ -180,7 +180,7 @@ public class AbstractUnitEdit extends GridPane implements Initializable {
 
   private void initializeInputFields() {
     txtAbstractUnit.setLabelText(resources.getString("abstract_unit"));
-    txtId.setLabelText(resources.getString("id"));
+    txtKey.setLabelText(resources.getString("id"));
   }
 
   @FXML
@@ -210,7 +210,7 @@ public class AbstractUnitEdit extends GridPane implements Initializable {
   }
 
   private void setId() {
-    txtId.setText(abstractUnitWrapper.getKey());
+    txtKey.setText(abstractUnitWrapper.getKey());
   }
 
   private void setModules() {
@@ -233,7 +233,7 @@ public class AbstractUnitEdit extends GridPane implements Initializable {
   @SuppressWarnings("unused")
   public void persistChanges() {
     abstractUnitWrapper.setTitle(txtAbstractUnit.textProperty().get());
-    abstractUnitWrapper.setKey(txtId.textProperty().get());
+    abstractUnitWrapper.setKey(txtKey.textProperty().get());
     abstractUnitWrapper.getModules().clear();
     listViewModules.getItems().forEach(moduleWrapper -> {
       abstractUnitWrapper.getModules().add(moduleWrapper);

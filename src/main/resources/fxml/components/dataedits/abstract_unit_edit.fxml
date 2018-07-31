@@ -23,7 +23,7 @@
         <RowConstraints percentHeight="60.0"/>
     </rowConstraints>
     <LabeledTextField fx:id="txtAbstractUnit" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
-    <LabeledTextField fx:id="txtId" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+    <LabeledTextField fx:id="txtKey" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
     <VBox fx:id="referencedEntitiesBox" GridPane.columnIndex="0" GridPane.rowIndex="2" spacing="5.0">
         <SegmentedButton>
             <buttons>

@@ -219,8 +219,6 @@ public class UnitEdit extends GridPane implements Initializable {
     listViewAbstractUnits.getItems().forEach(parent -> {
       unitWrapper.getAbstractUnits().add(parent);
       parent.getUnits().add(unitWrapper);
-      dataService.dataChangeEventSource().push(
-            new DataChangeEvent(DataChangeType.STORE_ENTITY, parent));
     });
 
     dataService.dataChangeEventSource().push(

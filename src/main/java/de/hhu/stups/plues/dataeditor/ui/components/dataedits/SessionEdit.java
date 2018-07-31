@@ -159,16 +159,21 @@ public class SessionEdit extends GridPane implements Initializable {
             ButtonType.OK).showAndWait();
       return;
     }
-
-    sessionWrapper.setDayProperty(txtDay.textProperty().get());
+    int duration;
+    int rhythm;
+    int time;
     try {
-      sessionWrapper.setDurationProperty(Integer.parseInt(txtDuration.textProperty().get()));
-      sessionWrapper.setRhythmProperty(Integer.parseInt(txtRhythm.textProperty().get()));
-      sessionWrapper.setTimeProperty(Integer.parseInt(txtTime.textProperty().get()));
+      duration = Integer.parseInt(txtDuration.textProperty().get());
+      rhythm = Integer.parseInt(txtRhythm.textProperty().get());
+      time = Integer.parseInt(txtTime.textProperty().get());
     } catch (NumberFormatException exception) {
       new Alert(Alert.AlertType.ERROR, resources.getString("numberFormatError"), ButtonType.OK);
+      return;
     }
-
+    sessionWrapper.setTimeProperty(time);
+    sessionWrapper.setRhythmProperty(rhythm);
+    sessionWrapper.setDurationProperty(duration);
+    sessionWrapper.setDayProperty(txtDay.textProperty().get());
     sessionWrapper.setGroup(cbGroup.getValue().getGroup());
     cbGroup.getValue().getSessions().add(sessionWrapper);
 
