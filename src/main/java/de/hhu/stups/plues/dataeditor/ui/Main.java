@@ -9,7 +9,6 @@ import javafx.stage.Stage;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 
 @ComponentScan("de.hhu.stups.plues.dataeditor")
@@ -46,11 +45,5 @@ public class Main extends Application {
     root.closeApplication();
     springContext.close();
     Platform.exit();
-  }
-
-  //TODO später vielleicht anders erhalten
-  @Bean
-  public ConfigurableApplicationContext getSpringContext() {
-    return springContext;
   }
 }
