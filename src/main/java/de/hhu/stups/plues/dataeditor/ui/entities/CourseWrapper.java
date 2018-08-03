@@ -61,6 +61,7 @@ public class CourseWrapper implements EntityWrapper {
     course.setPo(2016);
     course.setMinorCourses(new HashSet<>());
     course.setMajorCourses(new HashSet<>());
+    course.setLevels(new HashSet<>());
     return new CourseWrapper(course);
   }
 
