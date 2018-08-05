@@ -110,8 +110,6 @@ public class UnitEdit extends GridPane implements Initializable {
   }
 
   private void setListViewDragListeners() {
-    dataService.draggedEntityProperty().addListener((observable, oldValue, newValue) ->
-          listViewAbstractUnits.requestFocus());
     listViewAbstractUnits.setOnDragOver(event -> {
       event.acceptTransferModes(TransferMode.COPY);
       event.consume();
@@ -128,8 +126,6 @@ public class UnitEdit extends GridPane implements Initializable {
       event.consume();
     });
 
-    dataService.draggedEntityProperty().addListener((observable, oldValue, newValue) ->
-          listViewGroups.requestFocus());
     listViewGroups.setOnDragOver(event -> {
       event.acceptTransferModes(TransferMode.COPY);
       event.consume();
