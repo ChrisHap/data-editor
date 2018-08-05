@@ -39,6 +39,8 @@ public class DataEditor extends VBox implements Initializable {
   private final DbService dbService;
   private double lastDividerPosition;
   private SplitPane.Divider splitPaneDivider;
+  private ResourceBundle resources;
+
   @FXML
   @SuppressWarnings("unused")
   private SideBar sideBar;
@@ -68,6 +70,7 @@ public class DataEditor extends VBox implements Initializable {
 
   @Override
   public void initialize(final URL location, final ResourceBundle resources) {
+    this.resources = resources;
     initializeSplitPane();
     dataEditView.prefWidthProperty().bind(contentAnchorPane.widthProperty()
           .subtract(btToggleDivider.widthProperty()));
@@ -90,10 +93,10 @@ public class DataEditor extends VBox implements Initializable {
     Platform.runLater(() -> {
       if (task == null) {
         statusBar.setProgress(0);
-        statusBar.textProperty().set("Idle");
+        statusBar.textProperty().set(resources.getString("idle"));
       } else {
         statusBar.setProgress(-1);
-        statusBar.textProperty().set("Loading Database");
+        statusBar.textProperty().set(resources.getString("loading"));
       }
     });
   }
