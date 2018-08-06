@@ -93,7 +93,7 @@ public class DataEditor extends VBox implements Initializable {
     Platform.runLater(() -> {
       if (task == null) {
         statusBar.setProgress(0);
-        statusBar.textProperty().set(resources.getString("idle"));
+        statusBar.textProperty().set("");
       } else {
         statusBar.setProgress(-1);
         statusBar.textProperty().set(resources.getString("loading"));
