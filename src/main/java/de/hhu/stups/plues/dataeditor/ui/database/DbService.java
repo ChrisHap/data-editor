@@ -42,7 +42,7 @@ public class DbService {
     DataSourceBuilder dataSourceBuilder = DataSourceBuilder.create();
     dataSourceBuilder.type(org.sqlite.SQLiteDataSource.class);
     dataSourceBuilder.driverClassName("org.sqlite.JDBC");
-    dataSourceBuilder.url("jdbc:sqlite:cs.sqlite3");
+    dataSourceBuilder.url("jdbc:sqlite:db.sqlite3");
     DataSource newDataSource = dataSourceBuilder.build();
     dataSourceProperty.set(newDataSource);
   }
