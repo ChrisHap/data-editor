@@ -89,6 +89,12 @@ public class DataTreeView extends VBox implements Initializable {
     dataService.dataChangeEventSource().subscribe(this::updateDataTree);
     treeTableView.prefWidthProperty().bind(widthProperty());
     txtQuery.prefWidthProperty().bind(widthProperty());
+    setUpContextMenu();
+    setUpDragAndDrop();
+    EasyBind.subscribe(txtQuery.textProperty(), this::filterDataTree);
+  }
+
+  private void setUpContextMenu(){
     treeTableView.setOnMouseClicked(event -> {
       dataContextMenu.hide();
       final TreeItem<EntityWrapper> selectedTreeItem =
@@ -99,6 +105,9 @@ public class DataTreeView extends VBox implements Initializable {
         dataContextMenu.show(this, event.getScreenX(), event.getScreenY());
       }
     });
+  }
+
+  private void setUpDragAndDrop(){
     treeTableView.setOnDragDetected(test -> {
       if (treeTableView.getSelectionModel().getSelectedItem() == null) {
         return;
@@ -111,9 +120,13 @@ public class DataTreeView extends VBox implements Initializable {
       clipboardContent.putString("");
       db.setContent(clipboardContent);
     });
-    EasyBind.subscribe(txtQuery.textProperty(), this::filterDataTree);
   }
 
+  /**
+   * This method is called, when the text in the CustomTextField txtQuery is changed.
+   * It modifies the tree, so that only items containing the filter are shown.
+   * @param filter is the text from txtQuery used to search the tree.
+   */
   private void filterDataTree(String filter) {
     if (filter == null || filter.length() == 0) {
       treeTableView.setRoot(treeTableRoot);
@@ -297,6 +310,7 @@ public class DataTreeView extends VBox implements Initializable {
       default:
         break;
     }
+    filterDataTree(txtQuery.getText());
   }
 
   private void deleteEntity(EntityWrapper wrapper) {
