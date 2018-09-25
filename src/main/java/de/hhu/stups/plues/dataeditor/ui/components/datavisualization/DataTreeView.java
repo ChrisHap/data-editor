@@ -94,7 +94,7 @@ public class DataTreeView extends VBox implements Initializable {
     EasyBind.subscribe(txtQuery.textProperty(), this::filterDataTree);
   }
 
-  private void setUpContextMenu(){
+  private void setUpContextMenu() {
     treeTableView.setOnMouseClicked(event -> {
       dataContextMenu.hide();
       final TreeItem<EntityWrapper> selectedTreeItem =
@@ -107,7 +107,7 @@ public class DataTreeView extends VBox implements Initializable {
     });
   }
 
-  private void setUpDragAndDrop(){
+  private void setUpDragAndDrop() {
     treeTableView.setOnDragDetected(test -> {
       if (treeTableView.getSelectionModel().getSelectedItem() == null) {
         return;
