@@ -148,7 +148,7 @@ public class SessionEdit extends GridPane implements Initializable {
   @FXML
   @SuppressWarnings("unused")
   public void persistChanges() {
-    if (cbGroup.getValue() != null) {
+    if (cbGroup.getValue() == null) {
       new Alert(Alert.AlertType.ERROR, resources.getString("parentGroupError"),
             ButtonType.OK).showAndWait();
       return;
